@@ -260,6 +260,8 @@ module.exports = {
       "snipenear-dark": "#1F192D",
       "snipenear-dark-hover": "#282332",
       "snipenear-bg": "#151521",
+      "snipenear-input": "#5F3F5D",
+      "snipenear-text": "#5C4A50",
     },
     extend: {
       fontFamily: {

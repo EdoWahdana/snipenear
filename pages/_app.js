@@ -11,6 +11,7 @@ export default function MyApp({ Component, pageProps }) {
   const [walletConnection, setWalletConnection] = useState({});
   const [contract, setContract] = useState({});
   const [near, setNear] = useState({});
+  const [account, setAccount] = useState({});
   const [init, setInit] = useState(false);
 
   const _initContract = async () => {
@@ -23,37 +24,28 @@ export default function MyApp({ Component, pageProps }) {
 
     const walletConnection = new nearAPI.WalletConnection(near);
 
+    const account = await near.account("testingdo.testnet");
+
     const contract = await new nearAPI.Contract(
       walletConnection.account(),
       nearConfig.contractName,
       {
         viewMethods: ["nft_token", "nft_tokens_for_owner", "nft_metadata"],
-        changeMethods: [
-          "nft_mint_one",
-          "nft_mint",
-          "nft_mint_troop_steampunk",
-          "nft_mint_troop_samurai",
-          "nft_mint_troop_military",
-          "nft_mint_tower_steampunk",
-          "nft_mint_tower_samurai",
-          "nft_mint_tower_military",
-          "nft_mint_castle_steampunk",
-          "nft_mint_castle_samurai",
-          "nft_mint_castle_military",
-        ],
+        changeMethods: [],
         sender: walletConnection.getAccountId(),
       }
     );
 
-    return { walletConnection, contract, near };
+    return { walletConnection, contract, near, account };
   };
 
   useEffect(() => {
     if (!init) {
-      _initContract().then(({ walletConnection, contract, near }) => {
+      _initContract().then(({ walletConnection, contract, near, account }) => {
         setWalletConnection(walletConnection);
         setContract(contract);
         setNear(near);
+        setAccount(account);
         setInit(true);
       });
     }
@@ -72,6 +64,7 @@ export default function MyApp({ Component, pageProps }) {
           walletConnection: walletConnection,
           contract: contract,
           near: near,
+          account: account,
         }}
       >
         {init ? <Component {...pageProps} /> : <p>Loading</p>}

@@ -1,40 +1,117 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import Header from "components/Documentation/Header";
-import IndexNavbar from "pagesComponents/IndexNavbar";
-import IndexFooter from "pagesComponents/IndexFooter";
-import Button from "components/Button/Button";
+import AppNavbar from "pagesComponents/AppNavbar";
 import UserContext from "../config/context";
-import { parseImgUrl } from "../utils/common";
+import IconCheck from "../components/Icons/IconCheck";
+import IconChecked from "../components/Icons/IconChecked";
 
 const App = () => {
-  const { walletConnection, contract, near } = useContext(UserContext);
+  const { account } = useContext(UserContext);
+  const [isToken, setIsToken] = useState(false);
+  const [isListing, setIsListing] = useState(true);
+  const [isEmail, setIsEmail] = useState(false);
+  const [isPush, setIsPush] = useState(true);
+  const [isValid, setIsValid] = useState(false);
+  const [contractId, setContractId] = useState(null);
+  const [tokenId, setTokenId] = useState(null);
+  const [contractResult, setContractResult] = useState({});
+  const [isImageLoading, setIsImageLoading] = useState(false);
+
+  const checkContract = async () => {
+    try {
+      const resMetadata = await account.viewFunction(
+        contractId,
+        "nft_metadata",
+        {}
+      );
+      const resNftSupply = await account.viewFunction(
+        contractId,
+        "nft_total_supply",
+        {}
+      );
+
+      const resObject = {
+        metadata: resMetadata,
+        supply: resNftSupply,
+      };
+
+      setContractResult(resObject);
+    } catch (err) {
+      setContractResult(err.toString());
+    }
+  };
+
+  const checkTokenContract = async () => {
+    try {
+      const resMetadata = await account.viewFunction(
+        contractId,
+        "nft_metadata",
+        {}
+      );
+      const resToken = await account.viewFunction(contractId, "nft_token", {
+        token_id: tokenId,
+      });
+
+      const resObject = {
+        metadata: resMetadata,
+        token: resToken,
+      };
+
+      setContractResult(resObject);
+    } catch (err) {
+      setContractResult(err.toString());
+    }
+  };
 
   return (
     <>
       <Header title="SnipeNear | App" />
+      <AppNavbar />
+
       <section
-        className="header relative items-center flex bg-fill"
+        className="header relative items-start flex bg-fill h-[721px]"
         style={{
           backgroundImage: `url('./landing-page.png')`,
           backgroundSize: "100% 100%",
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="container max-w-7xl mx-auto">
-          <div className="w-full px-8 md:px-4 text-center">
-            <div className="flex flex-col md:flex-row relative mt-32">
-              <div className="md:w-6/12 mr-auto mt-10">
-                <div className="w-[90%]">
-                  <p
-                    className="tracking-wide text-white text-lg font-bold text-left md:text-5xl font-poppins"
-                    style={{ lineHeight: 1.3 }}
+        <div className="flex flex-row gap-x-2 mx-auto">
+          <div className="container w-full md:w-2/3">
+            <div className="w-5/12 px-8 md:px-4 text-center">
+              <div className="grid grid-cols-2 gap-x-8 justify-center items-center mt-40">
+                <p
+                  className=" text-white text-md text-left md:text-xl"
+                  style={{
+                    lineHeight: 1.3,
+                    fontFamily: "Poppins, sans-serif",
+                  }}
+                >
+                  Contract Id
+                </p>
+                <div className="inline-flex">
+                  <input
+                    name="contractId"
+                    className="bg-snipenear-input border-2 border-snipenear text-white rounded-md p-1 pr-10 mr-4"
+                    onChange={(e) => setContractId(e.target.value)}
+                  />
+                  <button
+                    className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                    onClick={() => setIsToken(!isToken)}
                   >
-                    The most reliable tool to snipe your favorite NFT &
-                    Collection
-                  </p>
+                    {isToken ? (
+                      <IconChecked size={25} />
+                    ) : (
+                      <IconCheck size={25} color={"#5C4A50"} />
+                    )}
+                    <p className="text-snipenear-text text-sm font-bold">
+                      Snipe Token?
+                    </p>
+                  </button>
                 </div>
-                <br />
-                <div className="w-5/6">
+              </div>
+              {isToken && (
+                <div className="grid grid-cols-2 gap-x-8 justify-center items-center mt-10">
                   <p
                     className=" text-white text-md text-left md:text-xl"
                     style={{
@@ -42,64 +119,243 @@ const App = () => {
                       fontFamily: "Poppins, sans-serif",
                     }}
                   >
-                    Have you ever missed getting your most wanted NFT? Worry no
-                    more, SnipeNear will notify every update on an NFT or a
-                    Collection in every marketplace using our blazingly fast and
-                    most reliable indexer.
+                    Token Id
                   </p>
+                  <input
+                    name="tokenId"
+                    className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
+                    onChange={(e) => setTokenId(e.target.value)}
+                  />
                 </div>
-                <br />
-                <div className="flex flex-row justify-start gap-x-4">
-                  <button className="bg-snipenear hover:bg-snipenear-hover transition-colors duration-100 py-4 px-10 text-snipenear-dark font-extrabold text-2xl rounded-lg">
-                    Launch App
-                  </button>
-                  <button className="bg-transparent hover:bg-snipenear-dark-hover transition-colors duration-100 border-2 border-snipenear py-4 px-10 text-snipenear font-bold text-2xl rounded-lg">
-                    Learn More
-                  </button>
+              )}
+              <div className="grid grid-cols-2 gap-x-8 justify-center items-start mt-10">
+                <p
+                  className=" text-white text-md text-left md:text-xl"
+                  style={{
+                    lineHeight: 1.3,
+                    fontFamily: "Poppins, sans-serif",
+                  }}
+                >
+                  Event
+                </p>
+                <div className="flex flex-col gap-y-4 w-full md:w-[230px] bg-snipenear-input rounded-lg p-4">
+                  {isListing ? (
+                    <button
+                      className="inline-flex gap-x-2 justify-start items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                      onClick={() => setIsListing(!isListing)}
+                    >
+                      <IconChecked size={25} />
+                      <p className="text-snipenear-text text-sm font-bold">
+                        Listing
+                      </p>
+                    </button>
+                  ) : (
+                    <button
+                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-snipenear hover:bg-snipenear hover:bg-opacity-20 rounded-lg p-2"
+                      onClick={() => setIsListing(!isListing)}
+                    >
+                      <IconCheck size={20} color={"#CCA8B4"} />
+                      <p className="text-snipenear text-sm font-bold">
+                        Listing
+                      </p>
+                    </button>
+                  )}
                 </div>
               </div>
-              <div>
-                <img
-                  src="nfts.png"
-                  alt="Material Tailwind Logo"
-                  className="w-64 md:w-[450px] mx-auto md:my-10"
-                />
+              <div className="grid grid-cols-2 gap-x-8 justify-center items-start mt-10">
+                <p
+                  className=" text-white text-md text-left md:text-xl"
+                  style={{
+                    lineHeight: 1.3,
+                    fontFamily: "Poppins, sans-serif",
+                  }}
+                >
+                  Notification
+                </p>
+                <div className="flex flex-col gap-y-4 w-full md:w-[230px] bg-snipenear-input rounded-lg p-4">
+                  {isEmail ? (
+                    <button
+                      className="inline-flex gap-x-2 justify-start items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                      onClick={() => setIsEmail(!isEmail)}
+                    >
+                      <IconChecked size={25} />
+                      <p className="text-snipenear-text text-sm font-bold">
+                        Email
+                      </p>
+                    </button>
+                  ) : (
+                    <button
+                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-snipenear hover:bg-snipenear hover:bg-opacity-20 rounded-lg p-2"
+                      onClick={() => setIsEmail(!isEmail)}
+                    >
+                      <IconCheck size={20} color={"#CCA8B4"} />
+                      <p className="text-snipenear text-sm font-bold">Email</p>
+                    </button>
+                  )}
+
+                  {isPush ? (
+                    <button
+                      className="inline-flex gap-x-2 justify-start items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                      onClick={() => setIsPush(!isPush)}
+                    >
+                      <IconChecked size={25} />
+                      <p className="text-snipenear-text text-sm font-bold">
+                        Push Notification
+                      </p>
+                    </button>
+                  ) : (
+                    <button
+                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-snipenear hover:bg-snipenear hover:bg-opacity-20 rounded-lg p-2"
+                      onClick={() => setIsPush(!isPush)}
+                    >
+                      <IconCheck size={20} color={"#CCA8B4"} />
+                      <p className="text-snipenear text-sm font-bold">
+                        Push Notification
+                      </p>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="inline-flex gap-x-4">
+                {contractId !== null && contractId !== "" ? (
+                  <button
+                    className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg py-2 mt-10"
+                    onClick={
+                      isToken && tokenId !== ""
+                        ? checkTokenContract
+                        : checkContract
+                    }
+                  >
+                    <p className="text-snipenear-text text-sm font-bold py-1 px-10">
+                      Check
+                    </p>
+                  </button>
+                ) : (
+                  <button className="inline-flex gap-x-2 justify-center items-center bg-snipenear bg-opacity-20 cursor-not-allowed rounded-lg py-2 mt-10">
+                    <p className="text-snipenear-text text-sm font-bold py-1 px-10">
+                      Check
+                    </p>
+                  </button>
+                )}
+
+                {isValid ? (
+                  <button className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg py-2 mt-10">
+                    <p className="text-snipenear-text text-sm font-bold py-1 px-10">
+                      Submit
+                    </p>
+                  </button>
+                ) : (
+                  <button className="inline-flex gap-x-2 justify-center items-center bg-snipenear bg-opacity-20 cursor-not-allowed rounded-lg py-2 mt-10">
+                    <p className="text-snipenear-text text-sm font-bold py-1 px-10">
+                      Snipe
+                    </p>
+                  </button>
+                )}
               </div>
             </div>
+          </div>
+          <div className="container w-full md:w-1/3">
+            <div className="w-5/12 px-8 md:px-4">
+              <div className="mt-36">
+                <p className="text-white text-2xl text-left mb-2">Preview</p>
+                <div className="flex flex-col gap-y-4 w-full md:w-96 h-96 bg-snipenear-input rounded-lg overflow-y-auto p-4">
+                  {typeof contractResult === "string" && (
+                    <p className="text-white text-md font-bold mx-auto">
+                      {contractResult}
+                    </p>
+                  )}
 
-            {walletConnection.getAccountId() && (
-              <div className="mt-12 flex flex-col justify-center gap-4 mb-36 md:flex-row">
-                <>
-                  {/* <a onClick={() => _mintOne()}>
-                    <Button
-                      color="green"
-                      size="lg"
-                      style={{
-                        width: "100%",
-                        justifyContent: "center",
-                      }}
-                      className="bg-opacity-100"
-                    >
-                      Mint One
-                    </Button>
-                  </a> */}
+                  {/* Contract Result */}
+                  {!isToken &&
+                    typeof contractResult === "object" &&
+                    Object.keys(contractResult).length > 0 && (
+                      <Fragment>
+                        <p className="text-white text-md font-bold mx-auto">
+                          Contract Info
+                        </p>
+                        <hr />
+                        <img
+                          src={contractResult.metadata?.icon}
+                          width={100}
+                          className="mx-auto border-4 border-snipenear rounded-lg"
+                        />
+                        <div className="grid grid-cols-3">
+                          <p className="text-white text-sm">Contract Id</p>
+                          <p className="text-white text-sm">:</p>
+                          <p className="text-white text-sm">{contractId}</p>
+                        </div>
+                        <div className="grid grid-cols-3">
+                          <p className="text-white text-sm">Contract Name</p>
+                          <p className="text-white text-sm">:</p>
+                          <p className="text-white text-sm">
+                            {contractResult.metadata?.name}
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-3">
+                          <p className="text-white text-sm">Symbol</p>
+                          <p className="text-white text-sm">:</p>
+                          <p className="text-white text-sm">
+                            {contractResult.metadata?.symbol}
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-3">
+                          <p className="text-white text-sm">NFT Supply</p>
+                          <p className="text-white text-sm">:</p>
+                          <p className="text-white text-sm">
+                            {contractResult.supply}
+                          </p>
+                        </div>
+                      </Fragment>
+                    )}
 
-                  <a onClick={() => _signOut()}>
-                    <Button
-                      color="green"
-                      size="lg"
-                      style={{
-                        width: "100%",
-                        justifyContent: "center",
-                      }}
-                      className="bg-opacity-100"
-                    >
-                      Logout
-                    </Button>
-                  </a>
-                </>
+                  {/* Token Result */}
+                  {isToken &&
+                    typeof contractResult === "object" &&
+                    Object.keys(contractResult).length > 0 && (
+                      <Fragment>
+                        <p className="text-white text-md font-bold mx-auto">
+                          Token Info
+                        </p>
+                        <hr />
+
+                        {isImageLoading ? (
+                          <p>Loading...b</p>
+                        ) : (
+                          <img
+                            src={`${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`}
+                            width={100}
+                            alt="NFT Image"
+                            className="mx-auto border-4 border-snipenear rounded-lg"
+                            onLoad={() => setIsImageLoading(false)}
+                          />
+                        )}
+                        <div className="grid grid-cols-3">
+                          <p className="text-white text-sm">Token Id</p>
+                          <p className="text-white text-sm">:</p>
+                          <p className="text-white text-sm">
+                            {contractResult.token?.token_id}
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-3">
+                          <p className="text-white text-sm">Owner Id</p>
+                          <p className="text-white text-sm">:</p>
+                          <p className="text-white text-sm">
+                            {contractResult.token?.owner_id}
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-3">
+                          <p className="text-white text-sm">Title</p>
+                          <p className="text-white text-sm">:</p>
+                          <p className="text-white text-sm">
+                            {contractResult.token?.metadata?.title}
+                          </p>
+                        </div>
+                      </Fragment>
+                    )}
+                </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
       </section>
