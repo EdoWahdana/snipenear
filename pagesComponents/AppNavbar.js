@@ -9,9 +9,18 @@ import NavbarBrand from "components/Navbar/NavbarBrand";
 import NavbarCollapse from "components/Navbar/NavbarCollapse";
 import UserContext from "../config/context";
 import NavbarToggler from "components/Navbar/NavbarToggler";
+import { useRouter } from "next/router";
 
 const AppNavbar = () => {
+  const router = useRouter();
   const [openNavbar, setOpenNavbar] = useState(false);
+  const { walletConnection } = useContext(UserContext);
+
+  const _signOut = async () => {
+    await walletConnection.signOut();
+
+    router.replace("/");
+  };
 
   return (
     <Navbar>
@@ -52,13 +61,15 @@ const AppNavbar = () => {
                   </p>
                 </div>
               </Link>
-              <Link href="/profile" replace={true}>
-                <div className="font-poppins mr-0 md:mr-4">
-                  <p className="text-lg text-[#CCA8B4] cursor-pointer hover:text-opacity-80">
-                    Profile
-                  </p>
-                </div>
-              </Link>
+              {walletConnection.isSignedIn() && (
+                <Link href="/">
+                  <div className="font-poppins mr-0 md:mr-4" onClick={_signOut}>
+                    <p className="bg-transparent hover:bg-snipenear-dark-hover transition-colors duration-100 border-2 border-snipenear py-2 px-4 text-snipenear font-bold text-lg rounded-lg cursor-pointer">
+                      SIGN OUT
+                    </p>
+                  </div>
+                </Link>
+              )}
             </NavLink>
           </Nav>
         </NavbarCollapse>

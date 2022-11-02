@@ -20,7 +20,6 @@ export default function IndexNavbar() {
 
   const _signOut = async () => {
     await walletConnection.signOut();
-    // location.reload();
   };
 
   console.log(walletConnection);
