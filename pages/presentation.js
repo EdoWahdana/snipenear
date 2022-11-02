@@ -5,31 +5,13 @@ import IndexFooter from "pagesComponents/IndexFooter";
 import Button from "components/Button/Button";
 import UserContext from "../config/context";
 import { parseImgUrl } from "../utils/common";
+import Link from "next/link";
 
 const Presentation = () => {
   const { walletConnection, contract, near } = useContext(UserContext);
-  const [nft, setNft] = useState([]);
-
-  useEffect(() => {
-    if (walletConnection.getAccountId()) {
-      _tokenListOwner();
-    }
-  }, [walletConnection.getAccountId()]);
 
   const _signIn = async () => {
-    await walletConnection.requestSignIn(contract, "NEARGotchi");
-  };
-
-  const _signOut = async () => {
-    await walletConnection.signOut();
-    location.reload();
-  };
-
-  const _tokenListOwner = async () => {
-    const tokens = await contract.nft_tokens_for_owner({
-      account_id: await walletConnection.getAccountId(),
-    });
-    setNft(tokens);
+    await walletConnection.requestSignIn(contract, "SnipeNear");
   };
 
   return (
@@ -75,9 +57,20 @@ const Presentation = () => {
                 </div>
                 <br />
                 <div className="flex flex-row justify-start gap-x-4">
-                  <button className="bg-snipenear hover:bg-snipenear-hover transition-colors duration-100 py-4 px-10 text-snipenear-dark font-extrabold text-2xl rounded-lg">
-                    Launch App
-                  </button>
+                  {walletConnection.isSignedIn() ? (
+                    <Link href="/app" replace={true}>
+                      <button className="bg-snipenear hover:bg-snipenear-hover transition-colors duration-100 py-4 px-10 text-snipenear-dark font-extrabold text-2xl rounded-lg">
+                        Launch App
+                      </button>
+                    </Link>
+                  ) : (
+                    <button
+                      className="bg-snipenear hover:bg-snipenear-hover transition-colors duration-100 py-4 px-10 text-snipenear-dark font-extrabold text-2xl rounded-lg"
+                      onClick={_signIn}
+                    >
+                      Sign In
+                    </button>
+                  )}
                   <button className="bg-transparent hover:bg-snipenear-dark-hover transition-colors duration-100 border-2 border-snipenear py-4 px-10 text-snipenear font-bold text-2xl rounded-lg">
                     Learn More
                   </button>
@@ -91,40 +84,6 @@ const Presentation = () => {
                 />
               </div>
             </div>
-
-            {walletConnection.getAccountId() && (
-              <div className="mt-12 flex flex-col justify-center gap-4 mb-36 md:flex-row">
-                <>
-                  {/* <a onClick={() => _mintOne()}>
-                    <Button
-                      color="green"
-                      size="lg"
-                      style={{
-                        width: "100%",
-                        justifyContent: "center",
-                      }}
-                      className="bg-opacity-100"
-                    >
-                      Mint One
-                    </Button>
-                  </a> */}
-
-                  <a onClick={() => _signOut()}>
-                    <Button
-                      color="green"
-                      size="lg"
-                      style={{
-                        width: "100%",
-                        justifyContent: "center",
-                      }}
-                      className="bg-opacity-100"
-                    >
-                      Logout
-                    </Button>
-                  </a>
-                </>
-              </div>
-            )}
           </div>
         </div>
       </section>

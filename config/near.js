@@ -1,4 +1,4 @@
-const CONTRACT_NAME = "dev-1653459826084-63224978133264";
+const CONTRACT_NAME = "snipenear.testnet";
 
 function getConfig(env) {
   switch (env) {

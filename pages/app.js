@@ -4,9 +4,12 @@ import AppNavbar from "pagesComponents/AppNavbar";
 import UserContext from "../config/context";
 import IconCheck from "../components/Icons/IconCheck";
 import IconChecked from "../components/Icons/IconChecked";
+import { useRouter } from "next/router";
 
 const App = () => {
-  const { account } = useContext(UserContext);
+  const router = useRouter();
+  const { walletConnection, account } = useContext(UserContext);
+
   const [isToken, setIsToken] = useState(false);
   const [isListing, setIsListing] = useState(true);
   const [isEmail, setIsEmail] = useState(false);
@@ -17,6 +20,12 @@ const App = () => {
   const [contractResult, setContractResult] = useState({});
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [hasFetching, setHasFetching] = useState(false);
+
+  useEffect(() => {
+    if (!walletConnection.isSignedIn()) {
+      router.replace('/');
+    }
+  }, [walletConnection]);
 
   const checkContract = async () => {
     try {
@@ -81,7 +90,7 @@ const App = () => {
   return (
     <>
       <Header title="SnipeNear | App" />
-      <AppNavbar   />
+      <AppNavbar />
 
       <section
         className="header relative items-start flex bg-fill h-[721px]"
@@ -116,6 +125,7 @@ const App = () => {
                       setIsToken(!isToken);
                       setTokenId(null);
                       setHasFetching(false);
+                      setIsValid(false);
                     }}
                   >
                     {isToken ? (

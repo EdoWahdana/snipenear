@@ -30,7 +30,7 @@ export default function MyApp({ Component, pageProps }) {
       walletConnection.account(),
       nearConfig.contractName,
       {
-        viewMethods: ["nft_token", "nft_tokens_for_owner", "nft_metadata"],
+        viewMethods: [],
         changeMethods: [],
         sender: walletConnection.getAccountId(),
       }

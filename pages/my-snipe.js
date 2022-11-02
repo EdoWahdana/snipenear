@@ -3,22 +3,17 @@ import Header from "components/Documentation/Header";
 import AppNavbar from "pagesComponents/AppNavbar";
 import UserContext from "../config/context";
 import { parseImgUrl } from "../utils/common";
+import { useRouter } from "next/router";
 
 const MySnipe = () => {
-  const { account } = useContext(UserContext);
-  const [isValid, setIsValid] = useState(false);
-  const [contractId, setContractId] = useState(null);
-  const [tokenId, setTokenId] = useState(null);
-  const [contractResult, setContractResult] = useState({});
-  const [isImageLoading, setIsImageLoading] = useState(false);
+  const router = useRouter();
+  const { walletConnection, account } = useContext(UserContext);
 
-  const snipe = async () => {
-    if (!isValid) {
-      return null;
+  useEffect(() => {
+    if (!walletConnection.isSignedIn()) {
+      router.replace("/");
     }
-
-    console.log(contractId, tokenId);
-  };
+  }, [walletConnection]);
 
   return (
     <>
@@ -42,11 +37,39 @@ const MySnipe = () => {
 
           <div className="grid grid-cols-2 w-full divide-x-2 divide-snipenear divide-solid px-2 md:px-10">
             {/* Contract snipe */}
-            <div className="mr-2">
+            <div className="mr-2 pl-0 lg:pl-10">
               <p className="text-xl text-white text-center font-semibold mb-2">
                 Contract Snipe
               </p>
-              <div className="flex flex-row h-20 justify-between items-center text-white bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4">
+              <div className="flex flex-col md:hidden h-48 justify-between items-center text-white bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 py-2">
+                <div className="flex flex-col items-center">
+                  <img
+                    src={parseImgUrl(
+                      "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
+                    )}
+                    className="w-16 h-16 rounded-full border-4 border-snipenear-dark"
+                  />
+                  <div className="flex flex-col justify-between items-start gap-y-2">
+                    <div className="text-center">
+                      <p className="text-white font-bold text-md">
+                        Anti Social Ape Club
+                      </p>
+                      <p className="text-white text-xs">
+                        Contract Id : asac.near
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col justify-end">
+                  <p className="text-snipenear-dark text-xs">
+                    Total Snipe : 100
+                  </p>
+                  <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
+                    Unsnipe
+                  </button>
+                </div>
+              </div>
+              <div className="hidden md:flex flex-row h-20 justify-between items-center text-white bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4">
                 <div className="inline-flex items-center gap-x-4">
                   <img
                     src={parseImgUrl(
@@ -78,11 +101,38 @@ const MySnipe = () => {
             </div>
 
             {/* Token Snipe */}
-            <div className="pl-2">
+            <div className="pl-2 pr-0 lg:pr-10">
               <p className="text-xl text-white text-center font-semibold mb-2">
                 Token Snipe
               </p>
-              <div className="flex flex-row h-20 justify-between items-center text-white bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4">
+              <div className="flex flex-col md:hidden h-48 justify-between items-center text-white bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 py-2">
+                <div className="flex flex-col items-center">
+                  <img
+                    src={parseImgUrl(
+                      "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
+                    )}
+                    className="w-16 h-16 rounded-full border-4 border-snipenear-dark"
+                  />
+                  <div className="flex flex-col justify-between items-start gap-y-2">
+                    <div className="text-center">
+                      <p className="text-white font-bold text-md">ASAC #1</p>
+                      <p className="text-white text-xs">
+                        Contract Id : asac.near
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col justify-end">
+                  <p className="text-snipenear-dark text-xs">
+                    Total Snipe : 100
+                  </p>
+                  <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
+                    Unsnipe
+                  </button>
+                </div>
+              </div>
+
+              <div className="hidden md:flex flex-row h-20 justify-between items-center text-white bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4">
                 <div className="inline-flex items-center gap-x-4">
                   <img
                     src={parseImgUrl(

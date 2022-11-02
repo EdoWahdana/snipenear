@@ -18,7 +18,7 @@ const AppNavbar = () => {
       <NavbarContainer>
         <NavbarWrapper>
           <NavbarBrand color="white">
-            <Link href="/">
+            <Link href="/" replace={true}>
               <img
                 src="snipenear-logo-title.png"
                 alt="Material Tailwind Logo"
@@ -36,7 +36,7 @@ const AppNavbar = () => {
         <NavbarCollapse open={openNavbar}>
           <Nav>
             <NavLink ripple="dark">
-              <Link href="/app">
+              <Link href="/app" replace={true}>
                 <div className="mr-0 md:mr-4">
                   <p
                     className={`font-poppins text-[#CCA8B4] text-lg cursor-pointer hover:text-opacity-80`}
@@ -45,14 +45,14 @@ const AppNavbar = () => {
                   </p>
                 </div>
               </Link>
-              <Link href="/my-snipe">
+              <Link href="/my-snipe" replace={true}>
                 <div className="font-poppins mr-0 md:mr-4">
                   <p className="text-lg text-[#CCA8B4] cursor-pointer hover:text-opacity-80">
                     My Snipe
                   </p>
                 </div>
               </Link>
-              <Link href="/profile">
+              <Link href="/profile" replace={true}>
                 <div className="font-poppins mr-0 md:mr-4">
                   <p className="text-lg text-[#CCA8B4] cursor-pointer hover:text-opacity-80">
                     Profile
