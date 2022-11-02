@@ -10,7 +10,7 @@ import NavbarCollapse from "components/Navbar/NavbarCollapse";
 import UserContext from "../config/context";
 import NavbarToggler from "components/Navbar/NavbarToggler";
 
-export default function AppNavbar() {
+const AppNavbar = () => {
   const [openNavbar, setOpenNavbar] = useState(false);
 
   return (
@@ -36,17 +36,26 @@ export default function AppNavbar() {
         <NavbarCollapse open={openNavbar}>
           <Nav>
             <NavLink ripple="dark">
-              <Link href="#roadmap">
+              <Link href="/app">
                 <div className="mr-0 md:mr-4">
-                  <p className="font-poppins font-bold text-[#CCA8B4] text-lg cursor-pointer hover:text-opacity-80">
+                  <p
+                    className={`font-poppins text-[#CCA8B4] text-lg cursor-pointer hover:text-opacity-80`}
+                  >
                     Snipe
                   </p>
                 </div>
               </Link>
-              <Link href="#team">
+              <Link href="/my-snipe">
                 <div className="font-poppins mr-0 md:mr-4">
                   <p className="text-lg text-[#CCA8B4] cursor-pointer hover:text-opacity-80">
                     My Snipe
+                  </p>
+                </div>
+              </Link>
+              <Link href="/profile">
+                <div className="font-poppins mr-0 md:mr-4">
+                  <p className="text-lg text-[#CCA8B4] cursor-pointer hover:text-opacity-80">
+                    Profile
                   </p>
                 </div>
               </Link>
@@ -56,4 +65,6 @@ export default function AppNavbar() {
       </NavbarContainer>
     </Navbar>
   );
-}
+};
+
+export default AppNavbar;

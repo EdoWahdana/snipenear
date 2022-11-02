@@ -16,6 +16,7 @@ const App = () => {
   const [tokenId, setTokenId] = useState(null);
   const [contractResult, setContractResult] = useState({});
   const [isImageLoading, setIsImageLoading] = useState(false);
+  const [hasFetching, setHasFetching] = useState(false);
 
   const checkContract = async () => {
     try {
@@ -35,8 +36,11 @@ const App = () => {
         supply: resNftSupply,
       };
 
+      setIsValid(true);
+      setHasFetching(true);
       setContractResult(resObject);
     } catch (err) {
+      setIsValid(false);
       setContractResult(err.toString());
     }
   };
@@ -57,16 +61,27 @@ const App = () => {
         token: resToken,
       };
 
+      setIsValid(true);
+      setHasFetching(true);
       setContractResult(resObject);
     } catch (err) {
+      setIsValid(false);
       setContractResult(err.toString());
     }
+  };
+
+  const snipe = async () => {
+    if (!isValid) {
+      return null;
+    }
+
+    console.log(contractId, tokenId);
   };
 
   return (
     <>
       <Header title="SnipeNear | App" />
-      <AppNavbar />
+      <AppNavbar   />
 
       <section
         className="header relative items-start flex bg-fill h-[721px]"
@@ -97,7 +112,11 @@ const App = () => {
                   />
                   <button
                     className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
-                    onClick={() => setIsToken(!isToken)}
+                    onClick={() => {
+                      setIsToken(!isToken);
+                      setTokenId(null);
+                      setHasFetching(false);
+                    }}
                   >
                     {isToken ? (
                       <IconChecked size={25} />
@@ -240,9 +259,12 @@ const App = () => {
                 )}
 
                 {isValid ? (
-                  <button className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg py-2 mt-10">
+                  <button
+                    className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg py-2 mt-10"
+                    onClick={snipe}
+                  >
                     <p className="text-snipenear-text text-sm font-bold py-1 px-10">
-                      Submit
+                      Snipe
                     </p>
                   </button>
                 ) : (
@@ -267,7 +289,8 @@ const App = () => {
                   )}
 
                   {/* Contract Result */}
-                  {!isToken &&
+                  {hasFetching &&
+                    !isToken &&
                     typeof contractResult === "object" &&
                     Object.keys(contractResult).length > 0 && (
                       <Fragment>
@@ -310,8 +333,19 @@ const App = () => {
                     )}
 
                   {/* Token Result */}
-                  {isToken &&
+                  {hasFetching &&
+                    isToken &&
                     typeof contractResult === "object" &&
+                    !contractResult.token && (
+                      <p className="text-white text-md font-bold mx-auto">
+                        Token Id not found
+                      </p>
+                    )}
+
+                  {hasFetching &&
+                    isToken &&
+                    typeof contractResult === "object" &&
+                    contractResult.token &&
                     Object.keys(contractResult).length > 0 && (
                       <Fragment>
                         <p className="text-white text-md font-bold mx-auto">

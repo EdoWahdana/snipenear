@@ -138,7 +138,7 @@ const Presentation = () => {
               </p>
             </div>
             <div className="grid grid-cols-4 gap-6">
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-80 rounded-lg text-center p-4">
+              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
                 <img
                   src={parseImgUrl(
                     "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
@@ -157,7 +157,7 @@ const Presentation = () => {
                   </div>
                 </div>
               </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-80 rounded-lg text-center p-4">
+              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
                 <img
                   src={parseImgUrl(
                     "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
@@ -176,7 +176,7 @@ const Presentation = () => {
                   </div>
                 </div>
               </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-80 rounded-lg text-center p-4">
+              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
                 <img
                   src={parseImgUrl(
                     "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
@@ -195,7 +195,7 @@ const Presentation = () => {
                   </div>
                 </div>
               </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-80 rounded-lg text-center p-4">
+              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
                 <img
                   src={parseImgUrl(
                     "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
@@ -214,7 +214,7 @@ const Presentation = () => {
                   </div>
                 </div>
               </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-80 rounded-lg text-center p-4">
+              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
                 <img
                   src={parseImgUrl(
                     "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
@@ -233,7 +233,7 @@ const Presentation = () => {
                   </div>
                 </div>
               </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-80 rounded-lg text-center p-4">
+              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
                 <img
                   src={parseImgUrl(
                     "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
@@ -252,7 +252,7 @@ const Presentation = () => {
                   </div>
                 </div>
               </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-80 rounded-lg text-center p-4">
+              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
                 <img
                   src={parseImgUrl(
                     "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
@@ -271,7 +271,7 @@ const Presentation = () => {
                   </div>
                 </div>
               </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-80 rounded-lg text-center p-4">
+              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
                 <img
                   src={parseImgUrl(
                     "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
