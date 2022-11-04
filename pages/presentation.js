@@ -2,16 +2,84 @@ import React, { useContext, useEffect, useState } from "react";
 import Header from "components/Documentation/Header";
 import IndexNavbar from "pagesComponents/IndexNavbar";
 import IndexFooter from "pagesComponents/IndexFooter";
-import Button from "components/Button/Button";
 import UserContext from "../config/context";
 import { parseImgUrl } from "../utils/common";
 import Link from "next/link";
+import { generateAuth } from "../config/utils";
+import axios from "axios";
 
 const Presentation = () => {
   const { walletConnection, contract, near } = useContext(UserContext);
 
   const _signIn = async () => {
     await walletConnection.requestSignIn(contract, "SnipeNear");
+  };
+
+  useEffect(() => {
+    navigator.serviceWorker.ready.then(() => {
+      setup();
+    });
+  }, []);
+
+  const setup = async () => {
+    if (!walletConnection.isSignedIn()) {
+      return;
+    }
+
+    try {
+      const register = await navigator.serviceWorker.register("./_worker.js", {
+        scope: "/",
+      });
+
+      //register push
+      console.log("Registering push...");
+
+      const subscription = await register.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+          "BMCbH8jWoT-mPUAODqUzCrern-rO1PrhywprUvz21mhSlFBdbvvpyCpRiTBIRaXvBOhsoAIJ3E9XDjt0c0EPL44"
+        ),
+      });
+
+      //Send push notification
+      // await axios({
+      //   method: "POST",
+      //   url: `${process.env.NEXT_PUBLIC_API}/subscribe-web-push-notification`,
+      //   headers: {
+      //     authorization: await generateAuth(
+      //       walletConnection.getAccountId(),
+      //       walletConnection
+      //     ),
+      //   },
+      //   data: subscription,
+      // });
+
+      await axios.get(`${process.env.NEXT_PUBLIC_API}/test-send-notif`, {
+        headers: {
+          authorization: await generateAuth(
+            walletConnection.getAccountId(),
+            walletConnection
+          ),
+        },
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const urlBase64ToUint8Array = (base64String) => {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding)
+      .replace(/\-/g, "+")
+      .replace(/_/g, "/");
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
   };
 
   return (
