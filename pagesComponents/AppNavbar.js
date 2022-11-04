@@ -30,15 +30,14 @@ const AppNavbar = () => {
             <Link href="/" replace={true}>
               <img
                 src="snipenear-logo-title.png"
-                alt="Material Tailwind Logo"
-                className="w-32 mr-auto md:w-72 md:mx-auto cursor-pointer"
+                alt="SnipeNear Logo"
+                className="w-48 mr-auto md:w-72 md:mx-auto cursor-pointer"
               />
             </Link>
           </NavbarBrand>
           <NavbarToggler
             onClick={() => setOpenNavbar(!openNavbar)}
-            ripple="dark"
-            color="green"
+            color="snipenear"
           />
         </NavbarWrapper>
 

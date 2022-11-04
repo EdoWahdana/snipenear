@@ -29,11 +29,18 @@ const Presentation = () => {
       >
         <div className="container max-w-7xl mx-auto">
           <div className="w-full px-8 md:px-4 text-center">
-            <div className="flex flex-col md:flex-row relative mt-32">
+            <div className="flex flex-col md:flex-row relative mt-16 md:mt-32">
               <div className="md:w-6/12 mr-auto mt-10">
+                <div className="block md:hidden mb-4 md:mb-0">
+                  <img
+                    src="nfts.png"
+                    alt="Material Tailwind Logo"
+                    className="w-72 md:w-[450px] mx-auto md:my-10"
+                  />
+                </div>
                 <div className="w-[90%]">
                   <p
-                    className="tracking-wide text-white text-lg font-bold text-left md:text-5xl font-poppins"
+                    className="tracking-wide text-white text-3xl font-bold text-left md:text-5xl font-poppins"
                     style={{ lineHeight: 1.3 }}
                   >
                     The most reliable tool to snipe your favorite NFT &
@@ -43,7 +50,7 @@ const Presentation = () => {
                 <br />
                 <div className="w-5/6">
                   <p
-                    className=" text-white text-md text-left md:text-xl"
+                    className=" text-white text-lg text-left md:text-xl"
                     style={{
                       lineHeight: 1.3,
                       fontFamily: "Poppins, sans-serif",
@@ -59,24 +66,24 @@ const Presentation = () => {
                 <div className="flex flex-row justify-start gap-x-4">
                   {walletConnection.isSignedIn() ? (
                     <Link href="/app" replace={true}>
-                      <button className="bg-snipenear hover:bg-snipenear-hover transition-colors duration-100 py-4 px-10 text-snipenear-dark font-extrabold text-2xl rounded-lg">
+                      <button className="bg-snipenear hover:bg-snipenear-hover transition-colors duration-100 p-2 md:py-4 md:px-10 text-snipenear-dark font-extrabold text-2xl rounded-lg">
                         Launch App
                       </button>
                     </Link>
                   ) : (
                     <button
-                      className="bg-snipenear hover:bg-snipenear-hover transition-colors duration-100 py-4 px-10 text-snipenear-dark font-extrabold text-2xl rounded-lg"
+                      className="bg-snipenear hover:bg-snipenear-hover transition-colors duration-100 p-4 md:py-4 md:px-10 text-snipenear-dark font-extrabold text-2xl rounded-lg"
                       onClick={_signIn}
                     >
                       Sign In
                     </button>
                   )}
-                  <button className="bg-transparent hover:bg-snipenear-dark-hover transition-colors duration-100 border-2 border-snipenear py-4 px-10 text-snipenear font-bold text-2xl rounded-lg">
+                  <button className="bg-transparent hover:bg-snipenear-dark-hover transition-colors duration-100 border-2 border-snipenear p-4 md:py-4 md:px-10 text-snipenear font-bold text-2xl rounded-lg">
                     Learn More
                   </button>
                 </div>
               </div>
-              <div>
+              <div className="hidden md:block">
                 <img
                   src="nfts.png"
                   alt="Material Tailwind Logo"
@@ -96,7 +103,7 @@ const Presentation = () => {
                 Hot Collections
               </p>
             </div>
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
                 <img
                   src={parseImgUrl(
@@ -104,7 +111,7 @@ const Presentation = () => {
                   )}
                   className="w-20 rounded-full border-4 border-snipenear-dark mx-auto mb-2"
                 />
-                <p>Anti Social Ape Club</p>
+                <p className="font-bold">Anti Social Ape Club</p>
                 <div className="flex flex-row gap-x-2 justify-between items-center mt-4 border-t-2 border-white border-opacity-40 p-4">
                   <div>
                     <p>Total NFT</p>

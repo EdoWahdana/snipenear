@@ -11,7 +11,7 @@ export default function IndexFooter() {
               <img
                 src="snipenear-logo-title.png"
                 alt="Material Tailwind Logo"
-                className="w-32 mr-auto md:w-72 md:mx-auto cursor-pointer"
+                className="w-80 mr-auto md:w-72 md:mx-auto"
               />
               <div className="w-full inline-flex gap-x-4 justify-center items-center mt-6">
                 <a

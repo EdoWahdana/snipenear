@@ -29,7 +29,7 @@ export default function Navbar({ children, color, navbar, className }) {
       <>
         <div className="absolute w-full z-20">
           <nav
-            className={`flex flex-wrap items-center justify-between py-2.5 px-3 mb-3 backdrop-filter backdrop-blur-md md:backdrop-blur-0`}
+            className={`fixed w-full md:relative md:flex md:flex-wrap md:items-center md:justify-between py-2.5 px-3 mb-3 backdrop-filter backdrop-blur-md md:backdrop-blur-0`}
           >
             {children}
           </nav>
