@@ -5,14 +5,21 @@ import UserContext from "../config/context";
 import IconCheck from "../components/Icons/IconCheck";
 import IconChecked from "../components/Icons/IconChecked";
 import { useRouter } from "next/router";
-import IndexNavbar from "../pagesComponents/IndexNavbar";
+import axios from "axios";
+import { generateAuth } from "../config/utils";
+import SuccessModal from "../components/Modal/SuccessModal";
+import { utils } from "near-api-js";
+
+const ModalEnum = {
+  success: "Success",
+  error: "Error",
+};
 
 const App = () => {
   const router = useRouter();
-  const { walletConnection, account } = useContext(UserContext);
+  const { walletConnection, account, authToken } = useContext(UserContext);
 
   const [isToken, setIsToken] = useState(false);
-  const [isListing, setIsListing] = useState(true);
   const [isEmail, setIsEmail] = useState(false);
   const [isPush, setIsPush] = useState(true);
   const [isValid, setIsValid] = useState(false);
@@ -22,6 +29,8 @@ const App = () => {
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [hasFetching, setHasFetching] = useState(false);
   const [email, setEmail] = useState(null);
+  const [price, setPrice] = useState(null);
+  const [showModal, setShowModal] = useState(ModalEnum.success);
 
   useEffect(() => {
     if (!walletConnection.isSignedIn()) {
@@ -86,7 +95,59 @@ const App = () => {
       return null;
     }
 
-    console.log(contractId, tokenId);
+    const metadata = isToken
+      ? {
+          title: contractResult.token?.metadata?.title,
+          media: `${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`,
+        }
+      : {
+          title: contractResult.metadata?.name,
+          media: contractResult.metadata?.icon,
+        };
+
+    const yoctoPrice = utils.format.parseNearAmount(price);
+    const settings = isEmail
+      ? {
+          emailNotification: email,
+          enableNotificationo: true,
+        }
+      : {
+          enableNotificationo: true,
+        };
+
+    const formData = {
+      contractId: contractId,
+      price: yoctoPrice,
+      settings: settings,
+      metadata: metadata,
+    };
+
+    if (isToken && tokenId) {
+      formData["tokenId"] = tokenId;
+    }
+
+    const resultSnipe = await axios.post(
+      `${process.env.NEXT_PUBLIC_API}/snipes`,
+      formData,
+      {
+        headers: {
+          authorization: await generateAuth(
+            walletConnection.getAccountId(),
+            walletConnection
+          ),
+        },
+      }
+    );
+
+    if (resultSnipe.data && resultSnipe.data?.status === 1) {
+      setShowModal(ModalEnum.success);
+    } else {
+      setShowModal(ModalEnum.error);
+    }
+
+    setTokenId(null);
+    setContractId(null);
+    setIsValid(false);
   };
 
   return (
@@ -183,7 +244,7 @@ const App = () => {
                         <hr />
 
                         {isImageLoading ? (
-                          <p>Loading...b</p>
+                          <p>Loading...</p>
                         ) : (
                           <img
                             src={`${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`}
@@ -267,31 +328,16 @@ const App = () => {
               )}
               <div className="flex flex-col gap-y-2 mt-6">
                 <p className="font-bold text-white text-md text-left md:text-xl">
-                  Event
+                  Alert Price
                 </p>
-                <div className="flex flex-col gap-y-4 w-full md:w-[230px] bg-snipenear-input rounded-lg p-4">
-                  {isListing ? (
-                    <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
-                      onClick={() => setIsListing(!isListing)}
-                    >
-                      <IconChecked size={25} />
-                      <p className="text-snipenear-text text-sm font-bold">
-                        Listing
-                      </p>
-                    </button>
-                  ) : (
-                    <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-snipenear hover:bg-snipenear hover:bg-opacity-20 rounded-lg p-2"
-                      onClick={() => setIsListing(!isListing)}
-                    >
-                      <IconCheck size={20} color={"#CCA8B4"} />
-                      <p className="text-snipenear text-sm font-bold">
-                        Listing
-                      </p>
-                    </button>
-                  )}
-                </div>
+                <input
+                  name="price"
+                  type={"number"}
+                  className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
+                  onChange={(e) => setPrice(e.target.value)}
+                  autoComplete={"off"}
+                  style={{ WebkitAppearance: "none", margin: 0 }}
+                />
               </div>
               <div className="flex flex-col gap-y-2 mt-6">
                 <p className="font-bold text-white text-md text-left md:text-xl">
@@ -400,13 +446,21 @@ const App = () => {
 
       {/* Desktop Section */}
       <section
-        className="hidden md:flex header relative items-start bg-fill h-[721px]"
+        className="hidden md:flex header relative items-start bg-fill min-h-screen overflow-y-auto pb-6"
         style={{
           backgroundImage: `url('./landing-page.png')`,
           backgroundSize: "100% 100%",
           backgroundRepeat: "no-repeat",
         }}
       >
+        {showModal === ModalEnum.success && (
+          <SuccessModal onClose={() => setShowModal(null)} />
+        )}
+
+        {showModal === ModalEnum.error && (
+          <SuccessModal onClose={() => setShowModal(null)} />
+        )}
+
         <div className="flex flex-row gap-x-2 mx-auto">
           <div className="container w-full md:w-2/3">
             <div className="w-5/12 px-8 md:px-4 text-center">
@@ -472,31 +526,16 @@ const App = () => {
                     fontFamily: "Poppins, sans-serif",
                   }}
                 >
-                  Event
+                  Alert Price
                 </p>
-                <div className="flex flex-col gap-y-4 w-full md:w-[230px] bg-snipenear-input rounded-lg p-4">
-                  {isListing ? (
-                    <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
-                      onClick={() => setIsListing(!isListing)}
-                    >
-                      <IconChecked size={25} />
-                      <p className="text-snipenear-text text-sm font-bold">
-                        Listing
-                      </p>
-                    </button>
-                  ) : (
-                    <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-snipenear hover:bg-snipenear hover:bg-opacity-20 rounded-lg p-2"
-                      onClick={() => setIsListing(!isListing)}
-                    >
-                      <IconCheck size={20} color={"#CCA8B4"} />
-                      <p className="text-snipenear text-sm font-bold">
-                        Listing
-                      </p>
-                    </button>
-                  )}
-                </div>
+                <input
+                  name="price"
+                  type={"number"}
+                  className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
+                  onChange={(e) => setPrice(e.target.value)}
+                  autoComplete={"off"}
+                  style={{ WebkitAppearance: "none", margin: 0 }}
+                />
               </div>
               <div className="grid grid-cols-2 gap-x-8 justify-center items-start mt-10">
                 <p

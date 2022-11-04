@@ -4,20 +4,79 @@ import AppNavbar from "pagesComponents/AppNavbar";
 import UserContext from "../config/context";
 import { parseImgUrl } from "../utils/common";
 import { useRouter } from "next/router";
+import axios from "axios";
+import { generateAuth } from "../config/utils";
 
 const MySnipe = () => {
   const router = useRouter();
   const { walletConnection, account, authToken } = useContext(UserContext);
-  console.log(authToken);
 
   const list = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
   const [isToken, setIsToken] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
+  const [contractSnipe, setContractSnipe] = useState([]);
+  const [tokenSnipe, setTokenSnipe] = useState([]);
+  const [page, setPage] = useState(0);
+
+  useEffect(() => {
+    fetchSnipe();
+  }, []);
 
   useEffect(() => {
     if (!walletConnection.isSignedIn()) {
       router.replace("/");
     }
   }, [walletConnection]);
+
+  const fetchSnipe = async () => {
+    if (!hasMore || isFetching) {
+      return;
+    }
+
+    const resultRaw = await axios.get(`${process.env.NEXT_PUBLIC_API}/snipes`, {
+      params: {
+        skip: page * 10,
+        limit: 10,
+      },
+      headers: {
+        authorization: await generateAuth(
+          walletConnection.getAccountId(),
+          walletConnection
+        ),
+      },
+    });
+
+    const newResult = await resultRaw.data.data.data;
+    const filteredTokenSnipe = newResult
+      .filter((res) => res.tokenId)
+      .map((res) => {
+        if (res.tokenId) {
+          return res;
+        }
+      });
+    const filteredContractSnipe = newResult
+      .filter((res) => !res.tokenId)
+      .map((res) => {
+        if (!res.tokenId) {
+          return res;
+        }
+      });
+
+    const newTokenSnipe = [...tokenSnipe, ...filteredTokenSnipe];
+    const newContractSnipe = [...contractSnipe, ...filteredContractSnipe];
+
+    setTokenSnipe(newTokenSnipe);
+    setContractSnipe(newContractSnipe);
+
+    if (newResult && newResult.length < 10) {
+      setHasMore(false);
+    } else {
+      setHasMore(true);
+    }
+
+    setIsFetching(false);
+  };
 
   return (
     <>
@@ -56,7 +115,7 @@ const MySnipe = () => {
                   <p className="text-xl text-white text-center font-semibold mb-2">
                     Contract Snipe
                   </p>
-                  {list.map(() => (
+                  {contractSnipe.map((snipe) => (
                     <div className="bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 mx-2 my-4">
                       <p className="text-white text-md text-center pt-2">
                         emailedowahdana@gmail.com.asldkfjasldkj
@@ -164,23 +223,23 @@ const MySnipe = () => {
               <p className="text-xl text-white text-center font-semibold mb-2">
                 Contract Snipe
               </p>
-              {list.map(() => (
+              {contractSnipe.map((snipe) => (
                 <div className="hidden md:flex flex-row h-20 justify-between items-center text-white bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 my-4">
                   <div className="inline-flex items-center gap-x-4">
                     <img
-                      src={parseImgUrl(
-                        "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
-                      )}
-                      className="w-16 h-16 rounded-full border-4 border-snipenear-dark"
+                      src={
+                        snipe.metadata?.media
+                          ? parseImgUrl(snipe.metadata?.media)
+                          : "./logo-white.png"
+                      }
+                      className="w-16 h-16 border-2 border-snipenear-dark"
                     />
                     <div className="flex flex-col justify-between items-start gap-y-2">
                       <div>
                         <p className="text-white font-bold text-md">
-                          Anti Social Ape Club
+                          {snipe.metadata?.title}
                         </p>
-                        <p className="text-white text-xs">
-                          Contract Id : asac.near
-                        </p>
+                        <p className="text-white text-xs">{snipe.contractId}</p>
                       </div>
                     </div>
                   </div>
@@ -202,23 +261,28 @@ const MySnipe = () => {
               <p className="text-xl text-white text-center font-semibold mb-2">
                 Token Snipe
               </p>
-              {list.map(() => (
+              {tokenSnipe.map((snipe) => (
                 <div className="hidden md:flex flex-row h-20 justify-between items-center text-white bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 my-4">
                   <div className="inline-flex items-center gap-x-4">
                     <img
-                      src={parseImgUrl(
-                        "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
-                      )}
-                      className="w-16 h-16 rounded-full border-4 border-snipenear-dark"
+                      alt="Token Image"
+                      src={
+                        snipe.metadata?.media
+                          ? parseImgUrl(snipe.metadata?.media)
+                          : "./logo-white.png"
+                      }
+                      className="w-16 h-16 border-2 border-snipenear-dark"
                     />
                     <div className="flex flex-col justify-between items-start gap-y-2">
                       <div>
-                        <p className="text-white font-bold text-md">ASAC #1</p>
+                        <p className="text-white font-bold text-md">
+                          {snipe.metadata?.title}
+                        </p>
                         <div className="flex flex-col">
                           <p className="text-white text-xs">
-                            Contract Id : asac.near
+                            {snipe.contractId}
                           </p>
-                          <p className="text-white text-xs">Token Id : 1:1</p>
+                          <p className="text-white text-xs">{snipe.tokenId}</p>
                         </div>
                       </div>
                     </div>
@@ -240,6 +304,6 @@ const MySnipe = () => {
       </section>
     </>
   );
-};
+};;
 
 export default MySnipe;

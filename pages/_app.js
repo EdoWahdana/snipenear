@@ -6,7 +6,6 @@ import * as nearAPI from "near-api-js";
 import getConfig from "../config/near";
 import UserContext from "../config/context";
 import { useEffect, useState } from "react";
-// import * as nearAPI from "near-api-js";
 
 export default function MyApp({ Component, pageProps }) {
   const [walletConnection, setWalletConnection] = useState({});
@@ -14,7 +13,6 @@ export default function MyApp({ Component, pageProps }) {
   const [near, setNear] = useState({});
   const [account, setAccount] = useState({});
   const [init, setInit] = useState(false);
-  const [authToken, setAuthToken] = useState(null);
 
   const _initContract = async () => {
     const nearConfig = getConfig("testnet");
@@ -41,27 +39,15 @@ export default function MyApp({ Component, pageProps }) {
     return { walletConnection, contract, near, account };
   };
 
-  const setupUser = async () => {
-    if (!walletConnection) {
-      return;
-    }
-
-    // const signer = new nearAPI.InMemorySigner
-  };
-
   useEffect(() => {
     if (!init) {
-      _initContract()
-        .then(({ walletConnection, contract, near, account }) => {
-          setWalletConnection(walletConnection);
-          setContract(contract);
-          setNear(near);
-          setAccount(account);
-          setInit(true);
-        })
-        .then(() => {
-          setupUser();
-        });
+      _initContract().then(({ walletConnection, contract, near, account }) => {
+        setWalletConnection(walletConnection);
+        setContract(contract);
+        setNear(near);
+        setAccount(account);
+        setInit(true);
+      });
     }
   }, [walletConnection]);
 
@@ -79,7 +65,6 @@ export default function MyApp({ Component, pageProps }) {
           contract: contract,
           near: near,
           account: account,
-          authToken: authToken,
         }}
       >
         {init ? <Component {...pageProps} /> : <p>Loading</p>}

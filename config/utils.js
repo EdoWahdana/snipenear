@@ -1,5 +1,12 @@
-import { connect, Contract, keyStores, WalletConnection } from "near-api-js";
-import getConfig from "./config";
+import {
+  connect,
+  Contract,
+  keyStores,
+  WalletConnection,
+  InMemorySigner,
+} from "near-api-js";
+import getConfig from "./near";
+import { Base64 } from "js-base64";
 
 const nearConfig = getConfig(process.env.NODE_ENV || "development");
 
@@ -47,22 +54,26 @@ export function login() {
   window.walletConnection.requestSignIn(nearConfig.contractName);
 }
 
-export async function authSignature() {
-  if (!this.currentUser) {
+export async function generateAuth(accountId, wallet) {
+  if (!accountId) {
+    return null;
+  }
+
+  if (!wallet) {
     return null;
   }
 
   try {
-    const accountId = this.currentUser.accountId;
+    const signer = new InMemorySigner(wallet._keyStore);
     const arr = new Array(accountId);
     for (var i = 0; i < accountId.length; i++) {
       arr[i] = accountId.charCodeAt(i);
     }
     const msgBuf = new Uint8Array(arr);
-    const signedMsg = await this.signer.signMessage(
+    const signedMsg = await signer.signMessage(
       msgBuf,
-      this.wallet._authData.accountId,
-      this.wallet._networkId
+      wallet._authData.accountId,
+      wallet._networkId
     );
     const pubKey = Buffer.from(signedMsg.publicKey.data).toString("hex");
     const signature = Buffer.from(signedMsg.signature).toString("hex");
@@ -70,7 +81,6 @@ export async function authSignature() {
     const _authToken = Base64.encode(payload.join("&"));
     return _authToken;
   } catch (err) {
-    sentryCaptureException(err);
     return null;
   }
 }
