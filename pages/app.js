@@ -30,7 +30,7 @@ const App = () => {
   const [hasFetching, setHasFetching] = useState(false);
   const [email, setEmail] = useState(null);
   const [price, setPrice] = useState(null);
-  const [showModal, setShowModal] = useState(ModalEnum.success);
+  const [showModal, setShowModal] = useState(null);
 
   useEffect(() => {
     if (!walletConnection.isSignedIn()) {

@@ -4,6 +4,11 @@ export const parseImgUrl = (imgUrl, defaultValue = "") => {
   if (!imgUrl) {
     return defaultValue;
   }
+
+  if (imgUrl.includes("data:image")) {
+    return imgUrl;
+  }
+
   let url = imgUrl.includes("://") ? imgUrl : `ipfs://${imgUrl}`;
   let schema = url.split("://")[0];
   if (schema === "ipfs") {
@@ -18,11 +23,7 @@ export const parseImgUrl = (imgUrl, defaultValue = "") => {
       return imgUrl;
     }
 
-    if (cid.version === 0) {
-      return `https://ipfs-gateway.paras.id/ipfs/${cid}${path}`;
-    } else {
-      return `https://ipfs.fleek.co/ipfs/${cid}${path}`;
-    }
+    return `https://ipfs.fleek.co/ipfs/${cid}${path}`;
   }
 
   return imgUrl;

@@ -6,18 +6,29 @@ import { parseImgUrl } from "../utils/common";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { generateAuth } from "../config/utils";
+import IconDelete from "../components/Icons/IconDelete";
+import IconInfo from "../components/Icons/IconInfo";
+import IconEdit from "../components/Icons/IconEdit";
+import SnipeInfoModal from "../components/Modal/SnipeInfoModal";
+
+const ModalEnum = {
+  Info: "Info",
+  Delete: "Delete",
+  Edit: "Edit",
+};
 
 const MySnipe = () => {
   const router = useRouter();
-  const { walletConnection, account, authToken } = useContext(UserContext);
+  const { walletConnection } = useContext(UserContext);
 
-  const list = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
   const [isToken, setIsToken] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
   const [contractSnipe, setContractSnipe] = useState([]);
   const [tokenSnipe, setTokenSnipe] = useState([]);
   const [page, setPage] = useState(0);
+  const [selectedSnipe, setSelectedSnipe] = useState(null);
+  const [showModal, setShowModal] = useState(null);
 
   useEffect(() => {
     fetchSnipe();
@@ -29,10 +40,15 @@ const MySnipe = () => {
     }
   }, [walletConnection]);
 
-  const fetchSnipe = async () => {
+  const fetchSnipe = async (initial = false) => {
     if (!hasMore || isFetching) {
       return;
     }
+
+    setIsFetching(true);
+
+    const tokenSnipeData = initial ? [] : tokenSnipe;
+    const contractSnipeData = initial ? [] : contractSnipe;
 
     const resultRaw = await axios.get(`${process.env.NEXT_PUBLIC_API}/snipes`, {
       params: {
@@ -63,8 +79,8 @@ const MySnipe = () => {
         }
       });
 
-    const newTokenSnipe = [...tokenSnipe, ...filteredTokenSnipe];
-    const newContractSnipe = [...contractSnipe, ...filteredContractSnipe];
+    const newTokenSnipe = [...tokenSnipeData, ...filteredTokenSnipe];
+    const newContractSnipe = [...contractSnipeData, ...filteredContractSnipe];
 
     setTokenSnipe(newTokenSnipe);
     setContractSnipe(newContractSnipe);
@@ -76,6 +92,24 @@ const MySnipe = () => {
     }
 
     setIsFetching(false);
+  };
+
+  const deleteSnipe = async (snipeId) => {
+    const res = await axios.delete(
+      `${process.env.NEXT_PUBLIC_API}/snipes/${snipeId}`,
+      {
+        headers: {
+          authorization: await generateAuth(
+            walletConnection.getAccountId(),
+            walletConnection
+          ),
+        },
+      }
+    );
+
+    if (res.data?.status === 1) {
+      location.reload();
+    }
   };
 
   return (
@@ -117,33 +151,50 @@ const MySnipe = () => {
                   </p>
                   {contractSnipe.map((snipe) => (
                     <div className="bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 mx-2 my-4">
-                      <p className="text-white text-md text-center pt-2">
-                        emailedowahdana@gmail.com.asldkfjasldkj
-                      </p>
                       <div className="flex flex-row h-20 justify-between items-center text-white">
                         <div className="inline-flex items-center gap-x-4">
                           <img
-                            src={parseImgUrl(
-                              "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
-                            )}
-                            className="w-16 h-16 rounded-full border-4 border-snipenear-dark"
+                            src={
+                              snipe.metadata?.media
+                                ? parseImgUrl(snipe.metadata?.media)
+                                : "./logo-white.png"
+                            }
+                            className="w-16 h-16 border-2 border-snipenear-dark"
                           />
                           <div className="flex flex-col justify-between items-start gap-y-2">
                             <div>
                               <p className="text-white font-bold text-md">
-                                Anti Social Ape Club
+                                {snipe.metadata?.title}
                               </p>
-                              <p className="text-white text-xs">asac.near</p>
+                              <p className="text-white text-xs">
+                                {snipe.contractId}
+                              </p>
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col justify-end">
-                          <p className="text-snipenear-dark text-xs">
-                            Total Snipe : 100
-                          </p>
-                          <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
-                            Unsnipe
-                          </button>
+                        <div className="flex flex-col justify-end items-center">
+                          <div className="inline-flex gap-x-1">
+                            <button
+                              className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                              onClick={() => {
+                                setShowModal(ModalEnum.Info);
+                                setSelectedSnipe(snipe);
+                              }}
+                            >
+                              <IconInfo size={20} />
+                            </button>
+                            <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
+                              <IconEdit size={20} />
+                            </button>
+                            <button
+                              className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                              onClick={() => {
+                                deleteSnipe(snipe._id);
+                              }}
+                            >
+                              <IconDelete size={20} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -159,36 +210,55 @@ const MySnipe = () => {
                 <p className="text-xl text-white text-center font-semibold mb-2">
                   Token Snipe
                 </p>
-                {list.map(() => (
+                {tokenSnipe.map((snipe) => (
                   <div className="bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 mx-2 my-4">
-                    <p className="text-white text-md text-center pt-2">
-                      emailedowahdana@gmail.com.asldkfjasldkj
-                    </p>
                     <div className="flex flex-row h-24 justify-between items-center text-white">
                       <div className="inline-flex items-center gap-x-4">
                         <img
-                          src={parseImgUrl(
-                            "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
-                          )}
-                          className="w-16 h-16 rounded-full border-4 border-snipenear-dark"
+                          src={
+                            snipe.metadata?.media
+                              ? parseImgUrl(snipe.metadata?.media)
+                              : "./logo-white.png"
+                          }
+                          className="w-16 h-16 border-2 border-snipenear-dark"
                         />
                         <div className="flex flex-col justify-between items-start gap-y-2">
                           <div>
                             <p className="text-white font-bold text-md">
-                              ASAC #1
+                              {snipe.metadata?.title}
                             </p>
-                            <p className="text-white text-xs">asac.near</p>
-                            <p className="text-white text-xs">1:1</p>
+                            <p className="text-white text-xs">
+                              {snipe.contractId}
+                            </p>
+                            <p className="text-white text-xs">
+                              {snipe.tokenId}
+                            </p>
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-col justify-end">
-                        <p className="text-snipenear-dark text-xs">
-                          Total Snipe : 100
-                        </p>
-                        <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
-                          Unsnipe
-                        </button>
+                      <div className="flex flex-col justify-end items-center">
+                        <div className="inline-flex gap-x-1">
+                          <button
+                            className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                            onClick={() => {
+                              setShowModal(ModalEnum.Info);
+                              setSelectedSnipe(snipe);
+                            }}
+                          >
+                            <IconInfo size={20} />
+                          </button>
+                          <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
+                            <IconEdit size={20} />
+                          </button>
+                          <button
+                            className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                            onClick={() => {
+                              deleteSnipe(snipe._id);
+                            }}
+                          >
+                            <IconDelete size={20} />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -243,13 +313,29 @@ const MySnipe = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col justify-end">
-                    <p className="text-snipenear-dark text-xs">
-                      Total Snipe : 100
-                    </p>
-                    <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
-                      Unsnipe
-                    </button>
+                  <div className="flex flex-col justify-end items-center">
+                    <div className="inline-flex gap-x-1">
+                      <button
+                        className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                        onClick={() => {
+                          setShowModal(ModalEnum.Info);
+                          setSelectedSnipe(snipe);
+                        }}
+                      >
+                        <IconInfo size={20} />
+                      </button>
+                      <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
+                        <IconEdit size={20} />
+                      </button>
+                      <button
+                        className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                        onClick={() => {
+                          deleteSnipe(snipe._id);
+                        }}
+                      >
+                        <IconDelete size={20} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -287,13 +373,29 @@ const MySnipe = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col justify-end">
-                    <p className="text-snipenear-dark text-xs">
-                      Total Snipe : 100
-                    </p>
-                    <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
-                      Unsnipe
-                    </button>
+                  <div className="flex flex-col justify-end items-center">
+                    <div className="inline-flex gap-x-1">
+                      <button
+                        className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                        onClick={() => {
+                          setShowModal(ModalEnum.Info);
+                          setSelectedSnipe(snipe);
+                        }}
+                      >
+                        <IconInfo size={20} />
+                      </button>
+                      <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
+                        <IconEdit size={20} />
+                      </button>
+                      <button
+                        className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                        onClick={() => {
+                          deleteSnipe(snipe._id);
+                        }}
+                      >
+                        <IconDelete size={20} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -302,6 +404,11 @@ const MySnipe = () => {
           </div>
         </div>
       </section>
+      <SnipeInfoModal
+        data={selectedSnipe}
+        isShow={showModal === ModalEnum.Info}
+        onClose={() => setShowModal(null)}
+      />
     </>
   );
 };;
