@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { generateAuth } from "../config/utils";
 import SuccessModal from "../components/Modal/SuccessModal";
+import ErrorModal from "../components/Modal/ErrorModal";
 import { utils } from "near-api-js";
 
 const ModalEnum = {
@@ -453,14 +454,6 @@ const App = () => {
           backgroundRepeat: "no-repeat",
         }}
       >
-        {showModal === ModalEnum.success && (
-          <SuccessModal onClose={() => setShowModal(null)} />
-        )}
-
-        {showModal === ModalEnum.error && (
-          <SuccessModal onClose={() => setShowModal(null)} />
-        )}
-
         <div className="flex flex-row gap-x-2 mx-auto">
           <div className="container w-full md:w-2/3">
             <div className="w-5/12 px-8 md:px-4 text-center">
@@ -767,6 +760,14 @@ const App = () => {
           </div>
         </div>
       </section>
+
+      {showModal === ModalEnum.success && (
+        <SuccessModal onClose={() => setShowModal(null)} />
+      )}
+
+      {showModal === ModalEnum.error && (
+        <ErrorModal onClose={() => setShowModal(null)} />
+      )}
     </>
   );
 };

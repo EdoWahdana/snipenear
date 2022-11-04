@@ -10,6 +10,7 @@ import IconDelete from "../components/Icons/IconDelete";
 import IconInfo from "../components/Icons/IconInfo";
 import IconEdit from "../components/Icons/IconEdit";
 import SnipeInfoModal from "../components/Modal/SnipeInfoModal";
+import SnipeEditModal from "../components/Modal/SnipeEditModal";
 
 const ModalEnum = {
   Info: "Info",
@@ -183,7 +184,13 @@ const MySnipe = () => {
                             >
                               <IconInfo size={20} />
                             </button>
-                            <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
+                            <button
+                              className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                              onClick={() => {
+                                setShowModal(ModalEnum.Edit);
+                                setSelectedSnipe(snipe);
+                              }}
+                            >
                               <IconEdit size={20} />
                             </button>
                             <button
@@ -247,7 +254,13 @@ const MySnipe = () => {
                           >
                             <IconInfo size={20} />
                           </button>
-                          <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
+                          <button
+                            className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                            onClick={() => {
+                              setShowModal(ModalEnum.Edit);
+                              setSelectedSnipe(snipe);
+                            }}
+                          >
                             <IconEdit size={20} />
                           </button>
                           <button
@@ -324,7 +337,13 @@ const MySnipe = () => {
                       >
                         <IconInfo size={20} />
                       </button>
-                      <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
+                      <button
+                        className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                        onClick={() => {
+                          setShowModal(ModalEnum.Edit);
+                          setSelectedSnipe(snipe);
+                        }}
+                      >
                         <IconEdit size={20} />
                       </button>
                       <button
@@ -384,7 +403,13 @@ const MySnipe = () => {
                       >
                         <IconInfo size={20} />
                       </button>
-                      <button className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50">
+                      <button
+                        className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                        onClick={() => {
+                          setShowModal(ModalEnum.Edit);
+                          setSelectedSnipe(snipe);
+                        }}
+                      >
                         <IconEdit size={20} />
                       </button>
                       <button
@@ -404,9 +429,16 @@ const MySnipe = () => {
           </div>
         </div>
       </section>
+
       <SnipeInfoModal
         data={selectedSnipe}
         isShow={showModal === ModalEnum.Info}
+        onClose={() => setShowModal(null)}
+      />
+
+      <SnipeEditModal
+        data={selectedSnipe}
+        isShow={showModal === ModalEnum.Edit}
         onClose={() => setShowModal(null)}
       />
     </>
