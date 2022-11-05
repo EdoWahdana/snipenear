@@ -17,6 +17,7 @@ const Presentation = () => {
     await walletConnection.requestSignIn(contract, "SnipeNear", "/");
   };
 
+  console.log("TES: ", process.env.NEXT_PUBLIC_API);
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       if (
