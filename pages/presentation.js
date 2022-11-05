@@ -30,7 +30,7 @@ const Presentation = () => {
   }, [router]);
 
   const setup = async () => {
-    if (!walletConnection.isSignedIn()) {
+    if (!walletConnection.getAccountId()) {
       return;
     }
 
@@ -47,6 +47,12 @@ const Presentation = () => {
 
       //register push
       console.log("Registering push...");
+
+      const authToken = await generateAuth(
+        walletConnection.getAccountId(),
+        walletConnection
+      );
+      console.log("Wallet connection : ", walletConnection, authToken);
 
       const subscription = await register.pushManager.subscribe({
         userVisibleOnly: true,
