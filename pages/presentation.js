@@ -14,7 +14,7 @@ const Presentation = () => {
   const { walletConnection, contract, near } = useContext(UserContext);
 
   const _signIn = async () => {
-    await walletConnection.requestSignIn(contract, "SnipeNear", "/");
+    await walletConnection.requestSignIn(contract, "SnipeNear");
   };
 
   console.log("TES: ", process.env.NEXT_PUBLIC_API);
