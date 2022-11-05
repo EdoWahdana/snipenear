@@ -7,19 +7,27 @@ import { parseImgUrl } from "../utils/common";
 import Link from "next/link";
 import { generateAuth } from "../config/utils";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 const Presentation = () => {
+  const router = useRouter();
   const { walletConnection, contract, near } = useContext(UserContext);
 
   const _signIn = async () => {
-    await walletConnection.requestSignIn(contract, "SnipeNear");
+    await walletConnection.requestSignIn(contract, "SnipeNear", "/");
   };
 
   useEffect(() => {
-    navigator.serviceWorker.ready.then(() => {
-      setup();
-    });
-  }, []);
+    if ("serviceWorker" in navigator) {
+      if (
+        router.query.account_id &&
+        router.query.public_key &&
+        router.query.all_keys
+      ) {
+        setup();
+      }
+    }
+  }, [router, walletConnection]);
 
   const setup = async () => {
     if (!walletConnection.isSignedIn()) {
@@ -27,9 +35,15 @@ const Presentation = () => {
     }
 
     try {
-      const register = await navigator.serviceWorker.register("./_worker.js", {
-        scope: "/",
-      });
+      const register = await navigator.serviceWorker
+        .register("./_worker.js", {
+          scope: "/",
+        })
+        .catch((err) => {
+          return console.log("Error : ", err);
+        });
+
+      await navigator.serviceWorker.ready;
 
       //register push
       console.log("Registering push...");
@@ -51,15 +65,6 @@ const Presentation = () => {
           ),
         },
         data: subscription,
-      });
-
-      await axios.get(`${process.env.NEXT_PUBLIC_API}/test-send-notif`, {
-        headers: {
-          authorization: await generateAuth(
-            walletConnection.getAccountId(),
-            walletConnection
-          ),
-        },
       });
     } catch (err) {
       console.log(err);
@@ -331,6 +336,6 @@ const Presentation = () => {
       <IndexFooter />
     </>
   );
-};
+};;;;
 
 export default Presentation;

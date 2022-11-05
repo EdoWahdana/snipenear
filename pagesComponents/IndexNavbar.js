@@ -15,7 +15,7 @@ export default function IndexNavbar() {
   const { walletConnection, contract, near } = useContext(UserContext);
 
   const _signIn = async () => {
-    await walletConnection.requestSignIn(contract, "SnipeNear");
+    await walletConnection.requestSignIn(contract, "SnipeNear", "/");
   };
 
   const _signOut = async () => {
