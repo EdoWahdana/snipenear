@@ -17,9 +17,49 @@ const AppNavbar = () => {
   const { walletConnection } = useContext(UserContext);
 
   const _signOut = async () => {
-    await walletConnection.signOut();
+    await unsubscribePushManager();
+  };
 
-    router.replace("/");
+  const unsubscribePushManager = async () => {
+    if (!walletConnection.getAccountId()) {
+      return;
+    }
+
+    navigator.serviceWorker.ready.then((serviceWorkerRegistration) => {
+      serviceWorkerRegistration.pushManager
+        .getSubscription()
+        .then(async (subscription) => {
+          if (!subscription) {
+            await walletConnection.signOut();
+            router.replace(process.env.NEXT_PUBLIC_BASE_URL);
+
+            return;
+          }
+
+          await subscription
+            .unsubscribe()
+            .then(async (success) => {
+              await axios({
+                method: "POST",
+                data: subscription,
+                url: `${process.env.NEXT_PUBLIC_API}/unsubscribe-web-push-notification`,
+                headers: {
+                  authorization: await generateAuth(walletConnection),
+                },
+              });
+            })
+            .then(async () => {
+              await walletConnection.signOut();
+              router.replace(process.env.NEXT_PUBLIC_BASE_URL);
+            })
+            .catch((error) => {
+              console.error(`Error unsubscribe : ${error}`);
+            });
+        })
+        .catch((err) => {
+          console.error(`Error during getSubscription(): ${err}`);
+        });
+    });
   };
 
   return (

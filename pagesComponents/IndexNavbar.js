@@ -41,14 +41,15 @@ export default function IndexNavbar() {
         .getSubscription()
         .then(async (subscription) => {
           if (!subscription) {
+            await walletConnection.signOut();
+            router.replace(process.env.NEXT_PUBLIC_BASE_URL);
+
             return;
           }
 
           await subscription
             .unsubscribe()
             .then(async (success) => {
-              console.log(success);
-
               await axios({
                 method: "POST",
                 data: subscription,

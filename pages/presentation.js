@@ -26,6 +26,8 @@ const Presentation = () => {
       if (router.query.successLogin) {
         setup();
       }
+    } else {
+      console.error("Service worker not supported");
     }
   }, [router, walletConnection]);
 
@@ -65,7 +67,7 @@ const Presentation = () => {
         }
       );
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
@@ -334,6 +336,6 @@ const Presentation = () => {
       <IndexFooter />
     </>
   );
-};;;;;
+};
 
 export default Presentation;
