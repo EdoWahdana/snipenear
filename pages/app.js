@@ -10,6 +10,7 @@ import { generateAuth } from "../config/utils";
 import SuccessModal from "../components/Modal/SuccessModal";
 import ErrorModal from "../components/Modal/ErrorModal";
 import { utils } from "near-api-js";
+import { urlBase64ToUint8Array } from "../utils/common";
 
 const ModalEnum = {
   success: "Success",
@@ -92,63 +93,65 @@ const App = () => {
   };
 
   const snipe = async () => {
-    if (!isValid) {
-      return null;
-    }
-
-    const metadata = isToken
-      ? {
-          title: contractResult.token?.metadata?.title,
-          media: `${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`,
-        }
-      : {
-          title: contractResult.metadata?.name,
-          media: contractResult.metadata?.icon,
-        };
-
-    const yoctoPrice = utils.format.parseNearAmount(price);
-    const settings = isEmail
-      ? {
-          emailNotification: email,
-          enableNotificationo: true,
-        }
-      : {
-          enableNotificationo: true,
-        };
-
-    const formData = {
-      contractId: contractId,
-      price: yoctoPrice,
-      settings: settings,
-      metadata: metadata,
-    };
-
-    if (isToken && tokenId) {
-      formData["tokenId"] = tokenId;
-    }
-
-    const resultSnipe = await axios.post(
-      `${process.env.NEXT_PUBLIC_API}/snipes`,
-      formData,
-      {
-        headers: {
-          authorization: await generateAuth(
-            walletConnection.getAccountId(),
-            walletConnection
-          ),
-        },
+    try {
+      if (!isValid) {
+        return null;
       }
-    );
 
-    if (resultSnipe.data && resultSnipe.data?.status === 1) {
-      setShowModal(ModalEnum.success);
-    } else {
-      setShowModal(ModalEnum.error);
+      let settings = {};
+      const metadata = isToken
+        ? {
+            title: contractResult.token?.metadata?.title,
+            media: `${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`,
+          }
+        : {
+            title: contractResult.metadata?.name,
+            media: contractResult.metadata?.icon,
+          };
+
+      const yoctoPrice = utils.format.parseNearAmount(price);
+
+      if (isPush) {
+        settings["enableNotificationo"] = true;
+      }
+      if (isEmail) {
+        settings["emailNotification"] = email;
+      }
+
+      const formData = {
+        contractId: contractId,
+        price: yoctoPrice,
+        settings: settings,
+        metadata: metadata,
+      };
+
+      if (isToken && tokenId) {
+        formData["tokenId"] = tokenId;
+      }
+
+      const resultSnipe = await axios.post(
+        `${process.env.NEXT_PUBLIC_API}/snipes`,
+        formData,
+        {
+          headers: {
+            authorization: await generateAuth(
+              walletConnection.getAccountId(),
+              walletConnection
+            ),
+          },
+        }
+      );
+
+      if (resultSnipe.data && resultSnipe.data?.status === 1) {
+        setShowModal(ModalEnum.success);
+      } else {
+        setShowModal(ModalEnum.error);
+      }
+
+      setIsValid(false);
+    } catch (err) {
+      console.error(err);
     }
-
-    setTokenId(null);
-    setContractId(null);
-    setIsValid(false);
   };
 
   return (

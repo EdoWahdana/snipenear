@@ -6,7 +6,6 @@ import * as nearAPI from "near-api-js";
 import getConfig from "../config/near";
 import UserContext from "../config/context";
 import { useEffect, useState } from "react";
-import { generateAuth } from "../config/utils";
 
 export default function MyApp({ Component, pageProps }) {
   const [walletConnection, setWalletConnection] = useState({});

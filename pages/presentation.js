@@ -41,18 +41,17 @@ const Presentation = () => {
         ),
       });
 
-      //Send push notification
-      // await axios({
-      //   method: "POST",
-      //   url: `${process.env.NEXT_PUBLIC_API}/subscribe-web-push-notification`,
-      //   headers: {
-      //     authorization: await generateAuth(
-      //       walletConnection.getAccountId(),
-      //       walletConnection
-      //     ),
-      //   },
-      //   data: subscription,
-      // });
+      await axios({
+        method: "POST",
+        url: `${process.env.NEXT_PUBLIC_API}/subscribe-web-push-notification`,
+        headers: {
+          authorization: await generateAuth(
+            walletConnection.getAccountId(),
+            walletConnection
+          ),
+        },
+        data: subscription,
+      });
 
       await axios.get(`${process.env.NEXT_PUBLIC_API}/test-send-notif`, {
         headers: {

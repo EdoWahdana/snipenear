@@ -3,7 +3,7 @@ import IconEmailSent from "../Icons/IconEmailSent";
 const SuccessModal = ({ onClose }) => {
   return (
     <div className="fixed inset-0 z-20 overflow-y-auto bg-black bg-opacity-50">
-      <div className="flex min-h-full items-center md:items-end justify-center p-4 text-center sm:items-center">
+      <div className="flex min-h-full items-center md:items-center justify-center p-4 text-center sm:items-center">
         <div className="relative transform overflow-hidden rounded-lg bg-snipenear-input border-4 border-snipenear">
           <div className="bg-snipenear-input p-4">
             <div className="sm:flex sm:items-start mb-4">

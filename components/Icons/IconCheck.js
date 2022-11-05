@@ -15,7 +15,7 @@ const IconCheck = ({ size, color, ...props }) => (
       width="28.8571"
       height="28.8571"
       stroke={color}
-      stroke-width="3.14286"
+      strokeWidth="3.14286"
     />
   </svg>
 );
