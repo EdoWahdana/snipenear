@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Link from "next/link";
 import Nav from "components/Nav/Nav";
 import Navbar from "components/Navbar/Navbar";
@@ -9,10 +9,15 @@ import NavbarBrand from "components/Navbar/NavbarBrand";
 import NavbarCollapse from "components/Navbar/NavbarCollapse";
 import UserContext from "../config/context";
 import NavbarToggler from "components/Navbar/NavbarToggler";
+import axios from "axios";
+import { generateAuth } from "../config/utils";
+import { useRouter } from "next/router";
 
 export default function IndexNavbar() {
+  const router = useRouter();
+  const { walletConnection } = useContext(UserContext);
+
   const [openNavbar, setOpenNavbar] = useState(false);
-  const { walletConnection, contract, near } = useContext(UserContext);
 
   const _signIn = async () => {
     await walletConnection.requestSignIn(
@@ -23,7 +28,48 @@ export default function IndexNavbar() {
   };
 
   const _signOut = async () => {
-    await walletConnection.signOut();
+    await unsubscribePushManager();
+  };
+
+  const unsubscribePushManager = async () => {
+    if (!walletConnection.getAccountId()) {
+      return;
+    }
+
+    navigator.serviceWorker.ready.then((serviceWorkerRegistration) => {
+      serviceWorkerRegistration.pushManager
+        .getSubscription()
+        .then(async (subscription) => {
+          if (!subscription) {
+            return;
+          }
+
+          await subscription
+            .unsubscribe()
+            .then(async (success) => {
+              console.log(success);
+
+              await axios({
+                method: "POST",
+                data: subscription,
+                url: `${process.env.NEXT_PUBLIC_API}/unsubscribe-web-push-notification`,
+                headers: {
+                  authorization: await generateAuth(walletConnection),
+                },
+              });
+            })
+            .then(async () => {
+              await walletConnection.signOut();
+              router.replace(process.env.NEXT_PUBLIC_BASE_URL);
+            })
+            .catch((error) => {
+              console.error(`Error unsubscribe : ${error}`);
+            });
+        })
+        .catch((err) => {
+          console.error(`Error during getSubscription(): ${err}`);
+        });
+    });
   };
 
   return (

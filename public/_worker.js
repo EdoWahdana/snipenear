@@ -2,7 +2,6 @@ console.log("Service Worker Loaded...");
 
 self.addEventListener("push", (e) => {
   const data = e.data.json();
-  console.log(self, data, e);
   self.registration.showNotification(
     data.title, // title of the notification
     {

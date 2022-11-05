@@ -40,19 +40,13 @@ const Presentation = () => {
           scope: "/",
         })
         .catch((err) => {
-          return console.log("Error : ", err);
+          return console.error("Error : ", err);
         });
 
       await navigator.serviceWorker.ready;
 
       //register push
       console.log("Registering push...");
-
-      const authToken = await generateAuth(
-        walletConnection.getAccountId(),
-        walletConnection
-      );
-      console.log("Wallet : ", walletConnection, authToken);
 
       const subscription = await register.pushManager.subscribe({
         userVisibleOnly: true,
@@ -61,17 +55,15 @@ const Presentation = () => {
         ),
       });
 
-      await axios({
-        method: "POST",
-        url: `${process.env.NEXT_PUBLIC_API}/subscribe-web-push-notification`,
-        headers: {
-          authorization: await generateAuth(
-            walletConnection.getAccountId(),
-            walletConnection
-          ),
-        },
-        data: subscription,
-      });
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API}/subscribe-web-push-notification`,
+        subscription,
+        {
+          headers: {
+            authorization: await generateAuth(walletConnection),
+          },
+        }
+      );
     } catch (err) {
       console.log(err);
     }

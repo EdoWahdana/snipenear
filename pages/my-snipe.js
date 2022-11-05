@@ -57,10 +57,7 @@ const MySnipe = () => {
         limit: 10,
       },
       headers: {
-        authorization: await generateAuth(
-          walletConnection.getAccountId(),
-          walletConnection
-        ),
+        authorization: await generateAuth(walletConnection),
       },
     });
 
@@ -100,10 +97,7 @@ const MySnipe = () => {
       `${process.env.NEXT_PUBLIC_API}/snipes/${snipeId}`,
       {
         headers: {
-          authorization: await generateAuth(
-            walletConnection.getAccountId(),
-            walletConnection
-          ),
+          authorization: await generateAuth(walletConnection),
         },
       }
     );

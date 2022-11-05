@@ -134,10 +134,7 @@ const App = () => {
         formData,
         {
           headers: {
-            authorization: await generateAuth(
-              walletConnection.getAccountId(),
-              walletConnection
-            ),
+            authorization: await generateAuth(walletConnection),
           },
         }
       );
