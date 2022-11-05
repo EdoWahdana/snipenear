@@ -52,7 +52,7 @@ const Presentation = () => {
         walletConnection.getAccountId(),
         walletConnection
       );
-      console.log("Wallet connection : ", walletConnection, authToken);
+      console.log("Wallet : ", walletConnection, authToken);
 
       const subscription = await register.pushManager.subscribe({
         userVisibleOnly: true,
