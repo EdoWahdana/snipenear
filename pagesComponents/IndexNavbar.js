@@ -15,7 +15,11 @@ export default function IndexNavbar() {
   const { walletConnection, contract, near } = useContext(UserContext);
 
   const _signIn = async () => {
-    await walletConnection.requestSignIn(contract, "SnipeNear");
+    await walletConnection.requestSignIn(
+      process.env.NEXT_PUBLIC_CONTRACT_ID,
+      "SnipeNear",
+      `${process.env.NEXT_PUBLIC_BASE_URL}?successLogin=${new Date().getTime()}`
+    );
   };
 
   const _signOut = async () => {
