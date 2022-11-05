@@ -27,7 +27,7 @@ const Presentation = () => {
         setup();
       }
     }
-  }, [router, walletConnection]);
+  }, [router]);
 
   const setup = async () => {
     if (!walletConnection.isSignedIn()) {
