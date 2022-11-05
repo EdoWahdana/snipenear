@@ -27,7 +27,7 @@ const Presentation = () => {
         setup();
       }
     }
-  }, [router]);
+  }, [router, walletConnection]);
 
   const setup = async () => {
     if (!walletConnection.getAccountId()) {
