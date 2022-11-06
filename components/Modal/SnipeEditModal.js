@@ -3,7 +3,7 @@ import { useState } from "react";
 import { parseImgUrl } from "../../utils/common";
 
 const SnipeEditModal = ({ isShow, data, onClose, onUpdate }) => {
-  const [price, setPrice] = useState(data.price);
+  const [price, setPrice] = useState(data?.price || null);
 
   if (!isShow) {
     return null;
