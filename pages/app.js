@@ -713,6 +713,28 @@ const App = () => {
                       </p>
                     </button>
                   )}
+
+                  {isAutoBuy ? (
+                    <button
+                      className="inline-flex gap-x-2 justify-start items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                      onClick={() => setIsAutoBuy(!isAutoBuy)}
+                    >
+                      <IconChecked size={25} />
+                      <p className="text-snipenear-text text-sm font-bold">
+                        Auto Buy
+                      </p>
+                    </button>
+                  ) : (
+                    <button
+                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-snipenear hover:bg-snipenear hover:bg-opacity-20 rounded-lg p-2"
+                      onClick={() => setIsAutoBuy(!isAutoBuy)}
+                    >
+                      <IconCheck size={20} color={"#CCA8B4"} />
+                      <p className="text-snipenear text-sm font-bold">
+                        Auto Buy
+                      </p>
+                    </button>
+                  )}
                 </div>
               </div>
               {isEmail && (
@@ -731,6 +753,20 @@ const App = () => {
                     type={"email"}
                     className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
                     onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+              )}
+              {isAutoBuy && (
+                <div className="flex flex-col gap-y-2 mt-6">
+                  <p className="font-bold text-white text-md text-left md:text-xl">
+                    Auto Buy Deposit (NEAR)
+                  </p>
+                  <input
+                    name="autoBuyDeposit"
+                    type={"number"}
+                    className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
+                    onChange={(e) => setAutoBuyDeposit(e.target.value)}
+                    placeholder="10, 20, 30"
                   />
                 </div>
               )}

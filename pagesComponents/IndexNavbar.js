@@ -38,45 +38,49 @@ export default function IndexNavbar() {
       return;
     }
 
-    navigator.serviceWorker.ready.then((serviceWorkerRegistration) => {
-      serviceWorkerRegistration.pushManager
-        .getSubscription()
-        .then(async (subscription) => {
-          if (!subscription) {
-            await walletSelectorObject.signOut();
-            router.replace(process.env.NEXT_PUBLIC_BASE_URL);
-
-            return;
-          }
-
-          await subscription
-            .unsubscribe()
-            .then(async (success) => {
-              await axios({
-                method: "POST",
-                data: subscription,
-                url: `${process.env.NEXT_PUBLIC_API}/unsubscribe-web-push-notification`,
-                headers: {
-                  authorization: await generateAuth(
-                    accountId,
-                    walletConnection,
-                    walletSelectorObject
-                  ),
-                },
-              });
-            })
-            .then(async () => {
+    if ("serviceworker" in navigator) {
+      navigator.serviceWorker.ready.then((serviceWorkerRegistration) => {
+        serviceWorkerRegistration.pushManager
+          .getSubscription()
+          .then(async (subscription) => {
+            if (!subscription) {
               await walletSelectorObject.signOut();
               router.replace(process.env.NEXT_PUBLIC_BASE_URL);
-            })
-            .catch((error) => {
-              console.error(`Error unsubscribe : ${error}`);
-            });
-        })
-        .catch((err) => {
-          console.error(`Error during getSubscription(): ${err}`);
-        });
-    });
+
+              return;
+            }
+
+            await subscription
+              .unsubscribe()
+              .then(async (success) => {
+                await axios({
+                  method: "POST",
+                  data: subscription,
+                  url: `${process.env.NEXT_PUBLIC_API}/unsubscribe-web-push-notification`,
+                  headers: {
+                    authorization: await generateAuth(
+                      accountId,
+                      walletConnection,
+                      walletSelectorObject
+                    ),
+                  },
+                });
+              })
+              .then(async () => {
+                await walletSelectorObject.signOut();
+                router.replace(process.env.NEXT_PUBLIC_BASE_URL);
+              })
+              .catch((error) => {
+                console.error(`Error unsubscribe : ${error}`);
+              });
+          })
+          .catch((err) => {
+            console.error(`Error during getSubscription(): ${err}`);
+          });
+      });
+    } else {
+      console.error("No navigators");
+    }
   };
 
   return (

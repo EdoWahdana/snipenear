@@ -12,7 +12,6 @@ import { setupNearWallet } from "@near-wallet-selector/near-wallet";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import "@near-wallet-selector/modal-ui/styles.css";
 import MyNearIconUrl from "@near-wallet-selector/my-near-wallet/assets/my-near-wallet-icon.png";
-import { providers } from "near-api-js";
 
 const THIRTY_TGAS = "30000000000000";
 const NO_DEPOSIT = "0";
@@ -81,33 +80,6 @@ export default function MyApp({ Component, pageProps }) {
     return { walletConnection, contract, near, account };
   };
 
-  const callMethod = async ({
-    contractId,
-    method,
-    args = {},
-    gas = THIRTY_TGAS,
-    deposit = NO_DEPOSIT,
-  }) => {
-    // Sign a transaction with the "FunctionCall" action
-    const outcome = await walletSelector.signAndSendTransaction({
-      signerId: accountId,
-      receiverId: contractId,
-      actions: [
-        {
-          type: "FunctionCall",
-          params: {
-            methodName: method,
-            args,
-            gas,
-            deposit,
-          },
-        },
-      ],
-    });
-
-    return providers.getTransactionLastResult(outcome);
-  };
-
   useEffect(() => {
     if (!init) {
       _initContract().then(({ walletConnection, contract, near, account }) => {
@@ -120,6 +92,10 @@ export default function MyApp({ Component, pageProps }) {
     }
 
     if (!initWalletSelector) {
+      _initContract().then(({ walletConnection }) => {
+        setWalletConnection(walletConnection);
+      });
+
       _initWallet().then(({ selector, wallet, accountIdWallet, modal }) => {
         setWalletSelector(selector);
         setWalletSelectorObject(wallet);
