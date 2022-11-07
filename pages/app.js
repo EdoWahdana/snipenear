@@ -1,4 +1,10 @@
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import React, {
+  Fragment,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import Header from "components/Documentation/Header";
 import AppNavbar from "pagesComponents/AppNavbar";
 import UserContext from "../config/context";
@@ -10,16 +16,23 @@ import { generateAuth } from "../config/utils";
 import SuccessModal from "../components/Modal/SuccessModal";
 import ErrorModal from "../components/Modal/ErrorModal";
 import { utils } from "near-api-js";
-import { urlBase64ToUint8Array } from "../utils/common";
+import AutobuyModal from "../components/Modal/AutobuyModal";
 
 const ModalEnum = {
   success: "Success",
   error: "Error",
+  autobuy: "Autobuy",
 };
 
 const App = () => {
   const router = useRouter();
-  const { walletConnection, account, authToken } = useContext(UserContext);
+  const {
+    walletConnection,
+    account,
+    walletSelector,
+    walletSelectorObject,
+    accountId,
+  } = useContext(UserContext);
 
   const [isToken, setIsToken] = useState(false);
   const [isEmail, setIsEmail] = useState(false);
@@ -33,12 +46,15 @@ const App = () => {
   const [email, setEmail] = useState(null);
   const [price, setPrice] = useState(null);
   const [showModal, setShowModal] = useState(null);
+  const [isAutoBuy, setIsAutoBuy] = useState(false);
+  const [autoBuyDeposit, setAutoBuyDeposit] = useState(null);
+  const [isAgree, setIsAgree] = useState(false);
 
   useEffect(() => {
-    if (!walletConnection.isSignedIn()) {
+    if (!walletSelector.isSignedIn()) {
       router.replace("/");
     }
-  }, [walletConnection]);
+  }, [walletSelector]);
 
   const checkContract = async () => {
     try {
@@ -129,23 +145,89 @@ const App = () => {
         formData["tokenId"] = tokenId;
       }
 
-      const resultSnipe = await axios.post(
-        `${process.env.NEXT_PUBLIC_API}/snipes`,
-        formData,
-        {
-          headers: {
-            authorization: await generateAuth(walletConnection),
-          },
-        }
-      );
+      if (isAutoBuy && autoBuyDeposit) {
+        const autoBuyDepositYocto =
+          utils.format.parseNearAmount(autoBuyDeposit);
 
-      if (resultSnipe.data && resultSnipe.data?.status === 1) {
-        setShowModal(ModalEnum.success);
-      } else {
-        setShowModal(ModalEnum.error);
+        formData["isAutoBuy"] = true;
+        formData["autoBuyDeposit"] = autoBuyDepositYocto;
       }
 
-      setIsValid(false);
+      if (isAutoBuy && autoBuyDeposit) {
+        const resultSnipe = await axios.post(
+          `${process.env.NEXT_PUBLIC_API}/snipes`,
+          formData,
+          {
+            headers: {
+              authorization: await generateAuth(
+                accountId,
+                walletConnection,
+                walletSelectorObject
+              ),
+            },
+          }
+        );
+
+        if (resultSnipe.data && resultSnipe.data?.status === 1) {
+          let snipeParams = {
+            contract_id: contractId,
+          };
+
+          if (isToken && tokenId) {
+            snipeParams["token_id"] = tokenId;
+          }
+
+          const autoBuyDepositYocto =
+            utils.format.parseNearAmount(autoBuyDeposit);
+
+          const resultSnipeContract =
+            await walletSelectorObject.signAndSendTransaction({
+              signerId: walletSelector.store.getState().accounts[0].accountId,
+              receiverId: process.env.NEXT_PUBLIC_SNIPE_CONTRACT_ID,
+              actions: [
+                {
+                  type: "FunctionCall",
+                  params: {
+                    methodName: "snipe",
+                    args: snipeParams,
+                    gas: "100000000000000",
+                    deposit: autoBuyDepositYocto,
+                  },
+                },
+              ],
+            });
+
+          if (resultSnipeContract) {
+            setShowModal(ModalEnum.success);
+          } else {
+            setShowModal(ModalEnum.error);
+          }
+
+          setIsValid(false);
+        } else {
+          const resultSnipe = await axios.post(
+            `${process.env.NEXT_PUBLIC_API}/snipes`,
+            formData,
+            {
+              headers: {
+                authorization: await generateAuth(
+                  accountId,
+                  walletConnection,
+                  walletSelectorObject
+                ),
+              },
+            }
+          );
+
+          if (resultSnipe.data && resultSnipe.data?.status === 1) {
+            setShowModal(ModalEnum.success);
+          } else {
+            setShowModal(ModalEnum.error);
+          }
+
+          setIsValid(false);
+        }
+      }
     } catch (err) {
       console.error(err);
     }
@@ -332,7 +414,6 @@ const App = () => {
                   Alert Price
                 </p>
                 <input
-                  name="price"
                   type={"number"}
                   className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
                   onChange={(e) => setPrice(e.target.value)}
@@ -342,7 +423,7 @@ const App = () => {
               </div>
               <div className="flex flex-col gap-y-2 mt-6">
                 <p className="font-bold text-white text-md text-left md:text-xl">
-                  Notification
+                  Settings
                 </p>
                 <div className="flex flex-col gap-y-4 w-full md:w-[230px] bg-snipenear-input rounded-lg p-4">
                   {isEmail ? (
@@ -352,7 +433,7 @@ const App = () => {
                     >
                       <IconChecked size={25} />
                       <p className="text-snipenear-text text-sm font-bold">
-                        Email
+                        Email Notification
                       </p>
                     </button>
                   ) : (
@@ -361,7 +442,9 @@ const App = () => {
                       onClick={() => setIsEmail(!isEmail)}
                     >
                       <IconCheck size={20} color={"#CCA8B4"} />
-                      <p className="text-snipenear text-sm font-bold">Email</p>
+                      <p className="text-snipenear text-sm font-bold">
+                        Email Notification
+                      </p>
                     </button>
                   )}
 
@@ -386,6 +469,28 @@ const App = () => {
                       </p>
                     </button>
                   )}
+
+                  {isAutoBuy ? (
+                    <button
+                      className="inline-flex gap-x-2 justify-start items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                      onClick={() => setIsAutoBuy(!isAutoBuy)}
+                    >
+                      <IconChecked size={25} />
+                      <p className="text-snipenear-text text-sm font-bold">
+                        Auto Buy
+                      </p>
+                    </button>
+                  ) : (
+                    <button
+                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-snipenear hover:bg-snipenear hover:bg-opacity-20 rounded-lg p-2"
+                      onClick={() => setIsAutoBuy(!isAutoBuy)}
+                    >
+                      <IconCheck size={20} color={"#CCA8B4"} />
+                      <p className="text-snipenear text-sm font-bold">
+                        Auto Buy
+                      </p>
+                    </button>
+                  )}
                 </div>
               </div>
               {isEmail && (
@@ -401,6 +506,30 @@ const App = () => {
                   />
                 </div>
               )}
+              {isAutoBuy && (
+                <div className="flex flex-col gap-y-2 mt-6">
+                  <p className="font-bold text-white text-md text-left md:text-xl">
+                    Auto Buy Deposit (NEAR)
+                  </p>
+                  <input
+                    name="autoBuyDeposit"
+                    type={"number"}
+                    className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
+                    onChange={(e) => setAutoBuyDeposit(e.target.value)}
+                    placeholder="10, 20, 30"
+                  />
+                </div>
+              )}
+
+              <div className="mt-2">
+                <p
+                  className="text-gray-400 font-bold"
+                  onClick={() => setShowModal(ModalEnum.autobuy)}
+                >
+                  Click here to read about Auto Buy
+                </p>
+              </div>
+
               <div className="inline-flex gap-x-4 mb-10">
                 {contractId !== null && contractId !== "" ? (
                   <button
@@ -548,7 +677,7 @@ const App = () => {
                     >
                       <IconChecked size={25} />
                       <p className="text-snipenear-text text-sm font-bold">
-                        Email
+                        Email Notification
                       </p>
                     </button>
                   ) : (
@@ -557,7 +686,9 @@ const App = () => {
                       onClick={() => setIsEmail(!isEmail)}
                     >
                       <IconCheck size={20} color={"#CCA8B4"} />
-                      <p className="text-snipenear text-sm font-bold">Email</p>
+                      <p className="text-snipenear text-sm font-bold">
+                        Email Notification
+                      </p>
                     </button>
                   )}
 
@@ -767,6 +898,10 @@ const App = () => {
 
       {showModal === ModalEnum.error && (
         <ErrorModal onClose={() => setShowModal(null)} />
+      )}
+
+      {showModal === ModalEnum.autobuy && (
+        <AutobuyModal onClose={() => setShowModal(null)} onSubmit={snipe} />
       )}
     </>
   );

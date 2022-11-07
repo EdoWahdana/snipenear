@@ -14,14 +14,15 @@ import { useRouter } from "next/router";
 const AppNavbar = () => {
   const router = useRouter();
   const [openNavbar, setOpenNavbar] = useState(false);
-  const { walletConnection } = useContext(UserContext);
+  const { walletConnection, walletSelector, walletSelectorObject, accountId } =
+    useContext(UserContext);
 
   const _signOut = async () => {
     await unsubscribePushManager();
   };
 
   const unsubscribePushManager = async () => {
-    if (!walletConnection.getAccountId()) {
+    if (!walletSelector.isSignedIn()) {
       return;
     }
 
@@ -30,7 +31,7 @@ const AppNavbar = () => {
         .getSubscription()
         .then(async (subscription) => {
           if (!subscription) {
-            await walletConnection.signOut();
+            await walletSelectorObject.signOut();
             router.replace(process.env.NEXT_PUBLIC_BASE_URL);
 
             return;
@@ -44,12 +45,16 @@ const AppNavbar = () => {
                 data: subscription,
                 url: `${process.env.NEXT_PUBLIC_API}/unsubscribe-web-push-notification`,
                 headers: {
-                  authorization: await generateAuth(walletConnection),
+                  authorization: await generateAuth(
+                    accountId,
+                    walletConnection,
+                    walletSelectorObject
+                  ),
                 },
               });
             })
             .then(async () => {
-              await walletConnection.signOut();
+              await walletSelectorObject.signOut();
               router.replace(process.env.NEXT_PUBLIC_BASE_URL);
             })
             .catch((error) => {
@@ -100,7 +105,7 @@ const AppNavbar = () => {
                   </p>
                 </div>
               </Link>
-              {walletConnection.isSignedIn() && (
+              {walletSelector.isSignedIn() && (
                 <Link href="/">
                   <div className="font-poppins mr-0 md:mr-4" onClick={_signOut}>
                     <p className="bg-transparent hover:bg-snipenear-dark-hover transition-colors duration-100 border-2 border-snipenear py-2 px-4 text-snipenear font-bold text-lg rounded-lg cursor-pointer">

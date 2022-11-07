@@ -9,16 +9,24 @@ import { generateAuth } from "../config/utils";
 import axios from "axios";
 import { useRouter } from "next/router";
 
-const Presentation = () => {
+const Home = () => {
   const router = useRouter();
-  const { walletConnection, contract, near } = useContext(UserContext);
+  const {
+    walletConnection,
+    walletSelector,
+    walletSelectorObject,
+    accountId,
+    signInModal,
+  } = useContext(UserContext);
 
   const _signIn = async () => {
-    await walletConnection.requestSignIn(
-      process.env.NEXT_PUBLIC_CONTRACT_ID,
-      "SnipeNear",
-      `${process.env.NEXT_PUBLIC_BASE_URL}?successLogin=${new Date().getTime()}`
-    );
+    signInModal.show();
+
+    // await walletConnection.requestSignIn(
+    //   process.env.NEXT_PUBLIC_CONTRACT_ID,
+    //   "SnipeNear",
+    //   `${process.env.NEXT_PUBLIC_BASE_URL}?successLogin=${new Date().getTime()}`
+    // );
   };
 
   useEffect(() => {
@@ -29,10 +37,10 @@ const Presentation = () => {
     } else {
       console.error("Service worker not supported");
     }
-  }, [router, walletConnection]);
+  }, [router, walletConnection, walletSelector]);
 
   const setup = async () => {
-    if (!walletConnection.getAccountId()) {
+    if (!walletSelector.isSignedIn()) {
       return;
     }
 
@@ -62,7 +70,11 @@ const Presentation = () => {
         subscription,
         {
           headers: {
-            authorization: await generateAuth(walletConnection),
+            authorization: await generateAuth(
+              accountId,
+              walletConnection,
+              walletSelectorObject
+            ),
           },
         }
       );
@@ -136,7 +148,7 @@ const Presentation = () => {
                 </div>
                 <br />
                 <div className="flex flex-row justify-start gap-x-4">
-                  {walletConnection.isSignedIn() ? (
+                  {walletSelector.isSignedIn() ? (
                     <Link href="/app" replace={true}>
                       <button className="bg-snipenear hover:bg-snipenear-hover transition-colors duration-100 p-2 md:py-4 md:px-10 text-snipenear-dark font-extrabold text-2xl rounded-lg">
                         Launch App
@@ -338,4 +350,4 @@ const Presentation = () => {
   );
 };
 
-export default Presentation;
+export default Home;

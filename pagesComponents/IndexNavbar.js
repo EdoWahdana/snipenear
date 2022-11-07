@@ -15,16 +15,18 @@ import { useRouter } from "next/router";
 
 export default function IndexNavbar() {
   const router = useRouter();
-  const { walletConnection } = useContext(UserContext);
+  const {
+    walletConnection,
+    walletSelector,
+    walletSelectorObject,
+    accountId,
+    signInModal,
+  } = useContext(UserContext);
 
   const [openNavbar, setOpenNavbar] = useState(false);
 
   const _signIn = async () => {
-    await walletConnection.requestSignIn(
-      process.env.NEXT_PUBLIC_CONTRACT_ID,
-      "SnipeNear",
-      `${process.env.NEXT_PUBLIC_BASE_URL}?successLogin=${new Date().getTime()}`
-    );
+    signInModal.show();
   };
 
   const _signOut = async () => {
@@ -32,7 +34,7 @@ export default function IndexNavbar() {
   };
 
   const unsubscribePushManager = async () => {
-    if (!walletConnection.getAccountId()) {
+    if (!walletSelector.isSignedIn()) {
       return;
     }
 
@@ -41,7 +43,7 @@ export default function IndexNavbar() {
         .getSubscription()
         .then(async (subscription) => {
           if (!subscription) {
-            await walletConnection.signOut();
+            await walletSelectorObject.signOut();
             router.replace(process.env.NEXT_PUBLIC_BASE_URL);
 
             return;
@@ -55,12 +57,16 @@ export default function IndexNavbar() {
                 data: subscription,
                 url: `${process.env.NEXT_PUBLIC_API}/unsubscribe-web-push-notification`,
                 headers: {
-                  authorization: await generateAuth(walletConnection),
+                  authorization: await generateAuth(
+                    accountId,
+                    walletConnection,
+                    walletSelectorObject
+                  ),
                 },
               });
             })
             .then(async () => {
-              await walletConnection.signOut();
+              await walletSelectorObject.signOut();
               router.replace(process.env.NEXT_PUBLIC_BASE_URL);
             })
             .catch((error) => {
@@ -95,7 +101,7 @@ export default function IndexNavbar() {
         <NavbarCollapse open={openNavbar}>
           <Nav>
             <NavLink ripple="dark">
-              {walletConnection.isSignedIn() && (
+              {walletSelector.isSignedIn() && (
                 <Link href="/">
                   <div className="mr-0 md:mr-4" onClick={_signOut}>
                     <p className="font-poppins font-bold text-[#CCA8B4] text-lg cursor-pointer hover:text-opacity-80">
@@ -105,7 +111,7 @@ export default function IndexNavbar() {
                 </Link>
               )}
 
-              {walletConnection.isSignedIn() ? (
+              {walletSelector.isSignedIn() ? (
                 <Link href="/app">
                   <div className="font-poppins mr-0 md:mr-4">
                     <p className="bg-transparent hover:bg-snipenear-dark-hover transition-colors duration-100 border-2 border-snipenear py-2 px-4 text-snipenear font-bold text-lg rounded-lg cursor-pointer">
@@ -118,10 +124,10 @@ export default function IndexNavbar() {
                   <div
                     className="font-poppins mr-0 md:mr-4"
                     onClick={() => {
-                      walletConnection.getAccountId() ? _signOut() : _signIn();
+                      walletSelector.isSignedIn() ? _signOut() : _signIn();
                     }}
                   >
-                    {walletConnection.getAccountId() ? (
+                    {walletSelector.isSignedIn() ? (
                       <p className="bg-transparent hover:bg-snipenear-dark-hover transition-colors duration-100 border-2 border-snipenear py-2 px-4 text-snipenear font-bold text-lg rounded-lg cursor-pointer">
                         SIGN OUT
                       </p>

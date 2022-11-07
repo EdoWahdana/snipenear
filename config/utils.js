@@ -54,20 +54,24 @@ export function login() {
   window.walletConnection.requestSignIn(nearConfig.contractName);
 }
 
-export async function generateAuth(wallet) {
+export async function generateAuth(accountId, wallet, walletSelector) {
   if (!wallet) {
     return null;
   }
 
-  if (!wallet.getAccountId) {
+  if (!walletSelector) {
+    return null;
+  }
+
+  if (!accountId) {
     return null;
   }
 
   try {
     const signer = new InMemorySigner(wallet._keyStore);
-    const arr = new Array(wallet.getAccountId());
-    for (var i = 0; i < wallet.getAccountId().length; i++) {
-      arr[i] = wallet.getAccountId().charCodeAt(i);
+    const arr = new Array(accountId);
+    for (var i = 0; i < accountId.length; i++) {
+      arr[i] = accountId.charCodeAt(i);
     }
     const msgBuf = new Uint8Array(arr);
     const signedMsg = await signer.signMessage(
@@ -77,7 +81,7 @@ export async function generateAuth(wallet) {
     );
     const pubKey = Buffer.from(signedMsg.publicKey.data).toString("hex");
     const signature = Buffer.from(signedMsg.signature).toString("hex");
-    const payload = [wallet.getAccountId(), pubKey, signature];
+    const payload = [accountId, pubKey, signature];
     const _authToken = Base64.encode(payload.join("&"));
     return _authToken;
   } catch (err) {

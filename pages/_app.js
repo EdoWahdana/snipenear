@@ -6,6 +6,16 @@ import * as nearAPI from "near-api-js";
 import getConfig from "../config/near";
 import UserContext from "../config/context";
 import { useEffect, useState } from "react";
+import { setupWalletSelector } from "@near-wallet-selector/core";
+import { setupModal } from "@near-wallet-selector/modal-ui";
+import { setupNearWallet } from "@near-wallet-selector/near-wallet";
+import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
+import "@near-wallet-selector/modal-ui/styles.css";
+import MyNearIconUrl from "@near-wallet-selector/my-near-wallet/assets/my-near-wallet-icon.png";
+import { providers } from "near-api-js";
+
+const THIRTY_TGAS = "30000000000000";
+const NO_DEPOSIT = "0";
 
 export default function MyApp({ Component, pageProps }) {
   const [walletConnection, setWalletConnection] = useState({});
@@ -13,6 +23,38 @@ export default function MyApp({ Component, pageProps }) {
   const [near, setNear] = useState({});
   const [account, setAccount] = useState({});
   const [init, setInit] = useState(false);
+  const [walletSelector, setWalletSelector] = useState({});
+  const [initWalletSelector, setInitWalletSelector] = useState(false);
+  const [accountId, setAccountId] = useState(null);
+  const [walletSelectorObject, setWalletSelectorObject] = useState({});
+  const [signInModal, setSignInModal] = useState(null);
+
+  const _initWallet = async () => {
+    const selector = await setupWalletSelector({
+      network: process.env.NEXT_PUBLIC_APP_ENV,
+      debug: true,
+      modules: [
+        setupNearWallet(),
+        setupMyNearWallet({ iconUrl: MyNearIconUrl }),
+      ],
+    });
+    const modal = setupModal(selector, {
+      contractId: process.env.NEXT_PUBLIC_SNIPE_CONTRACT_ID,
+      description: "Please connect your wallet",
+    });
+
+    const isSignedIn = selector.isSignedIn();
+
+    let wallet;
+    let accountIdWallet;
+
+    if (isSignedIn) {
+      wallet = await selector.wallet();
+      accountIdWallet = selector.store.getState().accounts[0].accountId;
+    }
+
+    return { selector, wallet, accountIdWallet, modal };
+  };
 
   const _initContract = async () => {
     const nearConfig = getConfig("testnet");
@@ -39,6 +81,33 @@ export default function MyApp({ Component, pageProps }) {
     return { walletConnection, contract, near, account };
   };
 
+  const callMethod = async ({
+    contractId,
+    method,
+    args = {},
+    gas = THIRTY_TGAS,
+    deposit = NO_DEPOSIT,
+  }) => {
+    // Sign a transaction with the "FunctionCall" action
+    const outcome = await walletSelector.signAndSendTransaction({
+      signerId: accountId,
+      receiverId: contractId,
+      actions: [
+        {
+          type: "FunctionCall",
+          params: {
+            methodName: method,
+            args,
+            gas,
+            deposit,
+          },
+        },
+      ],
+    });
+
+    return providers.getTransactionLastResult(outcome);
+  };
+
   useEffect(() => {
     if (!init) {
       _initContract().then(({ walletConnection, contract, near, account }) => {
@@ -49,7 +118,17 @@ export default function MyApp({ Component, pageProps }) {
         setInit(true);
       });
     }
-  }, [walletConnection]);
+
+    if (!initWalletSelector) {
+      _initWallet().then(({ selector, wallet, accountIdWallet, modal }) => {
+        setWalletSelector(selector);
+        setWalletSelectorObject(wallet);
+        setAccountId(accountIdWallet);
+        setSignInModal(modal);
+        setInitWalletSelector(true);
+      });
+    }
+  }, [walletConnection, walletSelector]);
 
   return (
     <React.Fragment>
@@ -65,9 +144,13 @@ export default function MyApp({ Component, pageProps }) {
           contract: contract,
           near: near,
           account: account,
+          walletSelector: walletSelector,
+          walletSelectorObject: walletSelectorObject,
+          accountId: accountId,
+          signInModal: signInModal,
         }}
       >
-        {init ? <Component {...pageProps} /> : <p>Loading</p>}
+        {initWalletSelector ? <Component {...pageProps} /> : <p>Loading</p>}
       </UserContext.Provider>
     </React.Fragment>
   );

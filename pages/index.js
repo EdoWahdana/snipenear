@@ -1,6 +1,6 @@
 import React from "react";
-import Presentation from "./presentation";
+import Home from "./home";
 
 export default function Index() {
-  return <Presentation />;
+  return <Home />;
 }

@@ -20,7 +20,8 @@ const ModalEnum = {
 
 const MySnipe = () => {
   const router = useRouter();
-  const { walletConnection } = useContext(UserContext);
+  const { walletConnection, walletSelector, walletSelectorObject, accountId } =
+    useContext(UserContext);
 
   const [isToken, setIsToken] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -36,14 +37,16 @@ const MySnipe = () => {
   }, []);
 
   useEffect(() => {
-    if (!walletConnection.isSignedIn()) {
+    if (!walletSelector.isSignedIn()) {
       router.replace("/");
     }
-  }, [walletConnection]);
+  }, [walletSelector]);
 
   const fetchSnipe = async (initial = false) => {
     if (!hasMore || isFetching) {
-      return;
+      if (!initial) {
+        return;
+      }
     }
 
     setIsFetching(true);
@@ -57,7 +60,11 @@ const MySnipe = () => {
         limit: 10,
       },
       headers: {
-        authorization: await generateAuth(walletConnection),
+        authorization: await generateAuth(
+          accountId,
+          walletConnection,
+          walletSelectorObject
+        ),
       },
     });
 
@@ -92,18 +99,24 @@ const MySnipe = () => {
     setIsFetching(false);
   };
 
-  const deleteSnipe = async (snipeId) => {
+  const deleteSnipe = async (snipe) => {
+    const snipeId = snipe._id;
+
     const res = await axios.delete(
       `${process.env.NEXT_PUBLIC_API}/snipes/${snipeId}`,
       {
         headers: {
-          authorization: await generateAuth(walletConnection),
+          authorization: await generateAuth(
+            accountId,
+            walletConnection,
+            walletSelectorObject
+          ),
         },
       }
     );
 
     if (res.data?.status === 1) {
-      location.reload();
+      await fetchSnipe(true);
     }
   };
 
@@ -145,7 +158,10 @@ const MySnipe = () => {
                     Contract Snipe
                   </p>
                   {contractSnipe.map((snipe) => (
-                    <div className="bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 mx-2 my-4">
+                    <div
+                      key={snipe._id}
+                      className="bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 mx-2 my-4"
+                    >
                       <div className="flex flex-row h-20 justify-between items-center text-white">
                         <div className="inline-flex items-center gap-x-4">
                           <img
@@ -190,7 +206,7 @@ const MySnipe = () => {
                             <button
                               className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
                               onClick={() => {
-                                deleteSnipe(snipe._id);
+                                deleteSnipe(snipe);
                               }}
                             >
                               <IconDelete size={20} />
@@ -212,7 +228,10 @@ const MySnipe = () => {
                   Token Snipe
                 </p>
                 {tokenSnipe.map((snipe) => (
-                  <div className="bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 mx-2 my-4">
+                  <div
+                    key={snipe._id}
+                    className="bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 mx-2 my-4"
+                  >
                     <div className="flex flex-row h-24 justify-between items-center text-white">
                       <div className="inline-flex items-center gap-x-4">
                         <img
@@ -260,7 +279,7 @@ const MySnipe = () => {
                           <button
                             className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
                             onClick={() => {
-                              deleteSnipe(snipe._id);
+                              deleteSnipe(snipe);
                             }}
                           >
                             <IconDelete size={20} />
@@ -301,7 +320,10 @@ const MySnipe = () => {
                 Contract Snipe
               </p>
               {contractSnipe.map((snipe) => (
-                <div className="hidden md:flex flex-row h-20 justify-between items-center text-white bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 my-4">
+                <div
+                  key={snipe._id}
+                  className="hidden md:flex flex-row h-20 justify-between items-center text-white bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 my-4"
+                >
                   <div className="inline-flex items-center gap-x-4">
                     <img
                       src={
@@ -343,7 +365,7 @@ const MySnipe = () => {
                       <button
                         className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
                         onClick={() => {
-                          deleteSnipe(snipe._id);
+                          deleteSnipe(snipe);
                         }}
                       >
                         <IconDelete size={20} />
@@ -361,7 +383,10 @@ const MySnipe = () => {
                 Token Snipe
               </p>
               {tokenSnipe.map((snipe) => (
-                <div className="hidden md:flex flex-row h-20 justify-between items-center text-white bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 my-4">
+                <div
+                  key={snipe._id}
+                  className="hidden md:flex flex-row h-20 justify-between items-center text-white bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 my-4"
+                >
                   <div className="inline-flex items-center gap-x-4">
                     <img
                       alt="Token Image"
@@ -409,7 +434,7 @@ const MySnipe = () => {
                       <button
                         className="bg-snipenear-input text-sm p-2 rounded-lg hover:bg-opacity-50"
                         onClick={() => {
-                          deleteSnipe(snipe._id);
+                          deleteSnipe(snipe);
                         }}
                       >
                         <IconDelete size={20} />
