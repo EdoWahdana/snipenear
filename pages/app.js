@@ -17,6 +17,7 @@ import SuccessModal from "../components/Modal/SuccessModal";
 import ErrorModal from "../components/Modal/ErrorModal";
 import { utils } from "near-api-js";
 import AutobuyModal from "../components/Modal/AutobuyModal";
+import { viewMethod } from "../config/utils";
 
 const ModalEnum = {
   success: "Success",
@@ -26,18 +27,14 @@ const ModalEnum = {
 
 const App = () => {
   const router = useRouter();
-  const {
-    account,
-    walletSelector,
-    walletSelectorObject,
-    accountId,
-  } = useContext(UserContext);
+  const { walletSelector, walletSelectorObject, accountId } =
+    useContext(UserContext);
 
-  const [isToken, setIsToken] = useState(router.query?.tokenId ? true : false);
+  const [isToken, setIsToken] = useState(false);
   const [isEmail, setIsEmail] = useState(false);
   const [isPush, setIsPush] = useState(true);
   const [isValid, setIsValid] = useState(false);
-  const [contractId, setContractId] = useState(router.query?.contractId || null);
+  const [contractId, setContractId] = useState(null);
   const [tokenId, setTokenId] = useState(null);
   const [contractResult, setContractResult] = useState({});
   const [isImageLoading, setIsImageLoading] = useState(false);
@@ -56,22 +53,21 @@ const App = () => {
 
   useEffect(() => {
     if (router.query) {
-      console.log(router.query);
+      if (router.query.contractId) {
+        setContractId(router.query.contractId);
+      }
+
+      if (router.query.tokenId) {
+        setIsToken(true);
+        setTokenId(router.query.tokenId);
+      }
     }
-  }, [router.query]);
+  }, [router.query.contractId, router.query.tokenId]);
 
   const checkContract = async () => {
     try {
-      const resMetadata = await account.viewFunction(
-        contractId,
-        "nft_metadata",
-        {}
-      );
-      const resNftSupply = await account.viewFunction(
-        contractId,
-        "nft_total_supply",
-        {}
-      );
+      const resMetadata = await viewMethod(contractId, "nft_metadata", {});
+      const resNftSupply = await viewMethod(contractId, "nft_total_supply", {});
 
       const resObject = {
         metadata: resMetadata,
@@ -89,12 +85,8 @@ const App = () => {
 
   const checkTokenContract = async () => {
     try {
-      const resMetadata = await account.viewFunction(
-        contractId,
-        "nft_metadata",
-        {}
-      );
-      const resToken = await account.viewFunction(contractId, "nft_token", {
+      const resMetadata = await viewMethod(contractId, "nft_metadata", {});
+      const resToken = await viewMethod(contractId, "nft_token", {
         token_id: tokenId,
       });
 

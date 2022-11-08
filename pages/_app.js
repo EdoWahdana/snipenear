@@ -13,9 +13,6 @@ import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import "@near-wallet-selector/modal-ui/styles.css";
 import MyNearIconUrl from "@near-wallet-selector/my-near-wallet/assets/my-near-wallet-icon.png";
 
-const THIRTY_TGAS = "30000000000000";
-const NO_DEPOSIT = "0";
-
 export default function MyApp({ Component, pageProps }) {
   const [walletSelector, setWalletSelector] = useState({});
   const [initWalletSelector, setInitWalletSelector] = useState(false);

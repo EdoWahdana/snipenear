@@ -7,7 +7,8 @@ import {
 } from "near-api-js";
 import getConfig from "./near";
 import { Base64 } from "js-base64";
-import sha256 from 'js-sha256';
+import sha256 from "js-sha256";
+import { providers } from 'near-api-js';
 
 const nearConfig = getConfig(process.env.NODE_ENV || "development");
 
@@ -82,14 +83,10 @@ export async function generateAuth(accountId, walletSelector) {
     return _authToken;
   } catch (err) {
     return null;
-  }
+  } 
 
-  async function signMessage(
-    message,
-    accountId,
-    networkId
-  ) {
-    const _keyStore = new keyStores.BrowserLocalStorageKeyStore()
+  async function signMessage(message, accountId, networkId) {
+    const _keyStore = new keyStores.BrowserLocalStorageKeyStore();
 
     const hash = new Uint8Array(sha256.sha256.array(message));
     if (!accountId) {
@@ -102,3 +99,17 @@ export async function generateAuth(accountId, walletSelector) {
     return keyPair.sign(hash);
   }
 }
+
+ export async function viewMethod(contractId, method, args = {}) {
+    const network = getConfig(process.env.NEXT_PUBLIC_APP_ENV);
+    const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+
+    let res = await provider.query({
+      request_type: "call_function",
+      account_id: contractId,
+      method_name: method,
+      args_base64: Buffer.from(JSON.stringify(args)).toString("base64"),
+      finality: "optimistic",
+    });
+    return JSON.parse(Buffer.from(res.result).toString());
+  }
