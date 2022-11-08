@@ -18,6 +18,7 @@ import ErrorModal from "../components/Modal/ErrorModal";
 import { utils } from "near-api-js";
 import AutobuyModal from "../components/Modal/AutobuyModal";
 import { viewMethod } from "../config/utils";
+import JSBI from "jsbi";
 
 const ModalEnum = {
   success: "Success",
@@ -104,6 +105,25 @@ const App = () => {
     }
   };
 
+  const _checkDepositLessThanPrice = (yoctoPrice, autoBuyDepositYocto) => {
+    if (!autoBuyDepositYocto) {
+      const errorMessage = 'Please specify your AutoBuy deposit!'
+      setContractResult(errorMessage)
+    }
+
+    if (!yoctoPrice) {
+      const errorMessage = 'Please specify the alert price!'
+      setContractResult(errorMessage)
+    }
+
+    const autoBuyDepositYoctoBI = JSBI.BigInt(autoBuyDepositYocto)
+    const yoctoPriceBI = JSBI.BigInt(yoctoPrice)
+
+    const depositLessThanPrice = JSBI.lessThan(autoBuyDepositYoctoBI, yoctoPriceBI)
+
+    return depositLessThanPrice
+  }
+
   const snipe = async () => {
     try {
       if (!isValid) {
@@ -146,10 +166,18 @@ const App = () => {
         const autoBuyDepositYocto =
           utils.format.parseNearAmount(autoBuyDeposit);
 
+        const depositLessThanPrice = _checkDepositLessThanPrice(yoctoPrice, autoBuyDepositYocto)
+        if (!depositLessThanPrice) {
+          const errorMessage = 'Your AutoBuy deposit must be less than the Alert Price'
+          setContractResult(errorMessage)
+
+          return
+        }
         formData["autoBuyDeposit"] = autoBuyDepositYocto;
       }
 
       if (isAutoBuy && autoBuyDeposit) {
+
         const resultSnipe = await axios.post(
           `${process.env.NEXT_PUBLIC_API}/snipes`,
           formData,
@@ -164,8 +192,18 @@ const App = () => {
         );
 
         if (resultSnipe.data && resultSnipe.data?.status === 1) {
+          if (!resultSnipe.data?.data._id) {
+            const errorMessage = 'No ObjectId returned'
+            setContractResult(errorMessage)
+
+            throw new Error('No ObjectId returned')
+          }
+
+          const memoParams = resultSnipe.data?.data._id
+
           let snipeParams = {
             contract_id: contractId,
+            memo: memoParams
           };
 
           if (isToken && tokenId) {
