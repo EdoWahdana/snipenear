@@ -15,12 +15,8 @@ import { useRouter } from "next/router";
 
 export default function IndexNavbar() {
   const router = useRouter();
-  const {
-    walletSelector,
-    walletSelectorObject,
-    accountId,
-    signInModal,
-  } = useContext(UserContext);
+  const { walletSelector, walletSelectorObject, accountId, signInModal } =
+    useContext(UserContext);
 
   const [openNavbar, setOpenNavbar] = useState(false);
 
@@ -29,11 +25,7 @@ export default function IndexNavbar() {
   };
 
   const _signOut = async () => {
-    if ("serviceworker" in navigator) {
-      unsubscribePushManager();
-    } else {
-      console.error("Service worker not supported");
-    }
+    unsubscribePushManager();
   };
 
   const unsubscribePushManager = async () => {
@@ -41,10 +33,13 @@ export default function IndexNavbar() {
       return;
     }
 
-    navigator.serviceWorker.ready.then((serviceWorkerRegistration) => {
-      serviceWorkerRegistration.pushManager
-        .getSubscription()
-        .then(async (subscription) => {
+    try {
+      navigator.serviceWorker
+        .register("/_worker.js")
+        .then(async (serviceWorkerRegistration) => {
+          const subscription =
+            await serviceWorkerRegistration.pushManager.getSubscription();
+
           if (!subscription) {
             await walletSelectorObject.signOut();
             router.replace(process.env.NEXT_PUBLIC_BASE_URL);
@@ -52,33 +47,28 @@ export default function IndexNavbar() {
             return;
           }
 
-          await subscription
-            .unsubscribe()
-            .then(async (success) => {
-              await axios({
-                method: "POST",
-                data: subscription,
-                url: `${process.env.NEXT_PUBLIC_API}/unsubscribe-web-push-notification`,
-                headers: {
-                  authorization: await generateAuth(
-                    accountId,
-                    walletSelectorObject
-                  ),
-                },
-              });
-            })
-            .then(async () => {
-              await walletSelectorObject.signOut();
-              router.replace(process.env.NEXT_PUBLIC_BASE_URL);
-            })
-            .catch((error) => {
-              console.error(`Error unsubscribe : ${error}`);
+          await subscription.unsubscribe().then(async () => {
+            await axios({
+              method: "POST",
+              data: subscription,
+              url: `${process.env.NEXT_PUBLIC_API}/unsubscribe-web-push-notification`,
+              headers: {
+                authorization: await generateAuth(
+                  accountId,
+                  walletSelectorObject
+                ),
+              },
             });
-        })
-        .catch((err) => {
-          console.error(`Error during getSubscription(): ${err}`);
+          }).then(async () => {
+            await walletSelectorObject.signOut()
+            router.replace(process.env.NEXT_PUBLIC_BASE_URL)
+          }).catch((error) => {
+            console.error("UNSUBSCRIBE ERR : ", error)
+          });
         });
-    });
+    } catch (err) {
+      console.error("GET SUBSCRIPTION ERR : ", err);
+    }
   };
 
   return (

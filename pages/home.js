@@ -69,12 +69,8 @@ const RecommendedTokens = [
 
 const Home = () => {
   const router = useRouter();
-  const {
-    walletSelector,
-    walletSelectorObject,
-    accountId,
-    signInModal,
-  } = useContext(UserContext);
+  const { walletSelector, walletSelectorObject, accountId, signInModal } =
+    useContext(UserContext);
 
   const _signIn = async () => {
     signInModal.show();
@@ -94,7 +90,8 @@ const Home = () => {
     }
 
     try {
-      navigator.serviceWorker.ready
+      navigator.serviceWorker
+        .register("/_worker.js")
         .then(async (serviceWorkerRegistration) => {
           const currentSubscription =
             await serviceWorkerRegistration.pushManager.getSubscription();
@@ -103,25 +100,15 @@ const Home = () => {
             return;
           }
 
-          const register = await navigator.serviceWorker
-            .register("./_worker.js", {
-              scope: "/",
-            })
-            .catch((err) => {
-              return console.error("Error : ", err);
-            });
-
-          await navigator.serviceWorker.ready;
-
-          //register push
           console.log("Registering push...");
 
-          const subscription = await register.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(
-              "BMCbH8jWoT-mPUAODqUzCrern-rO1PrhywprUvz21mhSlFBdbvvpyCpRiTBIRaXvBOhsoAIJ3E9XDjt0c0EPL44"
-            ),
-          });
+          const subscription =
+            await serviceWorkerRegistration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: urlBase64ToUint8Array(
+                "BMCbH8jWoT-mPUAODqUzCrern-rO1PrhywprUvz21mhSlFBdbvvpyCpRiTBIRaXvBOhsoAIJ3E9XDjt0c0EPL44"
+              ),
+            });
 
           await axios.post(
             `${process.env.NEXT_PUBLIC_API}/subscribe-web-push-notification`,
@@ -135,13 +122,10 @@ const Home = () => {
               },
             }
           );
-        })
-        .catch((err) => {
-          console.error(err);
-        })
-        .finally((res) => {
-          console.log("final : ", res);
+
+          console.log("Finish registering");
         });
+
     } catch (err) {
       console.error(err);
     }
@@ -255,8 +239,9 @@ const Home = () => {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {RecommendedTokens.map((token) => (
+              {RecommendedTokens.map((token, index) => (
                 <div
+                  key={index}
                   className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4 overflow-ellipsis"
                   onClick={() => {
                     router.push({

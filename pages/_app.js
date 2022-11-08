@@ -23,7 +23,6 @@ export default function MyApp({ Component, pageProps }) {
   const _initWallet = async () => {
     const selector = await setupWalletSelector({
       network: process.env.NEXT_PUBLIC_APP_ENV,
-      debug: true,
       modules: [
         setupNearWallet(),
         setupMyNearWallet({ iconUrl: MyNearIconUrl }),

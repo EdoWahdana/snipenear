@@ -135,6 +135,7 @@ const App = () => {
         price: yoctoPrice,
         settings: settings,
         metadata: metadata,
+        isAutoBuy: isAutoBuy
       };
 
       if (isToken && tokenId) {
@@ -145,7 +146,6 @@ const App = () => {
         const autoBuyDepositYocto =
           utils.format.parseNearAmount(autoBuyDeposit);
 
-        formData["isAutoBuy"] = true;
         formData["autoBuyDeposit"] = autoBuyDepositYocto;
       }
 

@@ -10,11 +10,12 @@ import NavbarCollapse from "components/Navbar/NavbarCollapse";
 import UserContext from "../config/context";
 import NavbarToggler from "components/Navbar/NavbarToggler";
 import { useRouter } from "next/router";
+import axios from "axios";
 
 const AppNavbar = () => {
   const router = useRouter();
   const [openNavbar, setOpenNavbar] = useState(false);
-  const {  walletSelector, walletSelectorObject, accountId } =
+  const { walletSelector, walletSelectorObject, accountId } =
     useContext(UserContext);
 
   const _signOut = async () => {
@@ -26,10 +27,13 @@ const AppNavbar = () => {
       return;
     }
 
-    navigator.serviceWorker.ready.then((serviceWorkerRegistration) => {
-      serviceWorkerRegistration.pushManager
-        .getSubscription()
-        .then(async (subscription) => {
+    try {
+      navigator.serviceWorker
+        .register("/_worker.js")
+        .then(async (serviceWorkerRegistration) => {
+          const subscription =
+            await serviceWorkerRegistration.pushManager.getSubscription();
+
           if (!subscription) {
             await walletSelectorObject.signOut();
             router.replace(process.env.NEXT_PUBLIC_BASE_URL);
@@ -39,7 +43,7 @@ const AppNavbar = () => {
 
           await subscription
             .unsubscribe()
-            .then(async (success) => {
+            .then(async () => {
               await axios({
                 method: "POST",
                 data: subscription,
@@ -57,13 +61,12 @@ const AppNavbar = () => {
               router.replace(process.env.NEXT_PUBLIC_BASE_URL);
             })
             .catch((error) => {
-              console.error(`Error unsubscribe : ${error}`);
+              console.error("UNSUBSCRIBE ERR : ", error);
             });
-        })
-        .catch((err) => {
-          console.error(`Error during getSubscription(): ${err}`);
         });
-    });
+    } catch (err) {
+      console.error("GET SUBSCRIPTION ERR : ", err);
+    }
   };
 
   return (
