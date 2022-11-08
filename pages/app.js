@@ -27,18 +27,17 @@ const ModalEnum = {
 const App = () => {
   const router = useRouter();
   const {
-    walletConnection,
     account,
     walletSelector,
     walletSelectorObject,
     accountId,
   } = useContext(UserContext);
 
-  const [isToken, setIsToken] = useState(false);
+  const [isToken, setIsToken] = useState(router.query?.tokenId ? true : false);
   const [isEmail, setIsEmail] = useState(false);
   const [isPush, setIsPush] = useState(true);
   const [isValid, setIsValid] = useState(false);
-  const [contractId, setContractId] = useState(null);
+  const [contractId, setContractId] = useState(router.query?.contractId || null);
   const [tokenId, setTokenId] = useState(null);
   const [contractResult, setContractResult] = useState({});
   const [isImageLoading, setIsImageLoading] = useState(false);
@@ -48,13 +47,18 @@ const App = () => {
   const [showModal, setShowModal] = useState(null);
   const [isAutoBuy, setIsAutoBuy] = useState(false);
   const [autoBuyDeposit, setAutoBuyDeposit] = useState(null);
-  const [isAgree, setIsAgree] = useState(false);
 
   useEffect(() => {
     if (!walletSelector.isSignedIn()) {
       router.replace("/");
     }
   }, [walletSelector]);
+
+  useEffect(() => {
+    if (router.query) {
+      console.log(router.query);
+    }
+  }, [router.query]);
 
   const checkContract = async () => {
     try {
@@ -161,7 +165,6 @@ const App = () => {
             headers: {
               authorization: await generateAuth(
                 accountId,
-                walletConnection,
                 walletSelectorObject
               ),
             },
@@ -212,7 +215,6 @@ const App = () => {
               headers: {
                 authorization: await generateAuth(
                   accountId,
-                  walletConnection,
                   walletSelectorObject
                 ),
               },
@@ -376,6 +378,11 @@ const App = () => {
                     name="contractId"
                     className="bg-snipenear-input border-2 border-snipenear text-white rounded-md p-1 pr-10 mr-4"
                     onChange={(e) => setContractId(e.target.value)}
+                    defaultValue={
+                      router.query && router.query.contractId
+                        ? router.query.contractId
+                        : null
+                    }
                   />
                   <button
                     className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
@@ -406,6 +413,11 @@ const App = () => {
                     name="tokenId"
                     className="bg-snipenear-input w-full border-2 border-snipenear text-white rounded-md p-2"
                     onChange={(e) => setTokenId(e.target.value)}
+                    defaultValue={
+                      router.query && router.query.tokenId
+                        ? router.query.tokenId
+                        : null
+                    }
                   />
                 </div>
               )}
@@ -601,6 +613,11 @@ const App = () => {
                     name="contractId"
                     className="bg-snipenear-input border-2 border-snipenear text-white rounded-md p-1 pr-10 mr-4"
                     onChange={(e) => setContractId(e.target.value)}
+                    defaultValue={
+                      router.query && router.query.contractId
+                        ? router.query.contractId
+                        : null
+                    }
                   />
                   <button
                     className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
@@ -637,6 +654,11 @@ const App = () => {
                     name="tokenId"
                     className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
                     onChange={(e) => setTokenId(e.target.value)}
+                    defaultValue={
+                      router.query && router.query.tokenId
+                        ? router.query.tokenId
+                        : null
+                    }
                   />
                 </div>
               )}
@@ -757,8 +779,8 @@ const App = () => {
                 </div>
               )}
               {isAutoBuy && (
-                <div className="flex flex-col gap-y-2 mt-6">
-                  <p className="font-bold text-white text-md text-left md:text-xl">
+                <div className="grid grid-cols-2 gap-x-8 justify-center items-start mt-10">
+                  <p className="text-white text-md text-left md:text-xl">
                     Auto Buy Deposit (NEAR)
                   </p>
                   <input

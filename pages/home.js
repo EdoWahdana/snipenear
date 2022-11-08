@@ -9,10 +9,67 @@ import { generateAuth } from "../config/utils";
 import axios from "axios";
 import { useRouter } from "next/router";
 
+const RecommendedTokens = [
+  {
+    contract_id: "baby.minimous34.testnet",
+    token_id: "37:1",
+    title: "Baby Munky #0024 #1",
+    media:
+      "https://ipfs.io/ipfs/bafkreiaxmuvsvtwa36iklbcb323dix3wmykktdndp7sxqysdsdj4whyi74",
+  },
+  {
+    contract_id: "nft-frontend-simple-mint.blockhead.testnet",
+    token_id: "pandadev.testnet-my-token-1667590458671",
+    title: "First NFT",
+    media:
+      "https://gateway.pinata.cloud/ipfs/QmZBu8PLzLgmaV9RWFjPPihkHTdapSmkAVSEYcDEDFdfcq",
+  },
+  {
+    contract_id: "paras-token-v1.testnet",
+    token_id: "1116:1",
+    title: "Test #1",
+    media:
+      "https://ipfs.fleek.co/ipfs/bafybeiaquqjvebxsnjj6viz5dxudauvnmupujq7sjbvkbqev6t656wq72u",
+  },
+  {
+    contract_id: "gorillashops2.mintspace2.testnet",
+    token_id: "312",
+    title: "Gorilla Shop",
+    media: "https://arweave.net/Cvzyg8eq_OvYCk8WfAzzas2EwPIYns4AA1JW4NG8TDc",
+  },
+  {
+    contract_id: "super.minimous34.testnet",
+    token_id: "2:1",
+    title: "Super Munky #0001 #1",
+    media:
+      "https://ipfs.fleek.co/ipfs/bafkreiammqx274xedukmxuprlctc7vfmwmlkaitcscpsneistgfvkytke4",
+  },
+  {
+    contract_id: "nft-v1.internal.fayyr.testnet",
+    token_id: "token-fef6b853-5a0a-45bd-b1ea-ecd6947618cb_5",
+    title: "Lion!",
+    media:
+      "https://cloudflare-ipfs.com/ipfs/QmcWXfEuQuxQ1Do5v8cBVMSC3faHEdMmuQreHtmnjBo7uG",
+  },
+  {
+    contract_id: "nft.endlesss.testnet",
+    token_id: "f44bc3c0255411ed83c0ffa350072944",
+    title: "Test #1",
+    media:
+      "https://endlesss-dev.fra1.cdn.digitaloceanspaces.com/attachments/avatars/band30560fca25",
+  },
+  {
+    contract_id: "paras-token-v1.testnet",
+    token_id: "1090:1",
+    title: "bot #1",
+    media:
+      "https://ipfs.fleek.co/ipfs/bafkreicqw7dbon4pcmksfiwvvkq6nryvd3swzkp7gaspius45x7cds5kze",
+  },
+];
+
 const Home = () => {
   const router = useRouter();
   const {
-    walletConnection,
     walletSelector,
     walletSelectorObject,
     accountId,
@@ -21,23 +78,15 @@ const Home = () => {
 
   const _signIn = async () => {
     signInModal.show();
-
-    // await walletConnection.requestSignIn(
-    //   process.env.NEXT_PUBLIC_CONTRACT_ID,
-    //   "SnipeNear",
-    //   `${process.env.NEXT_PUBLIC_BASE_URL}?successLogin=${new Date().getTime()}`
-    // );
   };
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
-      if (router.query.successLogin) {
-        setup();
-      }
+      setup();
     } else {
       console.error("Service worker not supported");
     }
-  }, [router, walletConnection, walletSelector]);
+  }, [router, walletSelector]);
 
   const setup = async () => {
     if (!walletSelector.isSignedIn()) {
@@ -45,39 +94,54 @@ const Home = () => {
     }
 
     try {
-      const register = await navigator.serviceWorker
-        .register("./_worker.js", {
-          scope: "/",
+      navigator.serviceWorker.ready
+        .then(async (serviceWorkerRegistration) => {
+          const currentSubscription =
+            await serviceWorkerRegistration.pushManager.getSubscription();
+
+          if (currentSubscription) {
+            return;
+          }
+
+          const register = await navigator.serviceWorker
+            .register("./_worker.js", {
+              scope: "/",
+            })
+            .catch((err) => {
+              return console.error("Error : ", err);
+            });
+
+          await navigator.serviceWorker.ready;
+
+          //register push
+          console.log("Registering push...");
+
+          const subscription = await register.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(
+              "BMCbH8jWoT-mPUAODqUzCrern-rO1PrhywprUvz21mhSlFBdbvvpyCpRiTBIRaXvBOhsoAIJ3E9XDjt0c0EPL44"
+            ),
+          });
+
+          await axios.post(
+            `${process.env.NEXT_PUBLIC_API}/subscribe-web-push-notification`,
+            subscription,
+            {
+              headers: {
+                authorization: await generateAuth(
+                  accountId,
+                  walletSelectorObject
+                ),
+              },
+            }
+          );
         })
         .catch((err) => {
-          return console.error("Error : ", err);
+          console.error(err);
+        })
+        .finally((res) => {
+          console.log("final : ", res);
         });
-
-      await navigator.serviceWorker.ready;
-
-      //register push
-      console.log("Registering push...");
-
-      const subscription = await register.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          "BMCbH8jWoT-mPUAODqUzCrern-rO1PrhywprUvz21mhSlFBdbvvpyCpRiTBIRaXvBOhsoAIJ3E9XDjt0c0EPL44"
-        ),
-      });
-
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API}/subscribe-web-push-notification`,
-        subscription,
-        {
-          headers: {
-            authorization: await generateAuth(
-              accountId,
-              walletConnection,
-              walletSelectorObject
-            ),
-          },
-        }
-      );
     } catch (err) {
       console.error(err);
     }
@@ -162,7 +226,10 @@ const Home = () => {
                       Sign In
                     </button>
                   )}
-                  <button className="bg-transparent hover:bg-snipenear-dark-hover transition-colors duration-100 border-2 border-snipenear p-4 md:py-4 md:px-10 text-snipenear font-bold text-2xl rounded-lg">
+                  <button
+                    className="bg-transparent hover:bg-snipenear-dark-hover transition-colors duration-100 border-2 border-snipenear p-4 md:py-4 md:px-10 text-snipenear font-bold text-2xl rounded-lg"
+                    onClick={() => {}}
+                  >
                     Learn More
                   </button>
                 </div>
@@ -184,162 +251,44 @@ const Home = () => {
           <div className="w-full md:w-9/12 px-8 md:px-4 ml-auto mr-auto mt-10">
             <div className="w-80 md:w-full mb-10 mx-auto">
               <p className="text-5xl text-white font-poppins font-bold text-center">
-                Hot Collections
+                Recommended NFTs
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
-                <img
-                  src={parseImgUrl(
-                    "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
-                  )}
-                  className="w-20 rounded-full border-4 border-snipenear-dark mx-auto mb-2"
-                />
-                <p className="font-bold">Anti Social Ape Club</p>
-                <div className="flex flex-row gap-x-2 justify-between items-center mt-4 border-t-2 border-white border-opacity-40 p-4">
-                  <div>
-                    <p>Total NFT</p>
-                    <p>3000</p>
-                  </div>
-                  <div>
-                    <p>Total Volume</p>
-                    <p>10000 N</p>
-                  </div>
-                </div>
-              </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
-                <img
-                  src={parseImgUrl(
-                    "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
-                  )}
-                  className="w-20 rounded-full border-4 border-snipenear-dark mx-auto mb-2"
-                />
-                <p>Anti Social Ape Club</p>
-                <div className="flex flex-row gap-x-2 justify-between items-center mt-4 border-t-2 border-white border-opacity-40 p-4">
-                  <div>
-                    <p>Total NFT</p>
-                    <p>3000</p>
-                  </div>
-                  <div>
-                    <p>Total Volume</p>
-                    <p>10000 N</p>
+              {RecommendedTokens.map((token) => (
+                <div
+                  className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4 overflow-ellipsis"
+                  onClick={() => {
+                    router.push({
+                      pathname: "/app",
+                      query: {
+                        contractId: token.contract_id,
+                        tokenId: token.token_id,
+                      },
+                    });
+                  }}
+                >
+                  <img
+                    src={parseImgUrl(token.media)}
+                    className="w-20 border-2 border-snipenear-text mx-auto mb-2"
+                  />
+                  <p className="font-bold">{token.title}</p>
+                  <div className="flex flex-row gap-x-2 justify-between items-center mt-4 border-t-2 border-white border-opacity-40 p-2">
+                    <div className="w-1/2 h-14 overflow-hidden">
+                      <p className="text-xs mb-2">Token Id</p>
+                      <p className="text-sm font-bold truncate">
+                        {token.token_id}
+                      </p>
+                    </div>
+                    <div className="w-1/2 h-14 overflow-hidden">
+                      <p className="text-xs mb-2">Contract Id</p>
+                      <p className="text-sm font-bold truncate">
+                        {token.contract_id}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
-                <img
-                  src={parseImgUrl(
-                    "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
-                  )}
-                  className="w-20 rounded-full border-4 border-snipenear-dark mx-auto mb-2"
-                />
-                <p>Anti Social Ape Club</p>
-                <div className="flex flex-row gap-x-2 justify-between items-center mt-4 border-t-2 border-white border-opacity-40 p-4">
-                  <div>
-                    <p>Total NFT</p>
-                    <p>3000</p>
-                  </div>
-                  <div>
-                    <p>Total Volume</p>
-                    <p>10000 N</p>
-                  </div>
-                </div>
-              </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
-                <img
-                  src={parseImgUrl(
-                    "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
-                  )}
-                  className="w-20 rounded-full border-4 border-snipenear-dark mx-auto mb-2"
-                />
-                <p>Anti Social Ape Club</p>
-                <div className="flex flex-row gap-x-2 justify-between items-center mt-4 border-t-2 border-white border-opacity-40 p-4">
-                  <div>
-                    <p>Total NFT</p>
-                    <p>3000</p>
-                  </div>
-                  <div>
-                    <p>Total Volume</p>
-                    <p>10000 N</p>
-                  </div>
-                </div>
-              </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
-                <img
-                  src={parseImgUrl(
-                    "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
-                  )}
-                  className="w-20 rounded-full border-4 border-snipenear-dark mx-auto mb-2"
-                />
-                <p>Anti Social Ape Club</p>
-                <div className="flex flex-row gap-x-2 justify-between items-center mt-4 border-t-2 border-white border-opacity-40 p-4">
-                  <div>
-                    <p>Total NFT</p>
-                    <p>3000</p>
-                  </div>
-                  <div>
-                    <p>Total Volume</p>
-                    <p>10000 N</p>
-                  </div>
-                </div>
-              </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
-                <img
-                  src={parseImgUrl(
-                    "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
-                  )}
-                  className="w-20 rounded-full border-4 border-snipenear-dark mx-auto mb-2"
-                />
-                <p>Anti Social Ape Club</p>
-                <div className="flex flex-row gap-x-2 justify-between items-center mt-4 border-t-2 border-white border-opacity-40 p-4">
-                  <div>
-                    <p>Total NFT</p>
-                    <p>3000</p>
-                  </div>
-                  <div>
-                    <p>Total Volume</p>
-                    <p>10000 N</p>
-                  </div>
-                </div>
-              </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
-                <img
-                  src={parseImgUrl(
-                    "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
-                  )}
-                  className="w-20 rounded-full border-4 border-snipenear-dark mx-auto mb-2"
-                />
-                <p>Anti Social Ape Club</p>
-                <div className="flex flex-row gap-x-2 justify-between items-center mt-4 border-t-2 border-white border-opacity-40 p-4">
-                  <div>
-                    <p>Total NFT</p>
-                    <p>30000</p>
-                  </div>
-                  <div>
-                    <p>Total Volume</p>
-                    <p>1000000 N</p>
-                  </div>
-                </div>
-              </div>
-              <div className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4">
-                <img
-                  src={parseImgUrl(
-                    "bafkreihbekral363uaxi7whursbexozrkz72jggl6rymxeg5jh2u6mr4om"
-                  )}
-                  className="w-20 rounded-full border-4 border-snipenear-dark mx-auto mb-2"
-                />
-                <p>Anti Social Ape Club</p>
-                <div className="flex flex-row gap-x-2 justify-between items-center mt-4 border-t-2 border-white border-opacity-40 p-4">
-                  <div>
-                    <p>Total NFT</p>
-                    <p>10000</p>
-                  </div>
-                  <div>
-                    <p>Total Volume</p>
-                    <p>1000000 N</p>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>

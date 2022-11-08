@@ -7,6 +7,7 @@ import {
 } from "near-api-js";
 import getConfig from "./near";
 import { Base64 } from "js-base64";
+import sha256 from 'js-sha256';
 
 const nearConfig = getConfig(process.env.NODE_ENV || "development");
 
@@ -54,11 +55,7 @@ export function login() {
   window.walletConnection.requestSignIn(nearConfig.contractName);
 }
 
-export async function generateAuth(accountId, wallet, walletSelector) {
-  if (!wallet) {
-    return null;
-  }
-
+export async function generateAuth(accountId, walletSelector) {
   if (!walletSelector) {
     return null;
   }
@@ -68,16 +65,15 @@ export async function generateAuth(accountId, wallet, walletSelector) {
   }
 
   try {
-    const signer = new InMemorySigner(wallet._keyStore);
     const arr = new Array(accountId);
     for (var i = 0; i < accountId.length; i++) {
       arr[i] = accountId.charCodeAt(i);
     }
     const msgBuf = new Uint8Array(arr);
-    const signedMsg = await signer.signMessage(
+    const signedMsg = await signMessage(
       msgBuf,
-      wallet._authData.accountId,
-      wallet._networkId
+      accountId,
+      process.env.NEXT_PUBLIC_APP_ENV
     );
     const pubKey = Buffer.from(signedMsg.publicKey.data).toString("hex");
     const signature = Buffer.from(signedMsg.signature).toString("hex");
@@ -86,5 +82,23 @@ export async function generateAuth(accountId, wallet, walletSelector) {
     return _authToken;
   } catch (err) {
     return null;
+  }
+
+  async function signMessage(
+    message,
+    accountId,
+    networkId
+  ) {
+    const _keyStore = new keyStores.BrowserLocalStorageKeyStore()
+
+    const hash = new Uint8Array(sha256.sha256.array(message));
+    if (!accountId) {
+      throw new Error("InMemorySigner requires provided account id");
+    }
+    const keyPair = await _keyStore.getKey(networkId, accountId);
+    if (keyPair === null) {
+      throw new Error(`Key for ${accountId} not found in ${networkId}`);
+    }
+    return keyPair.sign(hash);
   }
 }

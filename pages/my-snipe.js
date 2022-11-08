@@ -20,7 +20,7 @@ const ModalEnum = {
 
 const MySnipe = () => {
   const router = useRouter();
-  const { walletConnection, walletSelector, walletSelectorObject, accountId } =
+  const { walletSelector, walletSelectorObject, accountId } =
     useContext(UserContext);
 
   const [isToken, setIsToken] = useState(false);
@@ -62,7 +62,6 @@ const MySnipe = () => {
       headers: {
         authorization: await generateAuth(
           accountId,
-          walletConnection,
           walletSelectorObject
         ),
       },
@@ -108,7 +107,6 @@ const MySnipe = () => {
         headers: {
           authorization: await generateAuth(
             accountId,
-            walletConnection,
             walletSelectorObject
           ),
         },

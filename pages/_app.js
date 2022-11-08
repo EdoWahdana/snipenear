@@ -17,11 +17,6 @@ const THIRTY_TGAS = "30000000000000";
 const NO_DEPOSIT = "0";
 
 export default function MyApp({ Component, pageProps }) {
-  const [walletConnection, setWalletConnection] = useState({});
-  const [contract, setContract] = useState({});
-  const [near, setNear] = useState({});
-  const [account, setAccount] = useState({});
-  const [init, setInit] = useState(false);
   const [walletSelector, setWalletSelector] = useState({});
   const [initWalletSelector, setInitWalletSelector] = useState(false);
   const [accountId, setAccountId] = useState(null);
@@ -55,47 +50,8 @@ export default function MyApp({ Component, pageProps }) {
     return { selector, wallet, accountIdWallet, modal };
   };
 
-  const _initContract = async () => {
-    const nearConfig = getConfig("testnet");
-
-    const near = await nearAPI.connect({
-      keyStore: new nearAPI.keyStores.BrowserLocalStorageKeyStore(),
-      ...nearConfig,
-    });
-
-    const walletConnection = new nearAPI.WalletConnection(near);
-
-    const account = await near.account("testingdo.testnet");
-
-    const contract = await new nearAPI.Contract(
-      walletConnection.account(),
-      nearConfig.contractName,
-      {
-        viewMethods: [],
-        changeMethods: [],
-        sender: walletConnection.getAccountId(),
-      }
-    );
-
-    return { walletConnection, contract, near, account };
-  };
-
   useEffect(() => {
-    if (!init) {
-      _initContract().then(({ walletConnection, contract, near, account }) => {
-        setWalletConnection(walletConnection);
-        setContract(contract);
-        setNear(near);
-        setAccount(account);
-        setInit(true);
-      });
-    }
-
     if (!initWalletSelector) {
-      _initContract().then(({ walletConnection }) => {
-        setWalletConnection(walletConnection);
-      });
-
       _initWallet().then(({ selector, wallet, accountIdWallet, modal }) => {
         setWalletSelector(selector);
         setWalletSelectorObject(wallet);
@@ -104,7 +60,7 @@ export default function MyApp({ Component, pageProps }) {
         setInitWalletSelector(true);
       });
     }
-  }, [walletConnection, walletSelector]);
+  }, [walletSelector]);
 
   return (
     <React.Fragment>
@@ -116,10 +72,6 @@ export default function MyApp({ Component, pageProps }) {
       </Head>
       <UserContext.Provider
         value={{
-          walletConnection: walletConnection,
-          contract: contract,
-          near: near,
-          account: account,
           walletSelector: walletSelector,
           walletSelectorObject: walletSelectorObject,
           accountId: accountId,

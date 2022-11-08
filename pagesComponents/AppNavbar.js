@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 const AppNavbar = () => {
   const router = useRouter();
   const [openNavbar, setOpenNavbar] = useState(false);
-  const { walletConnection, walletSelector, walletSelectorObject, accountId } =
+  const {  walletSelector, walletSelectorObject, accountId } =
     useContext(UserContext);
 
   const _signOut = async () => {
@@ -47,7 +47,6 @@ const AppNavbar = () => {
                 headers: {
                   authorization: await generateAuth(
                     accountId,
-                    walletConnection,
                     walletSelectorObject
                   ),
                 },
