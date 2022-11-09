@@ -185,7 +185,6 @@ const App = () => {
             headers: {
               authorization: await generateAuth(
                 accountId,
-                walletSelectorObject
               ),
             },
           }
@@ -245,7 +244,6 @@ const App = () => {
               headers: {
                 authorization: await generateAuth(
                   accountId,
-                  walletSelectorObject
                 ),
               },
             }
@@ -267,11 +265,11 @@ const App = () => {
 
   return (
     <>
-      <Header title="SnipeNear | App" />
+      <Header title="EverSnipe | App" />
       <AppNavbar />
 
       {/* Mobile Section */}
-      <section className="grid md:hidden header relative items-start bg-snipenear-bg">
+      <section className="grid md:hidden header relative items-start bg-eversnipe-bg">
         <div className="grid grid-cols-1 gap-x-2 mx-auto">
           <div
             className="container w-full md:w-1/3"
@@ -286,7 +284,7 @@ const App = () => {
                 <p className="text-white font-bold text-2xl text-center mb-2">
                   Preview
                 </p>
-                <div className="flex flex-col gap-y-4 w-full md:w-96 h-[350px] bg-snipenear-input rounded-lg overflow-y-auto p-4">
+                <div className="flex flex-col gap-y-4 w-full md:w-96 h-[350px] bg-eversnipe-input rounded-lg overflow-y-auto p-4">
                   {typeof contractResult === "string" && (
                     <p className="text-white text-md font-bold mx-auto">
                       {contractResult}
@@ -306,7 +304,7 @@ const App = () => {
                         <img
                           src={contractResult.metadata?.icon}
                           width={100}
-                          className="mx-auto border-4 border-snipenear rounded-lg"
+                          className="mx-auto border-4 border-eversnipe rounded-lg"
                         />
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Contract Id</p>
@@ -365,7 +363,7 @@ const App = () => {
                             src={`${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`}
                             width={100}
                             alt="NFT Image"
-                            className="mx-auto border-4 border-snipenear rounded-lg"
+                            className="mx-auto border-4 border-eversnipe rounded-lg"
                             onLoad={() => setIsImageLoading(false)}
                           />
                         )}
@@ -406,7 +404,7 @@ const App = () => {
                 <div className="inline-flex">
                   <input
                     name="contractId"
-                    className="bg-snipenear-input border-2 border-snipenear text-white rounded-md p-1 pr-10 mr-4"
+                    className="bg-eversnipe-input border-2 border-eversnipe text-white rounded-md p-1 pr-10 mr-4"
                     onChange={(e) => setContractId(e.target.value)}
                     defaultValue={
                       router.query && router.query.contractId
@@ -415,7 +413,7 @@ const App = () => {
                     }
                   />
                   <button
-                    className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                    className="inline-flex gap-x-2 justify-center items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
                     onClick={() => {
                       setIsToken(!isToken);
                       setTokenId(null);
@@ -428,7 +426,7 @@ const App = () => {
                     ) : (
                       <IconCheck size={25} color={"#5C4A50"} />
                     )}
-                    <p className="text-snipenear-text text-sm font-bold">
+                    <p className="text-eversnipe-text text-sm font-bold">
                       Snipe Token?
                     </p>
                   </button>
@@ -441,7 +439,7 @@ const App = () => {
                   </p>
                   <input
                     name="tokenId"
-                    className="bg-snipenear-input w-full border-2 border-snipenear text-white rounded-md p-2"
+                    className="bg-eversnipe-input w-full border-2 border-eversnipe text-white rounded-md p-2"
                     onChange={(e) => setTokenId(e.target.value)}
                     defaultValue={
                       router.query && router.query.tokenId
@@ -457,7 +455,7 @@ const App = () => {
                 </p>
                 <input
                   type={"number"}
-                  className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
+                  className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
                   onChange={(e) => setPrice(e.target.value)}
                   autoComplete={"off"}
                   style={{ WebkitAppearance: "none", margin: 0 }}
@@ -467,24 +465,24 @@ const App = () => {
                 <p className="font-bold text-white text-md text-left md:text-xl">
                   Settings
                 </p>
-                <div className="flex flex-col gap-y-4 w-full md:w-[230px] bg-snipenear-input rounded-lg p-4">
+                <div className="flex flex-col gap-y-4 w-full md:w-[230px] bg-eversnipe-input rounded-lg p-4">
                   {isEmail ? (
                     <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                      className="inline-flex gap-x-2 justify-start items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
                       onClick={() => setIsEmail(!isEmail)}
                     >
                       <IconChecked size={25} />
-                      <p className="text-snipenear-text text-sm font-bold">
+                      <p className="text-eversnipe-text text-sm font-bold">
                         Email Notification
                       </p>
                     </button>
                   ) : (
                     <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-snipenear hover:bg-snipenear hover:bg-opacity-20 rounded-lg p-2"
+                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-eversnipe hover:bg-eversnipe hover:bg-opacity-20 rounded-lg p-2"
                       onClick={() => setIsEmail(!isEmail)}
                     >
                       <IconCheck size={20} color={"#CCA8B4"} />
-                      <p className="text-snipenear text-sm font-bold">
+                      <p className="text-eversnipe text-sm font-bold">
                         Email Notification
                       </p>
                     </button>
@@ -492,21 +490,21 @@ const App = () => {
 
                   {isPush ? (
                     <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                      className="inline-flex gap-x-2 justify-start items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
                       onClick={() => setIsPush(!isPush)}
                     >
                       <IconChecked size={25} />
-                      <p className="text-snipenear-text text-sm font-bold">
+                      <p className="text-eversnipe-text text-sm font-bold">
                         Push Notification
                       </p>
                     </button>
                   ) : (
                     <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-snipenear hover:bg-snipenear hover:bg-opacity-20 rounded-lg p-2"
+                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-eversnipe hover:bg-eversnipe hover:bg-opacity-20 rounded-lg p-2"
                       onClick={() => setIsPush(!isPush)}
                     >
                       <IconCheck size={20} color={"#CCA8B4"} />
-                      <p className="text-snipenear text-sm font-bold">
+                      <p className="text-eversnipe text-sm font-bold">
                         Push Notification
                       </p>
                     </button>
@@ -514,21 +512,21 @@ const App = () => {
 
                   {isAutoBuy ? (
                     <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                      className="inline-flex gap-x-2 justify-start items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
                       onClick={() => setIsAutoBuy(!isAutoBuy)}
                     >
                       <IconChecked size={25} />
-                      <p className="text-snipenear-text text-sm font-bold">
+                      <p className="text-eversnipe-text text-sm font-bold">
                         Auto Buy
                       </p>
                     </button>
                   ) : (
                     <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-snipenear hover:bg-snipenear hover:bg-opacity-20 rounded-lg p-2"
+                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-eversnipe hover:bg-eversnipe hover:bg-opacity-20 rounded-lg p-2"
                       onClick={() => setIsAutoBuy(!isAutoBuy)}
                     >
                       <IconCheck size={20} color={"#CCA8B4"} />
-                      <p className="text-snipenear text-sm font-bold">
+                      <p className="text-eversnipe text-sm font-bold">
                         Auto Buy
                       </p>
                     </button>
@@ -543,7 +541,7 @@ const App = () => {
                   <input
                     name="email"
                     type={"email"}
-                    className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
+                    className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
@@ -556,7 +554,7 @@ const App = () => {
                   <input
                     name="autoBuyDeposit"
                     type={"number"}
-                    className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
+                    className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
                     onChange={(e) => setAutoBuyDeposit(e.target.value)}
                     placeholder="10, 20, 30"
                   />
@@ -575,20 +573,20 @@ const App = () => {
               <div className="inline-flex gap-x-4 mb-10">
                 {contractId !== null && contractId !== "" ? (
                   <button
-                    className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg py-2 mt-10"
+                    className="inline-flex gap-x-2 justify-center items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg py-2 mt-10"
                     onClick={
                       isToken && tokenId !== ""
                         ? checkTokenContract
                         : checkContract
                     }
                   >
-                    <p className="text-snipenear-text text-sm font-bold py-1 px-10">
+                    <p className="text-eversnipe-text text-sm font-bold py-1 px-10">
                       Check
                     </p>
                   </button>
                 ) : (
-                  <button className="inline-flex gap-x-2 justify-center items-center bg-snipenear bg-opacity-20 cursor-not-allowed rounded-lg py-2 mt-10">
-                    <p className="text-snipenear-text text-sm font-bold py-1 px-10">
+                  <button className="inline-flex gap-x-2 justify-center items-center bg-eversnipe bg-opacity-20 cursor-not-allowed rounded-lg py-2 mt-10">
+                    <p className="text-eversnipe-text text-sm font-bold py-1 px-10">
                       Check
                     </p>
                   </button>
@@ -596,16 +594,16 @@ const App = () => {
 
                 {isValid ? (
                   <button
-                    className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg py-2 mt-10"
+                    className="inline-flex gap-x-2 justify-center items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg py-2 mt-10"
                     onClick={snipe}
                   >
-                    <p className="text-snipenear-text text-sm font-bold py-1 px-10">
+                    <p className="text-eversnipe-text text-sm font-bold py-1 px-10">
                       Snipe
                     </p>
                   </button>
                 ) : (
-                  <button className="inline-flex gap-x-2 justify-center items-center bg-snipenear bg-opacity-20 cursor-not-allowed rounded-lg py-2 mt-10">
-                    <p className="text-snipenear-text text-sm font-bold py-1 px-10">
+                  <button className="inline-flex gap-x-2 justify-center items-center bg-eversnipe bg-opacity-20 cursor-not-allowed rounded-lg py-2 mt-10">
+                    <p className="text-eversnipe-text text-sm font-bold py-1 px-10">
                       Snipe
                     </p>
                   </button>
@@ -641,7 +639,7 @@ const App = () => {
                 <div className="inline-flex">
                   <input
                     name="contractId"
-                    className="bg-snipenear-input border-2 border-snipenear text-white rounded-md p-1 pr-10 mr-4"
+                    className="bg-eversnipe-input border-2 border-eversnipe text-white rounded-md p-1 pr-10 mr-4"
                     onChange={(e) => setContractId(e.target.value)}
                     defaultValue={
                       router.query && router.query.contractId
@@ -650,7 +648,7 @@ const App = () => {
                     }
                   />
                   <button
-                    className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                    className="inline-flex gap-x-2 justify-center items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
                     onClick={() => {
                       setIsToken(!isToken);
                       setTokenId(null);
@@ -663,7 +661,7 @@ const App = () => {
                     ) : (
                       <IconCheck size={25} color={"#5C4A50"} />
                     )}
-                    <p className="text-snipenear-text text-sm font-bold">
+                    <p className="text-eversnipe-text text-sm font-bold">
                       Snipe Token?
                     </p>
                   </button>
@@ -682,7 +680,7 @@ const App = () => {
                   </p>
                   <input
                     name="tokenId"
-                    className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
+                    className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
                     onChange={(e) => setTokenId(e.target.value)}
                     defaultValue={
                       router.query && router.query.tokenId
@@ -705,7 +703,7 @@ const App = () => {
                 <input
                   name="price"
                   type={"number"}
-                  className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
+                  className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
                   onChange={(e) => setPrice(e.target.value)}
                   autoComplete={"off"}
                   style={{ WebkitAppearance: "none", margin: 0 }}
@@ -721,24 +719,24 @@ const App = () => {
                 >
                   Notification
                 </p>
-                <div className="flex flex-col gap-y-4 w-full md:w-[230px] bg-snipenear-input rounded-lg p-4">
+                <div className="flex flex-col gap-y-4 w-full md:w-[230px] bg-eversnipe-input rounded-lg p-4">
                   {isEmail ? (
                     <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                      className="inline-flex gap-x-2 justify-start items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
                       onClick={() => setIsEmail(!isEmail)}
                     >
                       <IconChecked size={25} />
-                      <p className="text-snipenear-text text-sm font-bold">
+                      <p className="text-eversnipe-text text-sm font-bold">
                         Email Notification
                       </p>
                     </button>
                   ) : (
                     <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-snipenear hover:bg-snipenear hover:bg-opacity-20 rounded-lg p-2"
+                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-eversnipe hover:bg-eversnipe hover:bg-opacity-20 rounded-lg p-2"
                       onClick={() => setIsEmail(!isEmail)}
                     >
                       <IconCheck size={20} color={"#CCA8B4"} />
-                      <p className="text-snipenear text-sm font-bold">
+                      <p className="text-eversnipe text-sm font-bold">
                         Email Notification
                       </p>
                     </button>
@@ -746,21 +744,21 @@ const App = () => {
 
                   {isPush ? (
                     <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                      className="inline-flex gap-x-2 justify-start items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
                       onClick={() => setIsPush(!isPush)}
                     >
                       <IconChecked size={25} />
-                      <p className="text-snipenear-text text-sm font-bold">
+                      <p className="text-eversnipe-text text-sm font-bold">
                         Push Notification
                       </p>
                     </button>
                   ) : (
                     <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-snipenear hover:bg-snipenear hover:bg-opacity-20 rounded-lg p-2"
+                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-eversnipe hover:bg-eversnipe hover:bg-opacity-20 rounded-lg p-2"
                       onClick={() => setIsPush(!isPush)}
                     >
                       <IconCheck size={20} color={"#CCA8B4"} />
-                      <p className="text-snipenear text-sm font-bold">
+                      <p className="text-eversnipe text-sm font-bold">
                         Push Notification
                       </p>
                     </button>
@@ -768,21 +766,21 @@ const App = () => {
 
                   {isAutoBuy ? (
                     <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-snipenear hover:bg-snipenear-hover rounded-lg p-2"
+                      className="inline-flex gap-x-2 justify-start items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
                       onClick={() => setIsAutoBuy(!isAutoBuy)}
                     >
                       <IconChecked size={25} />
-                      <p className="text-snipenear-text text-sm font-bold">
+                      <p className="text-eversnipe-text text-sm font-bold">
                         Auto Buy
                       </p>
                     </button>
                   ) : (
                     <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-snipenear hover:bg-snipenear hover:bg-opacity-20 rounded-lg p-2"
+                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-eversnipe hover:bg-eversnipe hover:bg-opacity-20 rounded-lg p-2"
                       onClick={() => setIsAutoBuy(!isAutoBuy)}
                     >
                       <IconCheck size={20} color={"#CCA8B4"} />
-                      <p className="text-snipenear text-sm font-bold">
+                      <p className="text-eversnipe text-sm font-bold">
                         Auto Buy
                       </p>
                     </button>
@@ -803,7 +801,7 @@ const App = () => {
                   <input
                     name="email"
                     type={"email"}
-                    className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
+                    className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
@@ -816,7 +814,7 @@ const App = () => {
                   <input
                     name="autoBuyDeposit"
                     type={"number"}
-                    className="bg-snipenear-input w-full md:w-[230px] border-2 border-snipenear text-white rounded-md p-2"
+                    className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
                     onChange={(e) => setAutoBuyDeposit(e.target.value)}
                     placeholder="10, 20, 30"
                   />
@@ -825,20 +823,20 @@ const App = () => {
               <div className="inline-flex gap-x-4">
                 {contractId !== null && contractId !== "" ? (
                   <button
-                    className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg py-2 mt-10"
+                    className="inline-flex gap-x-2 justify-center items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg py-2 mt-10"
                     onClick={
                       isToken && tokenId !== ""
                         ? checkTokenContract
                         : checkContract
                     }
                   >
-                    <p className="text-snipenear-text text-sm font-bold py-1 px-10">
+                    <p className="text-eversnipe-text text-sm font-bold py-1 px-10">
                       Check
                     </p>
                   </button>
                 ) : (
-                  <button className="inline-flex gap-x-2 justify-center items-center bg-snipenear bg-opacity-20 cursor-not-allowed rounded-lg py-2 mt-10">
-                    <p className="text-snipenear-text text-sm font-bold py-1 px-10">
+                  <button className="inline-flex gap-x-2 justify-center items-center bg-eversnipe bg-opacity-20 cursor-not-allowed rounded-lg py-2 mt-10">
+                    <p className="text-eversnipe-text text-sm font-bold py-1 px-10">
                       Check
                     </p>
                   </button>
@@ -846,16 +844,16 @@ const App = () => {
 
                 {isValid ? (
                   <button
-                    className="inline-flex gap-x-2 justify-center items-center bg-snipenear hover:bg-snipenear-hover rounded-lg py-2 mt-10"
+                    className="inline-flex gap-x-2 justify-center items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg py-2 mt-10"
                     onClick={snipe}
                   >
-                    <p className="text-snipenear-text text-sm font-bold py-1 px-10">
+                    <p className="text-eversnipe-text text-sm font-bold py-1 px-10">
                       Snipe
                     </p>
                   </button>
                 ) : (
-                  <button className="inline-flex gap-x-2 justify-center items-center bg-snipenear bg-opacity-20 cursor-not-allowed rounded-lg py-2 mt-10">
-                    <p className="text-snipenear-text text-sm font-bold py-1 px-10">
+                  <button className="inline-flex gap-x-2 justify-center items-center bg-eversnipe bg-opacity-20 cursor-not-allowed rounded-lg py-2 mt-10">
+                    <p className="text-eversnipe-text text-sm font-bold py-1 px-10">
                       Snipe
                     </p>
                   </button>
@@ -867,7 +865,7 @@ const App = () => {
             <div className="w-5/12 px-8 md:px-4">
               <div className="mt-36">
                 <p className="text-white text-2xl text-left mb-2">Preview</p>
-                <div className="flex flex-col gap-y-4 w-full md:w-96 h-96 bg-snipenear-input rounded-lg overflow-y-auto p-4">
+                <div className="flex flex-col gap-y-4 w-full md:w-96 h-96 bg-eversnipe-input rounded-lg overflow-y-auto p-4">
                   {typeof contractResult === "string" && (
                     <p className="text-white text-md font-bold mx-auto">
                       {contractResult}
@@ -887,7 +885,7 @@ const App = () => {
                         <img
                           src={contractResult.metadata?.icon}
                           width={100}
-                          className="mx-auto border-4 border-snipenear rounded-lg"
+                          className="mx-auto border-4 border-eversnipe rounded-lg"
                         />
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Contract Id</p>
@@ -946,7 +944,7 @@ const App = () => {
                             src={`${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`}
                             width={100}
                             alt="NFT Image"
-                            className="mx-auto border-4 border-snipenear rounded-lg"
+                            className="mx-auto border-4 border-eversnipe rounded-lg"
                             onLoad={() => setIsImageLoading(false)}
                           />
                         )}

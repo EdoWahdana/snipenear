@@ -82,7 +82,7 @@ const Home = () => {
     } else {
       console.error("Service worker not supported");
     }
-  }, [router, walletSelector]);
+  }, [walletSelector]);
 
   const setup = async () => {
     if (!walletSelector.isSignedIn()) {
@@ -117,7 +117,6 @@ const Home = () => {
               headers: {
                 authorization: await generateAuth(
                   accountId,
-                  walletSelectorObject
                 ),
               },
             }
@@ -148,7 +147,7 @@ const Home = () => {
 
   return (
     <>
-      <Header title="SnipeNear" />
+      <Header title="EverSnipe" />
       <IndexNavbar />
 
       <section
@@ -189,7 +188,7 @@ const Home = () => {
                     }}
                   >
                     Have you ever missed getting your most wanted NFT? Worry no
-                    more, SnipeNear will notify every update on an NFT or a
+                    more, EverSnipe will notify every update on an NFT or a
                     Collection in every marketplace using our blazingly fast and
                     most reliable indexer.
                   </p>
@@ -198,20 +197,20 @@ const Home = () => {
                 <div className="flex flex-row justify-start gap-x-4">
                   {walletSelector.isSignedIn() ? (
                     <Link href="/app" replace={true}>
-                      <button className="bg-snipenear hover:bg-snipenear-hover transition-colors duration-100 p-2 md:py-4 md:px-10 text-snipenear-dark font-extrabold text-2xl rounded-lg">
+                      <button className="bg-eversnipe hover:bg-eversnipe-hover transition-colors duration-100 p-2 md:py-4 md:px-10 text-eversnipe-dark font-extrabold text-2xl rounded-lg">
                         Launch App
                       </button>
                     </Link>
                   ) : (
                     <button
-                      className="bg-snipenear hover:bg-snipenear-hover transition-colors duration-100 p-4 md:py-4 md:px-10 text-snipenear-dark font-extrabold text-2xl rounded-lg"
+                      className="bg-eversnipe hover:bg-eversnipe-hover transition-colors duration-100 p-4 md:py-4 md:px-10 text-eversnipe-dark font-extrabold text-2xl rounded-lg"
                       onClick={_signIn}
                     >
                       Sign In
                     </button>
                   )}
                   <button
-                    className="bg-transparent hover:bg-snipenear-dark-hover transition-colors duration-100 border-2 border-snipenear p-4 md:py-4 md:px-10 text-snipenear font-bold text-2xl rounded-lg"
+                    className="bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-4 md:py-4 md:px-10 text-eversnipe font-bold text-2xl rounded-lg"
                     onClick={() => {}}
                   >
                     Learn More
@@ -242,7 +241,7 @@ const Home = () => {
               {RecommendedTokens.map((token, index) => (
                 <div
                   key={index}
-                  className="text-white cursor-pointer bg-snipenear transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4 overflow-ellipsis"
+                  className="text-white cursor-pointer bg-eversnipe transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4 overflow-ellipsis"
                   onClick={() => {
                     router.push({
                       pathname: "/app",
@@ -255,7 +254,7 @@ const Home = () => {
                 >
                   <img
                     src={parseImgUrl(token.media)}
-                    className="w-20 border-2 border-snipenear-text mx-auto mb-2"
+                    className="w-20 border-2 border-eversnipe-text mx-auto mb-2"
                   />
                   <p className="font-bold">{token.title}</p>
                   <div className="flex flex-row gap-x-2 justify-between items-center mt-4 border-t-2 border-white border-opacity-40 p-2">

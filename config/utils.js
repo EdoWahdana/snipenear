@@ -56,11 +56,7 @@ export function login() {
   window.walletConnection.requestSignIn(nearConfig.contractName);
 }
 
-export async function generateAuth(accountId, walletSelector) {
-  if (!walletSelector) {
-    return null;
-  }
-
+export async function generateAuth(accountId) {
   if (!accountId) {
     return null;
   }

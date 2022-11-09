@@ -13,9 +13,9 @@ const SnipeInfoModal = ({ isShow, data, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-20 overflow-y-auto bg-black bg-opacity-50">
-      <div className="flex min-h-full items-center md:items-end justify-center p-4 text-center sm:items-center">
-        <div className="relative transform overflow-hidden rounded-lg bg-snipenear-input">
-          <div className="bg-snipenear-input p-4">
+      <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center">
+        <div className="relative transform overflow-hidden rounded-lg bg-eversnipe-input">
+          <div className="bg-eversnipe-input p-4">
             <div className="sm:flex sm:items-start mb-4">
               <div className="text-center sm:text-left">
                 <h3
@@ -28,10 +28,10 @@ const SnipeInfoModal = ({ isShow, data, onClose }) => {
                   src={
                     data.metadata?.media
                       ? parseImgUrl(data.metadata?.media)
-                      : "./logo-white.png"
+                      : "./logo-white-new.png"
                   }
                   width={100}
-                  className="mx-auto border-4 border-snipenear rounded-lg"
+                  className="mx-auto border-4 border-eversnipe rounded-lg"
                 />
 
                 <div className="my-4">
@@ -67,10 +67,10 @@ const SnipeInfoModal = ({ isShow, data, onClose }) => {
               </div>
             </div>
 
-            <div className="bg-snipenear-input mx-auto">
+            <div className="bg-eversnipe-input mx-auto">
               <button
                 type="button"
-                className="bg-snipenear hover:bg-snipenear-hover text-snipenear-text rounded-lg p-2"
+                className="bg-eversnipe hover:bg-eversnipe-hover text-eversnipe-text rounded-lg p-2"
                 onClick={onClose}
               >
                 Close

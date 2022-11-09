@@ -4,12 +4,12 @@ import Link from "next/link";
 export default function IndexFooter() {
   return (
     <>
-      <footer className="relative bg-snipenear-bg pt-8 pb-6">
+      <footer className="relative bg-eversnipe-bg pt-8 pb-6">
         <div className="container max-w-7xl mx-auto px-4">
           <div className="flex flex-wrap text-center lg:text-left pt-2 md:pt-6">
             <div className="w-full px-4">
               <img
-                src="snipenear-logo-title.png"
+                src="eversnipe-logo-title.png"
                 alt="Material Tailwind Logo"
                 className="w-80 mr-auto md:w-72 md:mx-auto"
               />

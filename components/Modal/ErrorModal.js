@@ -4,8 +4,8 @@ const ErrorModal = ({ onClose }) => {
   return (
     <div className="fixed inset-0 z-20 overflow-y-auto bg-black bg-opacity-50">
       <div className="flex min-h-full items-center md:items-end justify-center p-4 text-center sm:items-center">
-        <div className="relative transform overflow-hidden rounded-lg bg-snipenear-input border-4 border-snipenear">
-          <div className="bg-snipenear-input p-4">
+        <div className="relative transform overflow-hidden rounded-lg bg-eversnipe-input border-4 border-eversnipe">
+          <div className="bg-eversnipe-input p-4">
             <div className="sm:flex sm:items-start mb-4">
               <div className="text-center sm:text-left">
                 <IconError size={100} className="mx-auto mb-4" />
@@ -24,10 +24,10 @@ const ErrorModal = ({ onClose }) => {
               </div>
             </div>
 
-            <div className="bg-snipenear-input mx-auto">
+            <div className="bg-eversnipe-input mx-auto">
               <button
                 type="button"
-                className="bg-snipenear hover:bg-snipenear-hover text-snipenear-text rounded-lg p-2"
+                className="bg-eversnipe hover:bg-eversnipe-hover text-eversnipe-text rounded-lg p-2"
                 onClick={onClose}
               >
                 Close

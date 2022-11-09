@@ -1,12 +1,12 @@
-# SnipeNear
+# EverSnipe 
 
-<div align="center"><img src="./public/logo-white.png" alt="SnipeNear" width="150"/></div>
+<div align="center"><img src="./public/eversnipe-logo-title.png" alt="EverSnipe" width="150"/></div
 
-### SnipeNear
+### EverSnipe 
 
-#### SnipeNear is the most reliable tool to snipe your favorite NFT & Collection.
+#### EverSnipe is the most reliable tool to snipe your favorite NFT & Collection.
 
-Have you ever missed getting your most wanted NFT? Worry no more, SnipeNear will notify every update on an NFT or a Collection in every marketplace using our blazingly fast and most reliable indexer.
+Have you ever missed getting your most wanted NFT? Worry no more, EverSnipe will notify every update on an NFT or a Collection in every marketplace using our blazingly fast and most reliable indexer.
 
 ### Preview
-<div align="center"><img src="./public/preview1.png" alt="SnipeNear" width="1280"/></div>
+<div align="center"><img src="./public/preview1.png" alt="EverSnipe" width="1280"/></div>

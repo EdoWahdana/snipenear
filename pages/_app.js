@@ -64,7 +64,7 @@ export default function MyApp({ Component, pageProps }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#03a9f4" />
-        <title>SnipeNear</title>
+        <title>EverSnipe</title>
       </Head>
       <UserContext.Provider
         value={{

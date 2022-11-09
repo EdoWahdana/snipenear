@@ -11,6 +11,7 @@ import UserContext from "../config/context";
 import NavbarToggler from "components/Navbar/NavbarToggler";
 import { useRouter } from "next/router";
 import axios from "axios";
+import { generateAuth } from "../config/utils";
 
 const AppNavbar = () => {
   const router = useRouter();
@@ -51,7 +52,6 @@ const AppNavbar = () => {
                 headers: {
                   authorization: await generateAuth(
                     accountId,
-                    walletSelectorObject
                   ),
                 },
               });
@@ -76,15 +76,15 @@ const AppNavbar = () => {
           <NavbarBrand color="white">
             <Link href="/" replace={true}>
               <img
-                src="snipenear-logo-title.png"
-                alt="SnipeNear Logo"
+                src="eversnipe-logo-title.png"
+                alt="EverSnipe Logo"
                 className="w-48 mr-auto md:w-72 md:mx-auto cursor-pointer"
               />
             </Link>
           </NavbarBrand>
           <NavbarToggler
             onClick={() => setOpenNavbar(!openNavbar)}
-            color="snipenear"
+            color="eversnipe"
           />
         </NavbarWrapper>
 
@@ -110,7 +110,7 @@ const AppNavbar = () => {
               {walletSelector.isSignedIn() && (
                 <Link href="/">
                   <div className="font-poppins mr-0 md:mr-4" onClick={_signOut}>
-                    <p className="bg-transparent hover:bg-snipenear-dark-hover transition-colors duration-100 border-2 border-snipenear py-2 px-4 text-snipenear font-bold text-lg rounded-lg cursor-pointer">
+                    <p className="bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe py-2 px-4 text-eversnipe font-bold text-lg rounded-lg cursor-pointer">
                       SIGN OUT
                     </p>
                   </div>

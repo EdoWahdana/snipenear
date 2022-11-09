@@ -23,7 +23,7 @@ const colors = {
   purple: "bg-purple-500",
   pink: "bg-pink-500",
   red: "bg-red-500",
-  snipenear: "bg-snipenear",
+  eversnipe: "bg-eversnipe",
 };
 
 const bgHoverColors = {
@@ -47,7 +47,7 @@ const bgHoverColors = {
   purple: "hover:bg-purple-50",
   pink: "hover:bg-pink-50",
   red: "hover:bg-red-50",
-  snipenear: "bg-snipenear",
+  eversnipe: "bg-eversnipe",
 };
 
 export default function NavbarToggler({ color, ripple, ...rest }) {

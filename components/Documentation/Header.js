@@ -7,7 +7,7 @@ export default function Header({ title }) {
   return (
     <Head>
       <title>{title}</title>
-      <link rel="SnipeNear" href="logo-white.png" />
+      <link rel="EverSnipe" href="logo-white-new.png" />
     </Head>
   );
 }
