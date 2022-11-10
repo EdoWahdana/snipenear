@@ -29,15 +29,30 @@ export const parseImgUrl = (imgUrl, defaultValue = "") => {
   return imgUrl;
 };
 
-export const prettyTruncate = (str = '', len = 8, type) => {
-	if (str && str.length > len) {
-		if (type === 'address') {
-			const front = Math.ceil(len / 2)
-			const back = str.length - (len - front)
-			return `${str.slice(0, front)}...${str.slice(back)}`
-		}
-		return `${str.slice(0, len)}...`
-	}
+export const prettyTruncate = (str = "", len = 8, type) => {
+  if (str && str.length > len) {
+    if (type === "address") {
+      const front = Math.ceil(len / 2);
+      const back = str.length - (len - front);
+      return `${str.slice(0, front)}...${str.slice(back)}`;
+    }
+    return `${str.slice(0, len)}...`;
+  }
 
-	return str
+  return str;
+};
+
+export const urlBase64ToUint8Array = (base64String) => {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, "+")
+    .replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
 };

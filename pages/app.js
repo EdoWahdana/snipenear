@@ -23,6 +23,7 @@ import AutobuyModal from "../components/Modal/AutobuyModal";
 import { viewMethod } from "../config/utils";
 import JSBI from "jsbi";
 import SuccessModalAutoBuy from "../components/Modal/SuccessModalAutoBuy";
+import IconLoader from "../components/Icons/IconLoader";
 
 const ModalEnum = {
   successAutoBuy: "SuccessAutoBuy",
@@ -38,7 +39,7 @@ const App = () => {
     useContext(UserContext);
 
   const [isToken, setIsToken] = useState(true);
-  const [isEmail, setIsEmail] = useState(false);
+  const [isEmail, setIsEmail] = useState(true);
   const [isPush, setIsPush] = useState(true);
   const [isValid, setIsValid] = useState(false);
   const [contractId, setContractId] = useState(null);
@@ -51,6 +52,8 @@ const App = () => {
   const [showModal, setShowModal] = useState(null);
   const [isAutoBuy, setIsAutoBuy] = useState(false);
   const [autoBuyDeposit, setAutoBuyDeposit] = useState(null);
+  const [isFetchingMetadata, setIsFetchingMetadata] = useState(false);
+  const [tokenMetadata, setTokenMetadata] = useState(null);
 
   useEffect(() => {
     if (!walletSelector.isSignedIn()) {
@@ -95,44 +98,44 @@ const App = () => {
     }
   };
 
-  const checkContract = async () => {
+  const checkNftSnipe = async () => {
     try {
-      const resMetadata = await viewMethod(contractId, "nft_metadata", {});
-      const resNftSupply = await viewMethod(contractId, "nft_total_supply", {});
+      setIsFetchingMetadata(true);
 
-      const resObject = {
-        metadata: resMetadata,
-        supply: resNftSupply,
-      };
+      const metadataRaw = await axios.get(
+        `${process.env.NEXT_PUBLIC_API}/check-nft`,
+        {
+          params: {
+            contractId: contractId,
+            tokenId: tokenId,
+          },
+        }
+      );
 
-      setIsValid(true);
-      setHasFetching(true);
-      setContractResult(resObject);
-    } catch (err) {
-      setIsValid(false);
-      setContractResult(err.toString());
-    }
-  };
+      setIsFetchingMetadata(false);
 
-  const checkTokenContract = async () => {
-    try {
-      const resMetadata = await viewMethod(contractId, "nft_metadata", {});
-      const resToken = await viewMethod(contractId, "nft_token", {
-        token_id: tokenId,
-      });
-
-      if (resToken.owner_id === accountId) {
-        throw new Error("You cannot snipe your own NFT");
+      if (metadataRaw.data.status === 0) {
+        throw new Error(metadataRaw.data.message);
       }
 
-      const resObject = {
-        metadata: resMetadata,
-        token: resToken,
+      const mediaUrl = metadataRaw.data.data.mediaUrl;
+      const contractMetadata = metadataRaw.data.data.nftMetadata;
+      const nftToken = metadataRaw.data.data.nftToken;
+
+      const contractResultData = {
+        metadata: contractMetadata,
+        token: nftToken,
+        media: mediaUrl,
       };
 
-      setIsValid(true);
+      if (accountId === nftToken.owner_id) {
+        setIsValid(false);
+      } else {
+        setIsValid(true);
+      }
+
       setHasFetching(true);
-      setContractResult(resObject);
+      setContractResult(contractResultData);
     } catch (err) {
       setIsValid(false);
       setContractResult(err.toString());
@@ -147,10 +150,19 @@ const App = () => {
 
       let settings = {};
 
+      if (price && parseFloat(price) < 0) {
+        console.log(parseFloat(price))
+        const errorMessage = 'Alert price must be greater than zero'
+        setContractResult(errorMessage)
+        setIsValid(false)
+
+        return
+      }
+
       const yoctoPrice = utils.format.parseNearAmount(price);
 
       if (isPush) {
-        settings["enableNotificationo"] = true;
+        settings["enablePushNotification"] = true;
       }
       if (isEmail) {
         settings["emailNotification"] = email;
@@ -278,6 +290,14 @@ const App = () => {
                   Preview
                 </p>
                 <div className="flex flex-col gap-y-4 w-full md:w-96 h-[350px] bg-eversnipe-input rounded-lg overflow-y-auto p-4">
+                  {isFetchingMetadata && (
+                    <div>
+                      <IconLoader size={20} colorClassName={"text-snipenear"} />
+                      <p className="text-eversnipe text-md mt-4 text-center font-bold">
+                        Fetching NFT metadata
+                      </p>
+                    </div>
+                  )}
                   {typeof contractResult === "string" && (
                     <p className="text-white text-md font-bold mx-auto">
                       {contractResult}
@@ -285,7 +305,7 @@ const App = () => {
                   )}
 
                   {/* Contract Result */}
-                  {hasFetching &&
+                  {!isFetchingMetadata && hasFetching &&
                     !isToken &&
                     typeof contractResult === "object" &&
                     Object.keys(contractResult).length > 0 && (
@@ -299,6 +319,9 @@ const App = () => {
                           width={100}
                           className="mx-auto border-4 border-eversnipe rounded-lg"
                         />
+                        {contractResult && contractResult.token?.owner_id === accountId && (
+                          <p className='text-red-200 text-sm text-center'>You cannot snipe your own NFT</p>
+                        )}
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Contract Id</p>
                           <p className="text-white text-sm">{contractId}</p>
@@ -325,7 +348,7 @@ const App = () => {
                     )}
 
                   {/* Token Result */}
-                  {hasFetching &&
+                  {!isFetchingMetadata && hasFetching &&
                     isToken &&
                     typeof contractResult === "object" &&
                     !contractResult.token && (
@@ -334,7 +357,7 @@ const App = () => {
                       </p>
                     )}
 
-                  {hasFetching &&
+                  {!isFetchingMetadata && hasFetching &&
                     isToken &&
                     typeof contractResult === "object" &&
                     contractResult.token &&
@@ -346,19 +369,21 @@ const App = () => {
                         <hr />
 
                         {isImageLoading ? (
-                          <p>Loading...</p>
+                          <IconLoader
+                            size={10}
+                            colorClassName={"text-snipenear"}
+                          />
                         ) : (
                           <img
-                            src={
-                              contractResult.metadata?.base_uri
-                                ? `${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`
-                                : `${contractResult.token?.metadata?.media}`
-                            }
+                            src={contractResult.media}
                             width={100}
                             alt="NFT Image"
                             className="mx-auto border-4 border-eversnipe rounded-lg"
                             onLoad={() => setIsImageLoading(false)}
                           />
+                        )}
+                        {contractResult && contractResult.token?.owner_id === accountId && (
+                          <p className='text-red-200 text-sm text-center'>You cannot snipe your own NFT</p>
                         )}
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Token Id</p>
@@ -401,24 +426,6 @@ const App = () => {
                       : null
                   }
                 />
-                {/* <button
-                    className="inline-flex gap-x-2 justify-center items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
-                    onClick={() => {
-                      setIsToken(!isToken);
-                      setTokenId(null);
-                      setHasFetching(false);
-                      setIsValid(false);
-                    }}
-                  >
-                    {isToken ? (
-                      <IconChecked size={25} />
-                    ) : (
-                      <IconCheck size={25} color={"#5C4A50"} />
-                    )}
-                    <p className="text-eversnipe-text text-sm font-bold">
-                      Snipe Token?
-                    </p>
-                  </button> */}
               </div>
               {/* {isToken && ( */}
               <div className="flex flex-col gap-y-2 mt-6">
@@ -452,33 +459,30 @@ const App = () => {
                   style={{ WebkitAppearance: "none", margin: 0 }}
                 />
               </div>
+              {isEmail && (
+                <div className="flex flex-col gap-y-2 mt-6">
+                  <p className="font-bold text-white text-md text-left md:text-xl">
+                    Your Email
+                  </p>
+                  <input
+                    name="email"
+                    type={"email"}
+                    className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+              )}
               <div className="flex flex-col gap-y-2 mt-6">
                 <p className="font-bold text-white text-md text-left md:text-xl">
                   Settings
                 </p>
                 <div className="flex flex-col gap-y-4 w-full md:w-[230px] bg-eversnipe-input rounded-lg p-4">
-                  {isEmail ? (
-                    <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
-                      onClick={() => setIsEmail(!isEmail)}
-                    >
-                      <IconChecked size={25} />
-                      <p className="text-eversnipe-text text-sm font-bold">
-                        Email Notification
-                      </p>
-                    </button>
-                  ) : (
-                    <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-eversnipe hover:bg-eversnipe hover:bg-opacity-20 rounded-lg p-2"
-                      onClick={() => setIsEmail(!isEmail)}
-                    >
-                      <IconCheck size={20} color={"#CCA8B4"} />
-                      <p className="text-eversnipe text-sm font-bold">
-                        Email Notification
-                      </p>
-                    </button>
-                  )}
-
+                  <button className="inline-flex gap-x-2 justify-start items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2">
+                    <IconChecked size={25} />
+                    <p className="text-eversnipe-text text-sm font-bold">
+                      Email Notification
+                    </p>
+                  </button>
                   {isPush ? (
                     <button
                       className="inline-flex gap-x-2 justify-start items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
@@ -524,19 +528,6 @@ const App = () => {
                   )}
                 </div>
               </div>
-              {isEmail && (
-                <div className="flex flex-col gap-y-2 mt-6">
-                  <p className="font-bold text-white text-md text-left md:text-xl">
-                    Your Email
-                  </p>
-                  <input
-                    name="email"
-                    type={"email"}
-                    className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              )}
               <div className="mt-2">
                 <p
                   className="text-gray-400 font-bold"
@@ -550,11 +541,7 @@ const App = () => {
                 {contractId !== null && contractId !== "" ? (
                   <button
                     className="inline-flex gap-x-2 justify-center items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg py-2 mt-10"
-                    onClick={
-                      isToken && tokenId !== ""
-                        ? checkTokenContract
-                        : checkContract
-                    }
+                    onClick={checkNftSnipe}
                   >
                     <p className="text-eversnipe-text text-sm font-bold py-1 px-10">
                       Check
@@ -622,26 +609,7 @@ const App = () => {
                       : null
                   }
                 />
-                {/* <button
-                    className="inline-flex gap-x-2 justify-center items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
-                    onClick={() => {
-                      setIsToken(!isToken);
-                      setTokenId(null);
-                      setHasFetching(false);
-                      setIsValid(false);
-                    }}
-                  >
-                    {isToken ? (
-                      <IconChecked size={25} />
-                    ) : (
-                      <IconCheck size={25} color={"#5C4A50"} />
-                    )}
-                    <p className="text-eversnipe-text text-sm font-bold">
-                      Snipe Token?
-                    </p>
-                  </button> */}
               </div>
-              {/* {isToken && ( */}
               <div className="grid grid-cols-2 gap-x-8 justify-center items-center mt-10">
                 <p
                   className=" text-white text-md text-left md:text-xl"
@@ -663,7 +631,6 @@ const App = () => {
                   }
                 />
               </div>
-              {/* )} */}
               <div className="grid grid-cols-2 gap-x-8 justify-center items-start mt-10">
                 <p
                   className=" text-white text-md text-left md:text-xl"
@@ -686,6 +653,25 @@ const App = () => {
                   style={{ WebkitAppearance: "none", margin: 0 }}
                 />
               </div>
+              {isEmail && (
+                <div className="grid grid-cols-2 gap-x-8 justify-center items-start mt-10">
+                  <p
+                    className=" text-white text-md text-left md:text-xl"
+                    style={{
+                      lineHeight: 1.3,
+                      fontFamily: "Poppins, sans-serif",
+                    }}
+                  >
+                    Your Email
+                  </p>
+                  <input
+                    name="email"
+                    type={"email"}
+                    className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-x-8 justify-center items-start mt-10">
                 <p
                   className=" text-white text-md text-left md:text-xl"
@@ -694,31 +680,15 @@ const App = () => {
                     fontFamily: "Poppins, sans-serif",
                   }}
                 >
-                  Notification
+                  Settings
                 </p>
                 <div className="flex flex-col gap-y-4 w-full md:w-[230px] bg-eversnipe-input rounded-lg p-4">
-                  {isEmail ? (
-                    <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
-                      onClick={() => setIsEmail(!isEmail)}
-                    >
-                      <IconChecked size={25} />
-                      <p className="text-eversnipe-text text-sm font-bold">
-                        Email Notification
-                      </p>
-                    </button>
-                  ) : (
-                    <button
-                      className="inline-flex gap-x-2 justify-start items-center bg-transparent border-2 border-eversnipe hover:bg-eversnipe hover:bg-opacity-20 rounded-lg p-2"
-                      onClick={() => setIsEmail(!isEmail)}
-                    >
-                      <IconCheck size={20} color={"#CCA8B4"} />
-                      <p className="text-eversnipe text-sm font-bold">
-                        Email Notification
-                      </p>
-                    </button>
-                  )}
-
+                  <button className="inline-flex gap-x-2 justify-start items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2">
+                    <IconChecked size={25} />
+                    <p className="text-eversnipe-text text-sm font-bold">
+                      Email Notification
+                    </p>
+                  </button>
                   {isPush ? (
                     <button
                       className="inline-flex gap-x-2 justify-start items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
@@ -764,34 +734,11 @@ const App = () => {
                   )}
                 </div>
               </div>
-              {isEmail && (
-                <div className="grid grid-cols-2 gap-x-8 justify-center items-start mt-10">
-                  <p
-                    className=" text-white text-md text-left md:text-xl"
-                    style={{
-                      lineHeight: 1.3,
-                      fontFamily: "Poppins, sans-serif",
-                    }}
-                  >
-                    Your Email
-                  </p>
-                  <input
-                    name="email"
-                    type={"email"}
-                    className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              )}
               <div className="inline-flex gap-x-4">
                 {contractId !== null && contractId !== "" ? (
                   <button
                     className="inline-flex gap-x-2 justify-center items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg py-2 mt-10"
-                    onClick={
-                      isToken && tokenId !== ""
-                        ? checkTokenContract
-                        : checkContract
-                    }
+                    onClick={checkNftSnipe}
                   >
                     <p className="text-eversnipe-text text-sm font-bold py-1 px-10">
                       Check
@@ -829,6 +776,15 @@ const App = () => {
               <div className="mt-36">
                 <p className="text-white text-2xl text-left mb-2">Preview</p>
                 <div className="flex flex-col gap-y-4 w-full md:w-96 h-96 bg-eversnipe-input rounded-lg overflow-y-auto p-4">
+                  {isFetchingMetadata && (
+                    <div>
+                      <IconLoader size={20} colorClassName={"text-snipenear"} />
+                      <p className="text-eversnipe text-md mt-4 text-center font-bold">
+                        Fetching NFT metadata
+                      </p>
+                    </div>
+                  )}
+
                   {typeof contractResult === "string" && (
                     <p className="text-white text-md font-bold mx-auto">
                       {contractResult}
@@ -836,7 +792,7 @@ const App = () => {
                   )}
 
                   {/* Contract Result */}
-                  {hasFetching &&
+                  {!isFetchingMetadata && hasFetching &&
                     !isToken &&
                     typeof contractResult === "object" &&
                     Object.keys(contractResult).length > 0 && (
@@ -850,6 +806,9 @@ const App = () => {
                           width={100}
                           className="mx-auto border-4 border-eversnipe rounded-lg"
                         />
+                        {contractResult && contractResult.token?.owner_id === accountId && (
+                          <p className='text-red-200 text-sm text-center'>You cannot snipe your own NFT</p>
+                        )}
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Contract Id</p>
                           <p className="text-white text-sm">:</p>
@@ -880,7 +839,7 @@ const App = () => {
                     )}
 
                   {/* Token Result */}
-                  {hasFetching &&
+                  {!isFetchingMetadata && hasFetching &&
                     isToken &&
                     typeof contractResult === "object" &&
                     !contractResult.token && (
@@ -889,7 +848,7 @@ const App = () => {
                       </p>
                     )}
 
-                  {hasFetching &&
+                  {!isFetchingMetadata && hasFetching &&
                     isToken &&
                     typeof contractResult === "object" &&
                     contractResult.token &&
@@ -904,16 +863,15 @@ const App = () => {
                           <p>Loading...b</p>
                         ) : (
                           <img
-                            src={
-                              contractResult.metadata?.base_uri
-                                ? `${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`
-                                : `${contractResult.token?.metadata?.media}`
-                            }
+                            src={contractResult.media}
                             width={100}
                             alt="NFT Image"
                             className="mx-auto border-4 border-eversnipe rounded-lg"
                             onLoad={() => setIsImageLoading(false)}
                           />
+                        )}
+                        {contractResult && contractResult.token?.owner_id === accountId && (
+                          <p className='text-red-200 text-sm text-center'>You cannot snipe your own NFT</p>
                         )}
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Token Id</p>

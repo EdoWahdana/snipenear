@@ -222,7 +222,7 @@ const MySnipe = () => {
                           <img
                             src={
                               snipe.metadata?.media
-                                ? parseImgUrl(snipe.metadata?.media)
+                                ? parseImgUrl(snipe._meta?.mediaUrl)
                                 : "./logo-white-new.png"
                             }
                             className="w-16 h-16 border-2 border-eversnipe-dark"
@@ -230,7 +230,7 @@ const MySnipe = () => {
                           <div className="flex flex-col justify-between items-start gap-y-2">
                             <div>
                               <p className="text-white font-bold text-md">
-                                {snipe.metadata?.title}
+                                {snipe._meta?.nftToken?.metadata.title}
                               </p>
                               <p className="text-white text-xs">
                                 {prettyTruncate(snipe.contractId, 20, 'address')}
@@ -313,7 +313,7 @@ const MySnipe = () => {
                         <img
                           src={
                             snipe.metadata?.media
-                              ? parseImgUrl(snipe.metadata?.media)
+                              ? parseImgUrl(snipe._meta?.mediaUrl)
                               : "./logo-white-new.png"
                           }
                           className="w-16 h-16 border-2 border-eversnipe-dark"
@@ -321,7 +321,7 @@ const MySnipe = () => {
                         <div className="flex flex-col justify-between items-start gap-y-2">
                           <div>
                             <p className="text-white font-bold text-md">
-                              {snipe.metadata?.title}
+                              {snipe._meta?.nftToken?.metadata.title}
                             </p>
                             <p className="text-white text-xs">
                               {prettyTruncate(snipe.contractId, 20, 'address')}
@@ -411,7 +411,7 @@ const MySnipe = () => {
                     <img
                       src={
                         snipe.metadata?.media
-                          ? parseImgUrl(snipe.metadata?.media)
+                          ? parseImgUrl(snipe._meta?.mediaUrl)
                           : "./logo-white-new.png"
                       }
                       className="w-16 h-16 border-2 border-eversnipe-dark"
@@ -419,7 +419,7 @@ const MySnipe = () => {
                     <div className="flex flex-col justify-between items-start gap-y-2">
                       <div>
                         <p className="text-white font-bold text-md">
-                          {snipe.metadata?.title}
+                          {snipe._meta?.nftToken?.metadata.title}
                         </p>
                         <p className="text-white text-xs">{prettyTruncate(snipe.contractId, 30, 'address')}</p>
                       </div>
@@ -482,7 +482,7 @@ const MySnipe = () => {
                       alt="Token Image"
                       src={
                         snipe.metadata?.media
-                          ? parseImgUrl(snipe.metadata?.media)
+                          ? parseImgUrl(snipe._meta?.mediaUrl)
                           : "./logo-white-new.png"
                       }
                       className="w-16 h-16 border-2 border-eversnipe-dark"
@@ -490,7 +490,7 @@ const MySnipe = () => {
                     <div className="flex flex-col justify-between items-start gap-y-2">
                       <div>
                         <p className="text-white font-bold text-md">
-                          {snipe.metadata?.title}
+                          {snipe._meta?.nftToken?.metadata.title}
                         </p>
                         <div className="flex flex-col">
                           <p className="text-white text-xs">

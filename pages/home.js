@@ -5,8 +5,6 @@ import IndexFooter from "pagesComponents/IndexFooter";
 import UserContext from "../config/context";
 import { parseImgUrl } from "../utils/common";
 import Link from "next/link";
-import { generateAuth } from "../config/utils";
-import axios from "axios";
 import { useRouter } from "next/router";
 
 const RecommendedTokens = [
@@ -74,76 +72,7 @@ const Home = () => {
 
   const _signIn = async () => {
     signInModal.show();
-  };
-
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      setup();
-    } else {
-      console.error("Service worker not supported");
-    }
-  }, [walletSelector]);
-
-  const setup = async () => {
-    if (!walletSelector.isSignedIn()) {
-      return;
-    }
-
-    try {
-      navigator.serviceWorker
-        .register("/_worker.js")
-        .then(async (serviceWorkerRegistration) => {
-          const currentSubscription =
-            await serviceWorkerRegistration.pushManager.getSubscription();
-
-          if (currentSubscription) {
-            return;
-          }
-
-          console.log("Registering push...");
-
-          const subscription =
-            await serviceWorkerRegistration.pushManager.subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: urlBase64ToUint8Array(
-                "BMCbH8jWoT-mPUAODqUzCrern-rO1PrhywprUvz21mhSlFBdbvvpyCpRiTBIRaXvBOhsoAIJ3E9XDjt0c0EPL44"
-              ),
-            });
-
-          await axios.post(
-            `${process.env.NEXT_PUBLIC_API}/subscribe-web-push-notification`,
-            subscription,
-            {
-              headers: {
-                authorization: await generateAuth(
-                  accountId,
-                ),
-              },
-            }
-          );
-
-          console.log("Finish registering");
-        });
-
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const urlBase64ToUint8Array = (base64String) => {
-    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding)
-      .replace(/\-/g, "+")
-      .replace(/_/g, "/");
-
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-  };
+  }; 
 
   return (
     <>
