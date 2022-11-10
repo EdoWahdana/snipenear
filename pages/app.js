@@ -3,6 +3,7 @@ import React, {
   useContext,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from "react";
 import Header from "components/Documentation/Header";
@@ -27,6 +28,7 @@ const ModalEnum = {
 };
 
 const App = () => {
+  const autoBuyDepositRef = useRef()
   const router = useRouter();
   const { walletSelector, walletSelectorObject, accountId } =
     useContext(UserContext);
@@ -456,7 +458,9 @@ const App = () => {
                 <input
                   type={"number"}
                   className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
-                  onChange={(e) => setPrice(e.target.value)}
+                  onChange={(e) => {
+                    setPrice(e.target.value)
+                  }}
                   autoComplete={"off"}
                   style={{ WebkitAppearance: "none", margin: 0 }}
                 />
@@ -552,6 +556,7 @@ const App = () => {
                     Auto Buy Deposit (NEAR)
                   </p>
                   <input
+                    ref={autoBuyDepositRef}
                     name="autoBuyDeposit"
                     type={"number"}
                     className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
