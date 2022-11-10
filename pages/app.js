@@ -1,3 +1,4 @@
+import { providers } from "near-api-js";
 import React, {
   Fragment,
   useContext,
@@ -7,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import Header from "components/Documentation/Header";
+import getConfig from "../config/near";
 import AppNavbar from "pagesComponents/AppNavbar";
 import UserContext from "../config/context";
 import IconCheck from "../components/Icons/IconCheck";
@@ -20,20 +22,22 @@ import { utils } from "near-api-js";
 import AutobuyModal from "../components/Modal/AutobuyModal";
 import { viewMethod } from "../config/utils";
 import JSBI from "jsbi";
+import SuccessModalAutoBuy from "../components/Modal/SuccessModalAutoBuy";
 
 const ModalEnum = {
+  successAutoBuy: "SuccessAutoBuy",
   success: "Success",
   error: "Error",
   autobuy: "Autobuy",
 };
 
 const App = () => {
-  const autoBuyDepositRef = useRef()
+  const autoBuyDepositRef = useRef();
   const router = useRouter();
   const { walletSelector, walletSelectorObject, accountId } =
     useContext(UserContext);
 
-  const [isToken, setIsToken] = useState(false);
+  const [isToken, setIsToken] = useState(true);
   const [isEmail, setIsEmail] = useState(false);
   const [isPush, setIsPush] = useState(true);
   const [isValid, setIsValid] = useState(false);
@@ -67,6 +71,30 @@ const App = () => {
     }
   }, [router.query.contractId, router.query.tokenId]);
 
+  useEffect(() => {
+    if (router.query) {
+      if (router.query.transactionHashes) {
+        checkTransactionHash({
+          accountId: accountId,
+          txHash: router.query.transactionHashes,
+        });
+      }
+    }
+  }, [router.query.transactionHashes]);
+
+  const checkTransactionHash = async ({ accountId, txHash }) => {
+    const nearConfig = getConfig(process.env.APP_ENV || "testnet");
+    const txResult = await new providers.JsonRpcProvider({
+      url: nearConfig.nodeUrl,
+    }).txStatus(txHash, accountId);
+
+    if (txResult.status.SuccessValue !== undefined) {
+      setShowModal(ModalEnum.successAutoBuy);
+    } else {
+      setShowModal(ModalEnum.error);
+    }
+  };
+
   const checkContract = async () => {
     try {
       const resMetadata = await viewMethod(contractId, "nft_metadata", {});
@@ -93,6 +121,10 @@ const App = () => {
         token_id: tokenId,
       });
 
+      if (resToken.owner_id === accountId) {
+        throw new Error("You cannot snipe your own NFT");
+      }
+
       const resObject = {
         metadata: resMetadata,
         token: resToken,
@@ -107,25 +139,6 @@ const App = () => {
     }
   };
 
-  const _checkDepositLessThanPrice = (yoctoPrice, autoBuyDepositYocto) => {
-    if (!autoBuyDepositYocto) {
-      const errorMessage = 'Please specify your AutoBuy deposit!'
-      setContractResult(errorMessage)
-    }
-
-    if (!yoctoPrice) {
-      const errorMessage = 'Please specify the alert price!'
-      setContractResult(errorMessage)
-    }
-
-    const autoBuyDepositYoctoBI = JSBI.BigInt(autoBuyDepositYocto)
-    const yoctoPriceBI = JSBI.BigInt(yoctoPrice)
-
-    const depositLessThanPrice = JSBI.lessThan(autoBuyDepositYoctoBI, yoctoPriceBI)
-
-    return depositLessThanPrice
-  }
-
   const snipe = async () => {
     try {
       if (!isValid) {
@@ -133,15 +146,6 @@ const App = () => {
       }
 
       let settings = {};
-      const metadata = isToken
-        ? {
-            title: contractResult.token?.metadata?.title,
-            media: `${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`,
-          }
-        : {
-            title: contractResult.metadata?.name,
-            media: contractResult.metadata?.icon,
-          };
 
       const yoctoPrice = utils.format.parseNearAmount(price);
 
@@ -156,8 +160,7 @@ const App = () => {
         contractId: contractId,
         price: yoctoPrice,
         settings: settings,
-        metadata: metadata,
-        isAutoBuy: isAutoBuy
+        isAutoBuy: isAutoBuy,
       };
 
       if (isToken && tokenId) {
@@ -168,43 +171,33 @@ const App = () => {
         const autoBuyDepositYocto =
           utils.format.parseNearAmount(autoBuyDeposit);
 
-        const depositLessThanPrice = _checkDepositLessThanPrice(yoctoPrice, autoBuyDepositYocto)
-        if (!depositLessThanPrice) {
-          const errorMessage = 'Your AutoBuy deposit must be less than the Alert Price'
-          setContractResult(errorMessage)
-
-          return
-        }
         formData["autoBuyDeposit"] = autoBuyDepositYocto;
       }
 
       if (isAutoBuy && autoBuyDeposit) {
-
         const resultSnipe = await axios.post(
           `${process.env.NEXT_PUBLIC_API}/snipes`,
           formData,
           {
             headers: {
-              authorization: await generateAuth(
-                accountId,
-              ),
+              authorization: await generateAuth(accountId),
             },
           }
         );
 
         if (resultSnipe.data && resultSnipe.data?.status === 1) {
           if (!resultSnipe.data?.data._id) {
-            const errorMessage = 'No ObjectId returned'
-            setContractResult(errorMessage)
+            const errorMessage = "No ObjectId returned";
+            setContractResult(errorMessage);
 
-            throw new Error('No ObjectId returned')
+            throw new Error("No ObjectId returned");
           }
 
-          const memoParams = resultSnipe.data?.data._id
+          const memoParams = resultSnipe.data?.data._id;
 
           let snipeParams = {
             contract_id: contractId,
-            memo: memoParams
+            memo: memoParams,
           };
 
           if (isToken && tokenId) {
@@ -244,9 +237,7 @@ const App = () => {
             formData,
             {
               headers: {
-                authorization: await generateAuth(
-                  accountId,
-                ),
+                authorization: await generateAuth(accountId),
               },
             }
           );
@@ -272,7 +263,7 @@ const App = () => {
 
       {/* Mobile Section */}
       <section className="grid md:hidden header relative items-start bg-eversnipe-bg">
-        <div className="grid grid-cols-1 gap-x-2 mx-auto">
+        <div className="grid grid-cols-1 w-full gap-x-2 mx-auto">
           <div
             className="container w-full md:w-1/3"
             style={{
@@ -310,26 +301,22 @@ const App = () => {
                         />
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Contract Id</p>
-                          <p className="text-white text-sm">:</p>
                           <p className="text-white text-sm">{contractId}</p>
                         </div>
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Contract Name</p>
-                          <p className="text-white text-sm">:</p>
                           <p className="text-white text-sm">
                             {contractResult.metadata?.name}
                           </p>
                         </div>
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Symbol</p>
-                          <p className="text-white text-sm">:</p>
                           <p className="text-white text-sm">
                             {contractResult.metadata?.symbol}
                           </p>
                         </div>
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">NFT Supply</p>
-                          <p className="text-white text-sm">:</p>
                           <p className="text-white text-sm">
                             {contractResult.supply}
                           </p>
@@ -362,7 +349,11 @@ const App = () => {
                           <p>Loading...</p>
                         ) : (
                           <img
-                            src={`${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`}
+                            src={
+                              contractResult.metadata?.base_uri
+                                ? `${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`
+                                : `${contractResult.token?.metadata?.media}`
+                            }
                             width={100}
                             alt="NFT Image"
                             className="mx-auto border-4 border-eversnipe rounded-lg"
@@ -371,22 +362,19 @@ const App = () => {
                         )}
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Token Id</p>
-                          <p className="text-white text-sm">:</p>
-                          <p className="text-white text-sm">
+                          <p className="text-white text-md">
                             {contractResult.token?.token_id}
                           </p>
                         </div>
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Owner Id</p>
-                          <p className="text-white text-sm">:</p>
-                          <p className="text-white text-sm">
+                          <p className="text-white text-md">
                             {contractResult.token?.owner_id}
                           </p>
                         </div>
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Title</p>
-                          <p className="text-white text-sm">:</p>
-                          <p className="text-white text-sm">
+                          <p className="text-white text-md">
                             {contractResult.token?.metadata?.title}
                           </p>
                         </div>
@@ -399,22 +387,21 @@ const App = () => {
 
           <div className="container w-full md:w-2/3">
             <div className="w-full px-8 md:px-4 text-center">
-              <div className="flex flex-col gap-y-2 mt-10">
+              <div className="flex flex-col gap-y-2 mt-6">
                 <p className=" font-poppins font-bold text-white text-md text-left md:text-xl">
                   Contract Id
                 </p>
-                <div className="inline-flex">
-                  <input
-                    name="contractId"
-                    className="bg-eversnipe-input border-2 border-eversnipe text-white rounded-md p-1 pr-10 mr-4"
-                    onChange={(e) => setContractId(e.target.value)}
-                    defaultValue={
-                      router.query && router.query.contractId
-                        ? router.query.contractId
-                        : null
-                    }
-                  />
-                  <button
+                <input
+                  name="contractId"
+                  className="bg-eversnipe-input w-full border-2 border-eversnipe text-white rounded-md p-2"
+                  onChange={(e) => setContractId(e.target.value)}
+                  defaultValue={
+                    router.query && router.query.contractId
+                      ? router.query.contractId
+                      : null
+                  }
+                />
+                {/* <button
                     className="inline-flex gap-x-2 justify-center items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
                     onClick={() => {
                       setIsToken(!isToken);
@@ -431,26 +418,25 @@ const App = () => {
                     <p className="text-eversnipe-text text-sm font-bold">
                       Snipe Token?
                     </p>
-                  </button>
-                </div>
+                  </button> */}
               </div>
-              {isToken && (
-                <div className="flex flex-col gap-y-2 mt-6">
-                  <p className="font-bold text-white text-md text-left md:text-xl">
-                    Token Id
-                  </p>
-                  <input
-                    name="tokenId"
-                    className="bg-eversnipe-input w-full border-2 border-eversnipe text-white rounded-md p-2"
-                    onChange={(e) => setTokenId(e.target.value)}
-                    defaultValue={
-                      router.query && router.query.tokenId
-                        ? router.query.tokenId
-                        : null
-                    }
-                  />
-                </div>
-              )}
+              {/* {isToken && ( */}
+              <div className="flex flex-col gap-y-2 mt-6">
+                <p className="font-bold text-white text-md text-left md:text-xl">
+                  Token Id
+                </p>
+                <input
+                  name="tokenId"
+                  className="bg-eversnipe-input w-full border-2 border-eversnipe text-white rounded-md p-2"
+                  onChange={(e) => setTokenId(e.target.value)}
+                  defaultValue={
+                    router.query && router.query.tokenId
+                      ? router.query.tokenId
+                      : null
+                  }
+                />
+              </div>
+              {/* )} */}
               <div className="flex flex-col gap-y-2 mt-6">
                 <p className="font-bold text-white text-md text-left md:text-xl">
                   Alert Price
@@ -459,7 +445,8 @@ const App = () => {
                   type={"number"}
                   className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
                   onChange={(e) => {
-                    setPrice(e.target.value)
+                    setAutoBuyDeposit(e.target.value);
+                    setPrice(e.target.value);
                   }}
                   autoComplete={"off"}
                   style={{ WebkitAppearance: "none", margin: 0 }}
@@ -550,22 +537,6 @@ const App = () => {
                   />
                 </div>
               )}
-              {isAutoBuy && (
-                <div className="flex flex-col gap-y-2 mt-6">
-                  <p className="font-bold text-white text-md text-left md:text-xl">
-                    Auto Buy Deposit (NEAR)
-                  </p>
-                  <input
-                    ref={autoBuyDepositRef}
-                    name="autoBuyDeposit"
-                    type={"number"}
-                    className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
-                    onChange={(e) => setAutoBuyDeposit(e.target.value)}
-                    placeholder="10, 20, 30"
-                  />
-                </div>
-              )}
-
               <div className="mt-2">
                 <p
                   className="text-gray-400 font-bold"
@@ -628,7 +599,7 @@ const App = () => {
           backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="flex flex-row gap-x-2 mx-auto">
+        <div className="flex flex-row gap-x-2 mx-auto w-4/5">
           <div className="container w-full md:w-2/3">
             <div className="w-5/12 px-8 md:px-4 text-center">
               <div className="grid grid-cols-2 gap-x-8 justify-center items-center mt-40">
@@ -641,18 +612,17 @@ const App = () => {
                 >
                   Contract Id
                 </p>
-                <div className="inline-flex">
-                  <input
-                    name="contractId"
-                    className="bg-eversnipe-input border-2 border-eversnipe text-white rounded-md p-1 pr-10 mr-4"
-                    onChange={(e) => setContractId(e.target.value)}
-                    defaultValue={
-                      router.query && router.query.contractId
-                        ? router.query.contractId
-                        : null
-                    }
-                  />
-                  <button
+                <input
+                  name="contractId"
+                  className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
+                  onChange={(e) => setContractId(e.target.value)}
+                  defaultValue={
+                    router.query && router.query.contractId
+                      ? router.query.contractId
+                      : null
+                  }
+                />
+                {/* <button
                     className="inline-flex gap-x-2 justify-center items-center bg-eversnipe hover:bg-eversnipe-hover rounded-lg p-2"
                     onClick={() => {
                       setIsToken(!isToken);
@@ -669,32 +639,31 @@ const App = () => {
                     <p className="text-eversnipe-text text-sm font-bold">
                       Snipe Token?
                     </p>
-                  </button>
-                </div>
+                  </button> */}
               </div>
-              {isToken && (
-                <div className="grid grid-cols-2 gap-x-8 justify-center items-center mt-10">
-                  <p
-                    className=" text-white text-md text-left md:text-xl"
-                    style={{
-                      lineHeight: 1.3,
-                      fontFamily: "Poppins, sans-serif",
-                    }}
-                  >
-                    Token Id
-                  </p>
-                  <input
-                    name="tokenId"
-                    className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
-                    onChange={(e) => setTokenId(e.target.value)}
-                    defaultValue={
-                      router.query && router.query.tokenId
-                        ? router.query.tokenId
-                        : null
-                    }
-                  />
-                </div>
-              )}
+              {/* {isToken && ( */}
+              <div className="grid grid-cols-2 gap-x-8 justify-center items-center mt-10">
+                <p
+                  className=" text-white text-md text-left md:text-xl"
+                  style={{
+                    lineHeight: 1.3,
+                    fontFamily: "Poppins, sans-serif",
+                  }}
+                >
+                  Token Id
+                </p>
+                <input
+                  name="tokenId"
+                  className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
+                  onChange={(e) => setTokenId(e.target.value)}
+                  defaultValue={
+                    router.query && router.query.tokenId
+                      ? router.query.tokenId
+                      : null
+                  }
+                />
+              </div>
+              {/* )} */}
               <div className="grid grid-cols-2 gap-x-8 justify-center items-start mt-10">
                 <p
                   className=" text-white text-md text-left md:text-xl"
@@ -709,7 +678,10 @@ const App = () => {
                   name="price"
                   type={"number"}
                   className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
-                  onChange={(e) => setPrice(e.target.value)}
+                  onChange={(e) => {
+                    setAutoBuyDeposit(e.target.value);
+                    setPrice(e.target.value);
+                  }}
                   autoComplete={"off"}
                   style={{ WebkitAppearance: "none", margin: 0 }}
                 />
@@ -808,20 +780,6 @@ const App = () => {
                     type={"email"}
                     className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
                     onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              )}
-              {isAutoBuy && (
-                <div className="grid grid-cols-2 gap-x-8 justify-center items-start mt-10">
-                  <p className="text-white text-md text-left md:text-xl">
-                    Auto Buy Deposit (NEAR)
-                  </p>
-                  <input
-                    name="autoBuyDeposit"
-                    type={"number"}
-                    className="bg-eversnipe-input w-full md:w-[230px] border-2 border-eversnipe text-white rounded-md p-2"
-                    onChange={(e) => setAutoBuyDeposit(e.target.value)}
-                    placeholder="10, 20, 30"
                   />
                 </div>
               )}
@@ -946,7 +904,11 @@ const App = () => {
                           <p>Loading...b</p>
                         ) : (
                           <img
-                            src={`${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`}
+                            src={
+                              contractResult.metadata?.base_uri
+                                ? `${contractResult.metadata?.base_uri}/${contractResult.token?.metadata?.media}`
+                                : `${contractResult.token?.metadata?.media}`
+                            }
                             width={100}
                             alt="NFT Image"
                             className="mx-auto border-4 border-eversnipe rounded-lg"
@@ -982,6 +944,10 @@ const App = () => {
           </div>
         </div>
       </section>
+
+      {showModal === ModalEnum.successAutoBuy && (
+        <SuccessModalAutoBuy onClose={() => setShowModal(null)} />
+      )}
 
       {showModal === ModalEnum.success && (
         <SuccessModal onClose={() => setShowModal(null)} />

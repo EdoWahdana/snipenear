@@ -1,6 +1,6 @@
-import IconEmailSent from "../Icons/IconEmailSent";
+import IconMagic from "../Icons/IconMagic";
 
-const SuccessModal = ({ onClose }) => {
+const SuccessModalAutoBuy = ({ onClose }) => {
   return (
     <div className="fixed inset-0 z-20 overflow-y-auto bg-black bg-opacity-50">
       <div className="flex min-h-full items-center md:items-center justify-center p-4 text-center sm:items-center">
@@ -8,21 +8,21 @@ const SuccessModal = ({ onClose }) => {
           <div className="bg-eversnipe-input p-4">
             <div className="sm:flex sm:items-start mb-4">
               <div className="text-center sm:text-left">
-                <IconEmailSent
-                  width={150}
-                  height={100}
+                <IconMagic
+                  width={70}
+                  height={70}
+                  color={'#FFF'}
                   className="mx-auto mb-4"
                 />
                 <h3
                   className="text-2xl font-bold text-center leading-6 text-white"
                   id="modal-title"
                 >
-                  All set. Just wait an email from us!
+                  All set. Wait for the AutoBuy Magic to happen!
                 </h3>
                 <div className="my-4">
                   <p className="text-sm text-white">
-                    You just have to chill n wait our system to notify you via
-                    email when your snipe hit the target.
+                    Our AutoBuy Magic system will do a magic that transfer your favorite NFT when your snipe hit the target.
                   </p>
                 </div>
               </div>
@@ -44,4 +44,4 @@ const SuccessModal = ({ onClose }) => {
   );
 };
 
-export default SuccessModal;
+export default SuccessModalAutoBuy;

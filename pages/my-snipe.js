@@ -23,6 +23,7 @@ const SnipeStatusEnum = {
   NotActive: "not_active",
   Waiting: "waiting",
   Success: "success",
+  Failed: "failed",
 };
 
 const MySnipe = () => {
@@ -56,8 +57,10 @@ const MySnipe = () => {
       return <p className="text-sm text-yellow-300">Waiting</p>;
     } else if (status === SnipeStatusEnum.Success) {
       return <p className="text-sm text-green-300">Success</p>;
+    } else if (status === SnipeStatusEnum.Failed) {
+      return <p className="text-sm text-gray-300">Failed</p>;
     } else {
-      return <p className="text-sm text-red-300">{status}</p>;
+      return <p className="text-sm text-gray-400">{status}</p>;
     }
   };
 
@@ -230,7 +233,7 @@ const MySnipe = () => {
                                 {snipe.metadata?.title}
                               </p>
                               <p className="text-white text-xs">
-                                {prettyTruncate(snipe.contractId, 20)}
+                                {prettyTruncate(snipe.contractId, 20, 'address')}
                               </p>
                             </div>
                           </div>
@@ -321,10 +324,10 @@ const MySnipe = () => {
                               {snipe.metadata?.title}
                             </p>
                             <p className="text-white text-xs">
-                              {prettyTruncate(snipe.contractId, 20)}
+                              {prettyTruncate(snipe.contractId, 20, 'address')}
                             </p>
                             <p className="text-white text-xs">
-                              {snipe.tokenId}
+                              {prettyTruncate(snipe.tokenId, 18, 'address')}
                             </p>
                           </div>
                         </div>
@@ -418,7 +421,7 @@ const MySnipe = () => {
                         <p className="text-white font-bold text-md">
                           {snipe.metadata?.title}
                         </p>
-                        <p className="text-white text-xs">{snipe.contractId}</p>
+                        <p className="text-white text-xs">{prettyTruncate(snipe.contractId, 30, 'address')}</p>
                       </div>
                     </div>
                   </div>
@@ -491,9 +494,9 @@ const MySnipe = () => {
                         </p>
                         <div className="flex flex-col">
                           <p className="text-white text-xs">
-                            {snipe.contractId}
+                            {prettyTruncate(snipe.contractId, 30, 'address')}
                           </p>
-                          <p className="text-white text-xs">{snipe.tokenId}</p>
+                          <p className="text-white text-xs">{prettyTruncate(snipe.tokenId, 30, 'address')}</p>
                         </div>
                       </div>
                     </div>
@@ -553,7 +556,10 @@ const MySnipe = () => {
         data={selectedSnipe}
         accountId={accountId}
         isShow={showModal === ModalEnum.Edit}
-        onClose={() => setShowModal(null)}
+        onClose={() => {
+          fetchSnipe(true);
+          setShowModal(null);
+        }}
       />
     </>
   );

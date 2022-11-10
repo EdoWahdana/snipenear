@@ -16,7 +16,7 @@ const SnipeEditModal = ({ isShow, accountId, data, onClose }) => {
 
   const updateSnipe = async () => {
     const snipeId = data._id;
-    const yoctoPrice = utils.format.parseNearAmount(price.toString())
+    const yoctoPrice = utils.format.parseNearAmount(price.toString());
 
     data["price"] = yoctoPrice;
     data["email"] = email;
@@ -40,7 +40,7 @@ const SnipeEditModal = ({ isShow, accountId, data, onClose }) => {
     <div className="fixed inset-0 z-20 overflow-y-auto bg-black bg-opacity-50">
       <div className="flex min-h-full items-center justify-center p-4 text-center w-full md:w-1/3 mx-auto">
         <div className="grow relative transform overflow-hidden rounded-lg bg-eversnipe-input border-4 border-eversnipe">
-          <div className="bg-eversnipe-input p-4 w-full">
+          <div className="p-4 w-full">
             <div className="sm:items-start mb-4 w-full">
               <div className="text-center sm:text-center">
                 <h3
@@ -82,7 +82,7 @@ const SnipeEditModal = ({ isShow, accountId, data, onClose }) => {
                           className="bg-eversnipe-input border-2 border-eversnipe text-white rounded-md p-1 mr-4"
                           onChange={(e) => setEmail(e.target.value)}
                           defaultValue={data.settings.emailNotification}
-                          size={30}
+                          size={20}
                         />
                       </div>
                     </div>
@@ -91,14 +91,18 @@ const SnipeEditModal = ({ isShow, accountId, data, onClose }) => {
                     <p className=" font-poppins font-bold text-white text-md text-left md:text-lg">
                       Alert Price
                     </p>
-                    <div className="inline-flex mx-auto">
+                    <div className="inline-flex mx-auto relative">
                       <input
                         name="price"
                         type={"number"}
                         className="bg-eversnipe-input border-2 border-eversnipe text-white rounded-md p-1 mr-4"
                         onChange={(e) => setPrice(e.target.value)}
                         defaultValue={data._meta.formatNearAmount}
+                        min={0}
                       />
+                      <div className="absolute right-5 top-0 flex items-center text-white text-opacity-70 h-full px-2">
+                        Ⓝ
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -111,11 +115,11 @@ const SnipeEditModal = ({ isShow, accountId, data, onClose }) => {
                   Close
                 </p>
               </div>
-              <div className="font-poppins mr-0 md:mr-4" onClick={updateSnipe}>
+              <button type="submit" className="font-poppins mr-0 md:mr-4" onClick={updateSnipe}>
                 <p className="bg-eversnipe hover:bg-eversnipe-hover transition-colors duration-100 border-2 border-eversnipe py-2 px-4 text-eversnipe-text font-bold text-lg rounded-lg cursor-pointer">
                   Update
                 </p>
-              </div>
+              </button>
             </div>
           </div>
         </div>
