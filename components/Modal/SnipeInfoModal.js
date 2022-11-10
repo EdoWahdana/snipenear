@@ -22,7 +22,7 @@ const SnipeInfoModal = ({ isShow, data, onClose }) => {
                   className="text-2xl font-bold text-center leading-6 text-white mb-2"
                   id="modal-title"
                 >
-                  {data.tokenId ? "Token Snipe" : "Collection Snipe"}
+                  {data.tokenId ? "NFT Snipe" : "Collection Snipe"}
                 </h3>
                 <img
                   src={

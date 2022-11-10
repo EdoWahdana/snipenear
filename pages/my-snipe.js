@@ -2,7 +2,7 @@ import React, { Fragment, useContext, useEffect, useState } from "react";
 import Header from "components/Documentation/Header";
 import AppNavbar from "pagesComponents/AppNavbar";
 import UserContext from "../config/context";
-import { parseImgUrl } from "../utils/common";
+import { parseImgUrl, prettyTruncate } from "../utils/common";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { generateAuth } from "../config/utils";
@@ -11,11 +11,18 @@ import IconInfo from "../components/Icons/IconInfo";
 import IconEdit from "../components/Icons/IconEdit";
 import SnipeInfoModal from "../components/Modal/SnipeInfoModal";
 import SnipeEditModal from "../components/Modal/SnipeEditModal";
+import IconWarning from "../components/Icons/IconWarning";
 
 const ModalEnum = {
   Info: "Info",
   Delete: "Delete",
   Edit: "Edit",
+};
+
+const SnipeStatusEnum = {
+  NotActive: "not_active",
+  Waiting: "waiting",
+  Success: "success",
 };
 
 const MySnipe = () => {
@@ -41,6 +48,18 @@ const MySnipe = () => {
       router.replace("/");
     }
   }, [walletSelector]);
+
+  const parseSnipeStatus = (status) => {
+    if (status === SnipeStatusEnum.NotActive) {
+      return <p className="text-sm text-gray-400">Not Active</p>;
+    } else if (status === SnipeStatusEnum.Waiting) {
+      return <p className="text-sm text-yellow-300">Waiting</p>;
+    } else if (status === SnipeStatusEnum.Success) {
+      return <p className="text-sm text-green-300">Success</p>;
+    } else {
+      return <p className="text-sm text-red-300">{status}</p>;
+    }
+  };
 
   const fetchSnipe = async (initial = false) => {
     if (!hasMore || isFetching) {
@@ -128,14 +147,14 @@ const MySnipe = () => {
                 snipe_id: externalId,
               },
               gas: "100000000000000",
-              deposit: '1',
+              deposit: "1",
             },
           },
         ],
       });
-    
+
     if (resultDeleteSnipeContract) {
-      console.log(resultDeleteSnipeContract)
+      console.log(resultDeleteSnipeContract);
     }
   };
 
@@ -164,7 +183,7 @@ const MySnipe = () => {
               className="bg-eversnipe hover:bg-eversnipe-hover border-2 border-eversnipe-text rounded-lg text-eversnipe-text p-2"
               onClick={() => setIsToken(!isToken)}
             >
-              {isToken ? "See Contract Snipe" : "See Token Snipe"}
+              {isToken ? "See Contract Snipe" : "See NFT Snipe"}
             </button>
           </div>
 
@@ -176,6 +195,20 @@ const MySnipe = () => {
                   <p className="text-xl text-white text-center font-semibold mb-2">
                     Contract Snipe
                   </p>
+
+                  {contractSnipe.length <= 0 && (
+                    <div className="mt-44 text-center">
+                      <IconWarning
+                        size={80}
+                        color={"rgb(158 158 158 / var(--tw-text-opacity))"}
+                        className="mx-auto mb-4"
+                      />
+                      <p className="text-gray-500">
+                        No Contract Snipe. Snipe some now!
+                      </p>
+                    </div>
+                  )}
+
                   {contractSnipe.map((snipe) => (
                     <div
                       key={snipe._id}
@@ -197,12 +230,13 @@ const MySnipe = () => {
                                 {snipe.metadata?.title}
                               </p>
                               <p className="text-white text-xs">
-                                {snipe.contractId}
+                                {prettyTruncate(snipe.contractId, 20)}
                               </p>
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col justify-end items-center">
+                        <div className="flex flex-col gap-y-2 justify-start items-end">
+                          {parseSnipeStatus(snipe.status)}
                           <div className="inline-flex gap-x-1">
                             <button
                               className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
@@ -213,23 +247,29 @@ const MySnipe = () => {
                             >
                               <IconInfo size={20} />
                             </button>
-                            <button
-                              className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
-                              onClick={() => {
-                                setShowModal(ModalEnum.Edit);
-                                setSelectedSnipe(snipe);
-                              }}
-                            >
-                              <IconEdit size={20} />
-                            </button>
-                            <button
-                              className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
-                              onClick={() => {
-                                snipe.isAutoBuy ? deleteSnipeAutoBuy(snipe) : deleteSnipe(snipe);
-                              }}
-                            >
-                              <IconDelete size={20} />
-                            </button>
+                            {snipe.status === SnipeStatusEnum.Waiting && (
+                              <>
+                                <button
+                                  className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                                  onClick={() => {
+                                    setShowModal(ModalEnum.Edit);
+                                    setSelectedSnipe(snipe);
+                                  }}
+                                >
+                                  <IconEdit size={20} />
+                                </button>
+                                <button
+                                  className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                                  onClick={() => {
+                                    snipe.isAutoBuy
+                                      ? deleteSnipeAutoBuy(snipe)
+                                      : deleteSnipe(snipe);
+                                  }}
+                                >
+                                  <IconDelete size={20} />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -246,6 +286,20 @@ const MySnipe = () => {
                 <p className="text-xl text-white text-center font-semibold mb-2">
                   Token Snipe
                 </p>
+
+                {tokenSnipe.length <= 0 && (
+                  <div className="mt-44 text-center">
+                    <IconWarning
+                      size={80}
+                      color={"rgb(158 158 158 / var(--tw-text-opacity))"}
+                      className="mx-auto mb-4"
+                    />
+                    <p className="text-gray-500">
+                      No NFT Snipe. Snipe some NFT now!
+                    </p>
+                  </div>
+                )}
+
                 {tokenSnipe.map((snipe) => (
                   <div
                     key={snipe._id}
@@ -267,7 +321,7 @@ const MySnipe = () => {
                               {snipe.metadata?.title}
                             </p>
                             <p className="text-white text-xs">
-                              {snipe.contractId}
+                              {prettyTruncate(snipe.contractId, 20)}
                             </p>
                             <p className="text-white text-xs">
                               {snipe.tokenId}
@@ -275,7 +329,8 @@ const MySnipe = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-col justify-end items-center">
+                      <div className="flex flex-col gap-y-2 justify-start items-end">
+                        {parseSnipeStatus(snipe.status)}
                         <div className="inline-flex gap-x-1">
                           <button
                             className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
@@ -286,23 +341,29 @@ const MySnipe = () => {
                           >
                             <IconInfo size={20} />
                           </button>
-                          <button
-                            className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
-                            onClick={() => {
-                              setShowModal(ModalEnum.Edit);
-                              setSelectedSnipe(snipe);
-                            }}
-                          >
-                            <IconEdit size={20} />
-                          </button>
-                          <button
-                            className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
-                            onClick={() => {
-                              snipe.isAutoBuy ? deleteSnipeAutoBuy(snipe) : deleteSnipe(snipe);
-                            }}
-                          >
-                            <IconDelete size={20} />
-                          </button>
+                          {snipe.status === SnipeStatusEnum.Waiting && (
+                            <>
+                              <button
+                                className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                                onClick={() => {
+                                  setShowModal(ModalEnum.Edit);
+                                  setSelectedSnipe(snipe);
+                                }}
+                              >
+                                <IconEdit size={20} />
+                              </button>
+                              <button
+                                className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                                onClick={() => {
+                                  snipe.isAutoBuy
+                                    ? deleteSnipeAutoBuy(snipe)
+                                    : deleteSnipe(snipe);
+                                }}
+                              >
+                                <IconDelete size={20} />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -361,7 +422,8 @@ const MySnipe = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col justify-end items-center">
+                  <div className="flex flex-col gap-y-2 justify-start items-end">
+                    {parseSnipeStatus(snipe.status)}
                     <div className="inline-flex gap-x-1">
                       <button
                         className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
@@ -372,23 +434,29 @@ const MySnipe = () => {
                       >
                         <IconInfo size={20} />
                       </button>
-                      <button
-                        className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
-                        onClick={() => {
-                          setShowModal(ModalEnum.Edit);
-                          setSelectedSnipe(snipe);
-                        }}
-                      >
-                        <IconEdit size={20} />
-                      </button>
-                      <button
-                        className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
-                        onClick={() => {
-                          snipe.isAutoBuy ? deleteSnipeAutoBuy(snipe) : deleteSnipe(snipe);
-                        }}
-                      >
-                        <IconDelete size={20} />
-                      </button>
+                      {snipe.status === SnipeStatusEnum.Waiting && (
+                        <>
+                          <button
+                            className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                            onClick={() => {
+                              setShowModal(ModalEnum.Edit);
+                              setSelectedSnipe(snipe);
+                            }}
+                          >
+                            <IconEdit size={20} />
+                          </button>
+                          <button
+                            className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                            onClick={() => {
+                              snipe.isAutoBuy
+                                ? deleteSnipeAutoBuy(snipe)
+                                : deleteSnipe(snipe);
+                            }}
+                          >
+                            <IconDelete size={20} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -399,7 +467,7 @@ const MySnipe = () => {
             {/* Token Snipe */}
             <div className="pl-2 pr-0 lg:pr-10">
               <p className="text-xl text-white text-center font-semibold mb-2">
-                Token Snipe
+                NFT Snipe
               </p>
               {tokenSnipe.map((snipe) => (
                 <div
@@ -430,7 +498,8 @@ const MySnipe = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col justify-end items-center">
+                  <div className="flex flex-col gap-y-2 justify-start items-end">
+                    {parseSnipeStatus(snipe.status)}
                     <div className="inline-flex gap-x-1">
                       <button
                         className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
@@ -441,23 +510,29 @@ const MySnipe = () => {
                       >
                         <IconInfo size={20} />
                       </button>
-                      <button
-                        className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
-                        onClick={() => {
-                          setShowModal(ModalEnum.Edit);
-                          setSelectedSnipe(snipe);
-                        }}
-                      >
-                        <IconEdit size={20} />
-                      </button>
-                      <button
-                        className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
-                        onClick={() => {
-                          snipe.isAutoBuy ? deleteSnipeAutoBuy(snipe) : deleteSnipe(snipe);
-                        }}
-                      >
-                        <IconDelete size={20} />
-                      </button>
+                      {snipe.status === SnipeStatusEnum.Waiting && (
+                        <>
+                          <button
+                            className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                            onClick={() => {
+                              setShowModal(ModalEnum.Edit);
+                              setSelectedSnipe(snipe);
+                            }}
+                          >
+                            <IconEdit size={20} />
+                          </button>
+                          <button
+                            className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                            onClick={() => {
+                              snipe.isAutoBuy
+                                ? deleteSnipeAutoBuy(snipe)
+                                : deleteSnipe(snipe);
+                            }}
+                          >
+                            <IconDelete size={20} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -476,6 +551,7 @@ const MySnipe = () => {
 
       <SnipeEditModal
         data={selectedSnipe}
+        accountId={accountId}
         isShow={showModal === ModalEnum.Edit}
         onClose={() => setShowModal(null)}
       />
