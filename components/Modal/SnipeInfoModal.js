@@ -26,8 +26,8 @@ const SnipeInfoModal = ({ isShow, data, onClose }) => {
                 </h3>
                 <img
                   src={
-                    data.metadata?.media
-                      ? parseImgUrl(data.metadata?.media)
+                   data._meta?.mediaUrl 
+                      ? parseImgUrl(data._meta?.mediaUrl)
                       : "./logo-white-new.png"
                   }
                   width={100}
