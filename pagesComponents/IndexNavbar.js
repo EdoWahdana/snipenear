@@ -37,6 +37,8 @@ export default function IndexNavbar() {
       navigator.serviceWorker
         .register("/_worker.js")
         .then(async (serviceWorkerRegistration) => {
+          await serviceWorkerRegistration.unregister();
+
           const subscription =
             await serviceWorkerRegistration.pushManager.getSubscription();
 
@@ -47,23 +49,25 @@ export default function IndexNavbar() {
             return;
           }
 
-          await subscription.unsubscribe().then(async () => {
-            await axios({
-              method: "POST",
-              data: subscription,
-              url: `${process.env.NEXT_PUBLIC_API}/unsubscribe-web-push-notification`,
-              headers: {
-                authorization: await generateAuth(
-                  accountId,
-                ),
-              },
+          await subscription
+            .unsubscribe()
+            .then(async () => {
+              await axios({
+                method: "POST",
+                data: subscription,
+                url: `${process.env.NEXT_PUBLIC_API}/unsubscribe-web-push-notification`,
+                headers: {
+                  authorization: await generateAuth(accountId),
+                },
+              });
+            })
+            .then(async () => {
+              await walletSelectorObject.signOut();
+              router.replace(process.env.NEXT_PUBLIC_BASE_URL);
+            })
+            .catch((error) => {
+              console.error("UNSUBSCRIBE ERR : ", error);
             });
-          }).then(async () => {
-            await walletSelectorObject.signOut()
-            router.replace(process.env.NEXT_PUBLIC_BASE_URL)
-          }).catch((error) => {
-            console.error("UNSUBSCRIBE ERR : ", error)
-          });
         });
     } catch (err) {
       console.error("GET SUBSCRIPTION ERR : ", err);

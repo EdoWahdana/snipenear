@@ -78,17 +78,15 @@ export default function MyApp({ Component, pageProps }) {
       return;
     }
 
+    const currentRegistration = await navigator.serviceWorker.getRegistration();
+    if (currentRegistration) {
+      return;
+    }
+
     try {
       navigator.serviceWorker
         .register("/_worker.js")
         .then(async (serviceWorkerRegistration) => {
-          const currentRegistration =
-            await navigator.serviceWorker.getRegistration();
-
-          if (currentRegistration) {
-            return;
-          }
-
           const currentSubscription =
             await serviceWorkerRegistration.pushManager.getSubscription();
 

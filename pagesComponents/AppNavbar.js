@@ -33,6 +33,8 @@ const AppNavbar = () => {
       navigator.serviceWorker
         .register("/_worker.js")
         .then(async (serviceWorkerRegistration) => {
+          await serviceWorkerRegistration.unregister();
+
           const subscription =
             await serviceWorkerRegistration.pushManager.getSubscription();
 
@@ -51,9 +53,7 @@ const AppNavbar = () => {
                 data: subscription,
                 url: `${process.env.NEXT_PUBLIC_API}/unsubscribe-web-push-notification`,
                 headers: {
-                  authorization: await generateAuth(
-                    accountId,
-                  ),
+                  authorization: await generateAuth(accountId),
                 },
               });
             })
@@ -112,7 +112,7 @@ const AppNavbar = () => {
                 <Link href="/">
                   <div className="font-poppins mr-0 md:mr-4" onClick={_signOut}>
                     <p className="bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe py-2 px-4 text-eversnipe font-bold text-lg rounded-lg cursor-pointer">
-                      {prettyTruncate(accountId, 30, 'address')}
+                      {prettyTruncate(accountId, 30, "address")}
                     </p>
                   </div>
                 </Link>
