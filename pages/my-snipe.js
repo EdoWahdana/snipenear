@@ -221,7 +221,7 @@ const MySnipe = () => {
                         <div className="inline-flex items-center gap-x-4">
                           <img
                             src={
-                              snipe.metadata?.media
+                              snipe._meta?.mediaUrl
                                 ? parseImgUrl(snipe._meta?.mediaUrl)
                                 : "./logo-white-new.png"
                             }
@@ -312,7 +312,7 @@ const MySnipe = () => {
                       <div className="inline-flex items-center gap-x-4">
                         <img
                           src={
-                            snipe.metadata?.media
+                            snipe._meta?.mediaUrl
                               ? parseImgUrl(snipe._meta?.mediaUrl)
                               : "./logo-white-new.png"
                           }
@@ -410,7 +410,7 @@ const MySnipe = () => {
                   <div className="inline-flex items-center gap-x-4">
                     <img
                       src={
-                        snipe.metadata?.media
+                        snipe._meta?.mediaUrl
                           ? parseImgUrl(snipe._meta?.mediaUrl)
                           : "./logo-white-new.png"
                       }
@@ -481,7 +481,7 @@ const MySnipe = () => {
                     <img
                       alt="Token Image"
                       src={
-                        snipe.metadata?.media
+                        snipe._meta?.mediaUrl
                           ? parseImgUrl(snipe._meta?.mediaUrl)
                           : "./logo-white-new.png"
                       }
