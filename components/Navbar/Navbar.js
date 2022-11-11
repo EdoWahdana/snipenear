@@ -24,12 +24,12 @@ const colors = {
     transparent: 'bg-transparent'
 };
 
-export default function Navbar({ children, color, navbar, className }) {
+export default function Navbar({ children, isOpen, color, navbar, className }) {
     return (
       <>
         <div className="absolute w-full z-20">
           <nav
-            className={`fixed w-full md:relative md:flex md:flex-wrap md:items-center md:justify-between py-2.5 px-3 mb-3 backdrop-filter backdrop-blur-md md:backdrop-blur-0`}
+            className={`${isOpen ? 'bg-eversnipe-input border-b border-b-eversnipe bg-opacity-100' : 'bg-transparent'} fixed w-full md:relative md:flex md:flex-wrap md:items-center md:justify-between py-2.5 px-3 mb-3`}
           >
             {children}
           </nav>

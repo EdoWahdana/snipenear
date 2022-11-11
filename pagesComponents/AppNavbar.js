@@ -71,7 +71,7 @@ const AppNavbar = () => {
   };
 
   return (
-    <Navbar>
+    <Navbar isOpen={openNavbar}>
       <NavbarContainer>
         <NavbarWrapper>
           <NavbarBrand color="white">

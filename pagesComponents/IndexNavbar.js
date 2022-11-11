@@ -75,7 +75,7 @@ export default function IndexNavbar() {
   };
 
   return (
-    <Navbar>
+    <Navbar isOpen={openNavbar}>
       <NavbarContainer>
         <NavbarWrapper>
           <NavbarBrand color="white">
