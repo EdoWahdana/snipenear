@@ -112,7 +112,7 @@ const AppNavbar = () => {
                 <Link href="/">
                   <div className="font-poppins mr-0 md:mr-4" onClick={_signOut}>
                     <p className="bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe py-2 px-4 text-eversnipe font-bold text-lg rounded-lg cursor-pointer">
-                      {prettyTruncate(accountId, 30, "address")}
+                      {prettyTruncate(accountId, 18, "address")}
                     </p>
                   </div>
                 </Link>
