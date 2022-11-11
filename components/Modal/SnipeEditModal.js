@@ -41,7 +41,7 @@ const SnipeEditModal = ({ isShow, accountId, data, onClose }) => {
       <div className="flex min-h-full items-center justify-center p-4 text-center w-full md:w-1/3 mx-auto">
         <div className="grow relative transform overflow-hidden rounded-lg bg-eversnipe-input border-4 border-eversnipe">
           <div className="p-4 w-full">
-            <div className="sm:items-start mb-4 w-full">
+            <div className="sm:items-start mb-6 w-full">
               <div className="text-center sm:text-center">
                 <h3
                   className="text-2xl font-bold text-center leading-6 text-white border-b-2 border-eversnipe mb-6 pb-2"
@@ -56,16 +56,16 @@ const SnipeEditModal = ({ isShow, accountId, data, onClose }) => {
                       : "./logo-white-new.png"
                   }
                   width={100}
-                  className="mx-auto border-4 border-eversnipe rounded-lg"
+                  className="mx-auto border-4 border-eversnipe rounded-lg mb-6"
                 />
 
-                <div className="my-8">
-                  {data.settings?.emailNotification && (
-                    <div className="grid grid-cols-3 gap-y-2 mb-4 grid-flow-col items-start">
-                      <p className=" font-poppins font-bold text-white text-md text-left md:text-lg">
+                <table className="table-auto mx-auto">
+                  <tbody className="text-white">
+                    <tr>
+                      <td className="p-2 text-start text-xs md:text-sm">
                         Email
-                      </p>
-                      <div className="inline-flex md:hidden mx-auto">
+                      </td>
+                      <td className="py-2 px-6 text-start font-bold">
                         <input
                           name="contractId"
                           type={"email"}
@@ -73,39 +73,30 @@ const SnipeEditModal = ({ isShow, accountId, data, onClose }) => {
                           onChange={(e) => setEmail(e.target.value)}
                           defaultValue={data.settings.emailNotification}
                         />
-                      </div>
-
-                      <div className="hidden md:inline-flex mx-auto">
-                        <input
-                          name="contractId"
-                          type={"email"}
-                          className="bg-eversnipe-input border-2 border-eversnipe text-white rounded-md p-1 mr-4"
-                          onChange={(e) => setEmail(e.target.value)}
-                          defaultValue={data.settings.emailNotification}
-                          size={20}
-                        />
-                      </div>
-                    </div>
-                  )}
-                  <div className="grid grid-cols-3 gap-y-2 grid-flow-col items-start">
-                    <p className=" font-poppins font-bold text-white text-md text-left md:text-lg">
-                      Alert Price
-                    </p>
-                    <div className="inline-flex mx-auto relative">
-                      <input
-                        name="price"
-                        type={"number"}
-                        className="bg-eversnipe-input border-2 border-eversnipe text-white rounded-md p-1 mr-4"
-                        onChange={(e) => setPrice(e.target.value)}
-                        defaultValue={data._meta.formatNearAmount}
-                        min={0}
-                      />
-                      <div className="absolute right-5 top-0 flex items-center text-white text-opacity-70 h-full px-2">
-                        Ⓝ
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="p-2 text-start text-xs md:text-sm">
+                        Alert Price
+                      </td>
+                      <td className="py-2 px-6 text-start font-bold">
+                        <div className="inline-flex mx-auto relative">
+                          <input
+                            name="price"
+                            type={"number"}
+                            className="bg-eversnipe-input border-2 border-eversnipe text-white rounded-md p-1 mr-4"
+                            onChange={(e) => setPrice(e.target.value)}
+                            defaultValue={data._meta.formatNearAmount}
+                            min={0}
+                          />
+                          <div className="absolute right-5 top-0 flex items-center text-white text-opacity-70 h-full px-2">
+                            Ⓝ
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
 
@@ -115,7 +106,11 @@ const SnipeEditModal = ({ isShow, accountId, data, onClose }) => {
                   Close
                 </p>
               </div>
-              <button type="submit" className="font-poppins mr-0 md:mr-4" onClick={updateSnipe}>
+              <button
+                type="submit"
+                className="font-poppins mr-0 md:mr-4"
+                onClick={updateSnipe}
+              >
                 <p className="bg-eversnipe hover:bg-eversnipe-hover transition-colors duration-100 border-2 border-eversnipe py-2 px-4 text-eversnipe-text font-bold text-lg rounded-lg cursor-pointer">
                   Update
                 </p>
