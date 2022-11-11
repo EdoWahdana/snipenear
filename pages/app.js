@@ -134,6 +134,7 @@ const App = () => {
         setIsValid(true);
       }
 
+      window.scroll(0, 0);
       setHasFetching(true);
       setContractResult(contractResultData);
     } catch (err) {
@@ -151,12 +152,12 @@ const App = () => {
       let settings = {};
 
       if (price && parseFloat(price) < 0) {
-        console.log(parseFloat(price))
-        const errorMessage = 'Alert price must be greater than zero'
-        setContractResult(errorMessage)
-        setIsValid(false)
+        console.log(parseFloat(price));
+        const errorMessage = "Alert price must be greater than zero";
+        setContractResult(errorMessage);
+        setIsValid(false);
 
-        return
+        return;
       }
 
       const yoctoPrice = utils.format.parseNearAmount(price);
@@ -289,7 +290,7 @@ const App = () => {
                 <p className="text-white font-bold text-2xl text-center mb-2">
                   Preview
                 </p>
-                <div className="flex flex-col gap-y-4 w-full md:w-96 h-[350px] bg-eversnipe-input rounded-lg overflow-y-auto p-4">
+                <div className="flex flex-col gap-y-4 w-full md:w-96 h-[350px] bg-eversnipe-input rounded-lg overflow-y-auto overflow-hidden break-all p-4">
                   {isFetchingMetadata && (
                     <div>
                       <IconLoader size={20} colorClassName={"text-snipenear"} />
@@ -305,7 +306,8 @@ const App = () => {
                   )}
 
                   {/* Contract Result */}
-                  {!isFetchingMetadata && hasFetching &&
+                  {!isFetchingMetadata &&
+                    hasFetching &&
                     !isToken &&
                     typeof contractResult === "object" &&
                     Object.keys(contractResult).length > 0 && (
@@ -319,9 +321,12 @@ const App = () => {
                           width={100}
                           className="mx-auto border-4 border-eversnipe rounded-lg"
                         />
-                        {contractResult && contractResult.token?.owner_id === accountId && (
-                          <p className='text-red-200 text-sm text-center'>You cannot snipe your own NFT</p>
-                        )}
+                        {contractResult &&
+                          contractResult.token?.owner_id === accountId && (
+                            <p className="text-red-200 text-sm text-center">
+                              You cannot snipe your own NFT
+                            </p>
+                          )}
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Contract Id</p>
                           <p className="text-white text-sm">{contractId}</p>
@@ -348,7 +353,8 @@ const App = () => {
                     )}
 
                   {/* Token Result */}
-                  {!isFetchingMetadata && hasFetching &&
+                  {!isFetchingMetadata &&
+                    hasFetching &&
                     isToken &&
                     typeof contractResult === "object" &&
                     !contractResult.token && (
@@ -357,7 +363,8 @@ const App = () => {
                       </p>
                     )}
 
-                  {!isFetchingMetadata && hasFetching &&
+                  {!isFetchingMetadata &&
+                    hasFetching &&
                     isToken &&
                     typeof contractResult === "object" &&
                     contractResult.token &&
@@ -382,27 +389,40 @@ const App = () => {
                             onLoad={() => setIsImageLoading(false)}
                           />
                         )}
-                        {contractResult && contractResult.token?.owner_id === accountId && (
-                          <p className='text-red-200 text-sm text-center'>You cannot snipe your own NFT</p>
-                        )}
-                        <div className="grid grid-cols-3">
-                          <p className="text-white text-sm">Token Id</p>
-                          <p className="text-white text-md">
-                            {contractResult.token?.token_id}
-                          </p>
-                        </div>
-                        <div className="grid grid-cols-3">
-                          <p className="text-white text-sm">Owner Id</p>
-                          <p className="text-white text-md">
-                            {contractResult.token?.owner_id}
-                          </p>
-                        </div>
-                        <div className="grid grid-cols-3">
-                          <p className="text-white text-sm">Title</p>
-                          <p className="text-white text-md">
-                            {contractResult.token?.metadata?.title}
-                          </p>
-                        </div>
+                        {contractResult &&
+                          contractResult.token?.owner_id === accountId && (
+                            <p className="text-red-200 text-sm text-center">
+                              You cannot snipe your own NFT
+                            </p>
+                          )}
+                        <table className="table-auto mx-auto">
+                          <tbody className="text-white">
+                            <tr>
+                              <td className="w-1/5 text-start text-xs md:text-sm py-4 align-top">
+                                Token Id
+                              </td>
+                              <td className="py-2 px-6 text-start font-bold">
+                                {contractResult.token?.token_id}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="w-1/5 text-start text-xs md:text-sm py-4 align-top">
+                                Owner Id
+                              </td>
+                              <td className="py-2 px-6 text-start font-bold">
+                                {contractResult.token?.owner_id}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="w-1/5 text-start text-xs md:text-sm py-4 align-top">
+                                Title
+                              </td>
+                              <td className="py-2 px-6 text-start font-bold">
+                                {contractResult.token?.metadata.title}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </Fragment>
                     )}
                 </div>
@@ -775,7 +795,7 @@ const App = () => {
             <div className="w-5/12 px-8 md:px-4">
               <div className="mt-36">
                 <p className="text-white text-2xl text-left mb-2">Preview</p>
-                <div className="flex flex-col gap-y-4 w-full md:w-96 h-96 bg-eversnipe-input rounded-lg overflow-y-auto p-4">
+                <div className="flex flex-col scrollbar gap-y-4 w-full md:w-96 h-96 bg-eversnipe-input rounded-lg overflow-y-auto overflow-x-hidden break-all p-4">
                   {isFetchingMetadata && (
                     <div>
                       <IconLoader size={20} colorClassName={"text-snipenear"} />
@@ -792,7 +812,8 @@ const App = () => {
                   )}
 
                   {/* Contract Result */}
-                  {!isFetchingMetadata && hasFetching &&
+                  {!isFetchingMetadata &&
+                    hasFetching &&
                     !isToken &&
                     typeof contractResult === "object" &&
                     Object.keys(contractResult).length > 0 && (
@@ -806,9 +827,12 @@ const App = () => {
                           width={100}
                           className="mx-auto border-4 border-eversnipe rounded-lg"
                         />
-                        {contractResult && contractResult.token?.owner_id === accountId && (
-                          <p className='text-red-200 text-sm text-center'>You cannot snipe your own NFT</p>
-                        )}
+                        {contractResult &&
+                          contractResult.token?.owner_id === accountId && (
+                            <p className="text-red-200 text-sm text-center">
+                              You cannot snipe your own NFT
+                            </p>
+                          )}
                         <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Contract Id</p>
                           <p className="text-white text-sm">:</p>
@@ -839,7 +863,8 @@ const App = () => {
                     )}
 
                   {/* Token Result */}
-                  {!isFetchingMetadata && hasFetching &&
+                  {!isFetchingMetadata &&
+                    hasFetching &&
                     isToken &&
                     typeof contractResult === "object" &&
                     !contractResult.token && (
@@ -848,7 +873,8 @@ const App = () => {
                       </p>
                     )}
 
-                  {!isFetchingMetadata && hasFetching &&
+                  {!isFetchingMetadata &&
+                    hasFetching &&
                     isToken &&
                     typeof contractResult === "object" &&
                     contractResult.token &&
@@ -870,10 +896,41 @@ const App = () => {
                             onLoad={() => setIsImageLoading(false)}
                           />
                         )}
-                        {contractResult && contractResult.token?.owner_id === accountId && (
-                          <p className='text-red-200 text-sm text-center'>You cannot snipe your own NFT</p>
-                        )}
-                        <div className="grid grid-cols-3">
+                        {contractResult &&
+                          contractResult.token?.owner_id === accountId && (
+                            <p className="text-red-200 text-sm text-center">
+                              You cannot snipe your own NFT
+                            </p>
+                          )}
+                        <table className="table-auto mx-auto">
+                          <tbody className="text-white">
+                            <tr>
+                              <td className="w-1/4 text-start text-sm py-4 align-top">
+                                Token Id
+                              </td>
+                              <td className="py-2 px-2 text-start font-bold">
+                                {contractResult.token?.token_id}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="w-1/4 text-start text-sm py-4 align-top">
+                                Owner Id
+                              </td>
+                              <td className="py-2 px-2 text-start font-bold">
+                                {contractResult.token?.owner_id}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="w-1/4 text-start text-sm py-4 align-top">
+                                Title
+                              </td>
+                              <td className="py-2 px-2 text-start font-bold">
+                                {contractResult.token?.metadata.title}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        {/* <div className="grid grid-cols-3">
                           <p className="text-white text-sm">Token Id</p>
                           <p className="text-white text-sm">:</p>
                           <p className="text-white text-sm">
@@ -893,7 +950,7 @@ const App = () => {
                           <p className="text-white text-sm">
                             {contractResult.token?.metadata?.title}
                           </p>
-                        </div>
+                        </div> */}
                       </Fragment>
                     )}
                 </div>

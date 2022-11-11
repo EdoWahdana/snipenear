@@ -233,7 +233,11 @@ const MySnipe = () => {
                                 {snipe._meta?.nftToken?.metadata.title}
                               </p>
                               <p className="text-white text-xs">
-                                {prettyTruncate(snipe.contractId, 20, 'address')}
+                                {prettyTruncate(
+                                  snipe.contractId,
+                                  20,
+                                  "address"
+                                )}
                               </p>
                             </div>
                           </div>
@@ -308,6 +312,7 @@ const MySnipe = () => {
                     key={snipe._id}
                     className="bg-eversnipe transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 mx-2 my-4"
                   >
+                    {console.log(snipe)}
                     <div className="flex flex-row h-24 justify-between items-center text-white">
                       <div className="inline-flex items-center gap-x-4">
                         <img
@@ -324,10 +329,10 @@ const MySnipe = () => {
                               {snipe._meta?.nftToken?.metadata.title}
                             </p>
                             <p className="text-white text-xs">
-                              {prettyTruncate(snipe.contractId, 20, 'address')}
+                              {prettyTruncate(snipe.contractId, 20, "address")}
                             </p>
                             <p className="text-white text-xs">
-                              {prettyTruncate(snipe.tokenId, 18, 'address')}
+                              {prettyTruncate(snipe.tokenId, 18, "address")}
                             </p>
                           </div>
                         </div>
@@ -421,7 +426,9 @@ const MySnipe = () => {
                         <p className="text-white font-bold text-md">
                           {snipe._meta?.nftToken?.metadata.title}
                         </p>
-                        <p className="text-white text-xs">{prettyTruncate(snipe.contractId, 30, 'address')}</p>
+                        <p className="text-white text-xs">
+                          {prettyTruncate(snipe.contractId, 30, "address")}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -494,9 +501,11 @@ const MySnipe = () => {
                         </p>
                         <div className="flex flex-col">
                           <p className="text-white text-xs">
-                            {prettyTruncate(snipe.contractId, 30, 'address')}
+                            {prettyTruncate(snipe.contractId, 30, "address")}
                           </p>
-                          <p className="text-white text-xs">{prettyTruncate(snipe.tokenId, 30, 'address')}</p>
+                          <p className="text-white text-xs">
+                            {prettyTruncate(snipe.tokenId, 30, "address")}
+                          </p>
                         </div>
                       </div>
                     </div>
