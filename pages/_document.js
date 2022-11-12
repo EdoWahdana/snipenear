@@ -13,7 +13,7 @@ export default class CustomDocument extends Document {
             }}
           ></script>
           {/* End Google Tag Manager */}
-          <link rel="icon" type="image/x-icon" href="logo-white-new.png" />
+          <link rel="icon" type="image/x-icon" href="eversnipe-logo-white-round.png" />
         </Head>
         <body className="text-gray-700 antialiased">
           <Main />
