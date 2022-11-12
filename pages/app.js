@@ -280,7 +280,7 @@ const App = () => {
   return (
     <>
       <Header title="EverSnipe | App" />
-      <AppNavbar />
+      <AppNavbar title={router.asPath} />
 
       {/* Mobile Section */}
       <section className="grid md:hidden header relative items-start bg-eversnipe-bg">
