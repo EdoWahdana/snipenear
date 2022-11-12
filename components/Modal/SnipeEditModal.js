@@ -1,4 +1,3 @@
-import { formatNearAmount } from "near-api-js/lib/utils/format";
 import { utils } from "near-api-js";
 import { useState } from "react";
 import { parseImgUrl } from "../../utils/common";
@@ -8,7 +7,6 @@ import { generateAuth } from "../../config/utils";
 const SnipeEditModal = ({ isShow, accountId, data, onClose }) => {
   const [price, setPrice] = useState(data?._meta.formatNearAmount || null);
   const [email, setEmail] = useState(data?.email || null);
-  const [message, setMessage] = useState(null);
 
   if (!isShow) {
     return null;

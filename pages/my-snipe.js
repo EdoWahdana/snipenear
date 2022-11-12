@@ -12,6 +12,8 @@ import IconEdit from "../components/Icons/IconEdit";
 import SnipeInfoModal from "../components/Modal/SnipeInfoModal";
 import SnipeEditModal from "../components/Modal/SnipeEditModal";
 import IconWarning from "../components/Icons/IconWarning";
+import InfiniteScroll from "react-infinite-scroll-component";
+import IconRedirect from "../components/Icons/IconRedirect";
 
 const ModalEnum = {
   Info: "Info",
@@ -52,15 +54,15 @@ const MySnipe = () => {
 
   const parseSnipeStatus = (status) => {
     if (status === SnipeStatusEnum.NotActive) {
-      return <p className="text-sm text-gray-400">Not Active</p>;
+      return <p className="text-sm text-center text-gray-400">Not Active</p>;
     } else if (status === SnipeStatusEnum.Waiting) {
-      return <p className="text-sm text-yellow-300">Waiting</p>;
+      return <p className="text-sm text-center text-yellow-300">Waiting</p>;
     } else if (status === SnipeStatusEnum.Success) {
-      return <p className="text-sm text-green-300">Success</p>;
+      return <p className="text-sm text-center text-green-300">Success</p>;
     } else if (status === SnipeStatusEnum.Failed) {
-      return <p className="text-sm text-gray-300">Failed</p>;
+      return <p className="text-sm text-center text-gray-300">Failed</p>;
     } else {
-      return <p className="text-sm text-gray-400">{status}</p>;
+      return <p className="text-sm text-center text-gray-400">{status}</p>;
     }
   };
 
@@ -107,6 +109,7 @@ const MySnipe = () => {
 
     setTokenSnipe(newTokenSnipe);
     setContractSnipe(newContractSnipe);
+    setPage(page + 1);
 
     if (newResult && newResult.length < 10) {
       setHasMore(false);
@@ -395,153 +398,128 @@ const MySnipe = () => {
         }}
       >
         <div className="container w-full mx-auto">
-          <div className="mt-32 mb-10">
+          <div className="mt-32 mb-6">
             <p className="text-3xl text-white font-poppins font-bold text-center">
               MY SNIPE
             </p>
+            <div className="flex flex-row justify-center items-center mt-4">
+              <button
+                className="bg-eversnipe-hover hover:bg-eversnipe-hover border-r-0 border-eversnipe-text rounded-l-lg text-eversnipe-text p-2"
+                onClick={() => setIsToken(!isToken)}
+              >
+                Waiting
+              </button>
+              <button
+                className="bg-eversnipe hover:bg-eversnipe-hover border-2 border-eversnipe-text rounded-r-lg text-eversnipe-text p-2"
+                onClick={() => setIsToken(!isToken)}
+              >
+                Success
+              </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 w-full divide-x-2 divide-eversnipe divide-solid px-2 md:px-10">
-            {/* Contract snipe */}
-            <div className="mr-2 pl-0 lg:pl-10">
-              <p className="text-xl text-white text-center font-semibold mb-2">
-                Contract Snipe
-              </p>
-              {contractSnipe.map((snipe) => (
-                <div
-                  key={snipe._id}
-                  className="hidden md:flex flex-row h-20 justify-between items-center text-white bg-eversnipe transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 my-4"
-                >
-                  <div className="inline-flex items-center gap-x-4">
-                    <img
-                      src={
-                        snipe._meta?.mediaUrl
-                          ? parseImgUrl(snipe._meta?.mediaUrl)
-                          : "./logo-white-new.png"
-                      }
-                      className="w-16 h-16 border-2 border-eversnipe-dark"
-                    />
-                    <div className="flex flex-col justify-between items-start gap-y-2">
-                      <div>
-                        <p className="text-white font-bold text-md">
-                          {snipe._meta?.nftToken?.metadata.title}
-                        </p>
-                        <p className="text-white text-xs">
-                          {prettyTruncate(snipe.contractId, 30, "address")}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-y-2 justify-start items-end">
-                    {parseSnipeStatus(snipe.status)}
-                    <div className="inline-flex gap-x-1">
-                      <button
-                        className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
-                        onClick={() => {
-                          setShowModal(ModalEnum.Info);
-                          setSelectedSnipe(snipe);
-                        }}
-                      >
-                        <IconInfo size={20} />
-                      </button>
-                      {snipe.status === SnipeStatusEnum.Waiting && (
-                        <>
-                          <button
-                            className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
-                            onClick={() => {
-                              setShowModal(ModalEnum.Edit);
-                              setSelectedSnipe(snipe);
-                            }}
-                          >
-                            <IconEdit size={20} />
-                          </button>
-                          <button
-                            className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
-                            onClick={() => {
-                              snipe.isAutoBuy
-                                ? deleteSnipeAutoBuy(snipe)
-                                : deleteSnipe(snipe);
-                            }}
-                          >
-                            <IconDelete size={20} />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {/* Loop contract snipe */}
-            </div>
-
+          <div className="grid grid-cols-1 w-full px-2 md:px-10">
             {/* Token Snipe */}
-            <div className="pl-2 pr-0 lg:pr-10">
-              <p className="text-xl text-white text-center font-semibold mb-2">
-                NFT Snipe
-              </p>
+            <InfiniteScroll
+              dataLength={tokenSnipe.length}
+              next={fetchSnipe}
+              hasMore={hasMore}
+              className={
+                "grid grid-cols-4 gap-x-4 lg:grid-cols-5 lg:gap-x-4 pl-2 pr-0 lg:px-10"
+              }
+            >
               {tokenSnipe.map((snipe) => (
                 <div
                   key={snipe._id}
-                  className="hidden md:flex flex-row h-20 justify-between items-center text-white bg-eversnipe transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 my-4"
+                  className="w-full justify-between cursor-pointer items-center text-white bg-eversnipe transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 my-4"
+                  onClick={() => {
+                    setShowModal(ModalEnum.Info);
+                    setSelectedSnipe(snipe);
+                  }}
                 >
-                  <div className="inline-flex items-center gap-x-4">
-                    <img
-                      alt="Token Image"
-                      src={
-                        snipe._meta?.mediaUrl
-                          ? parseImgUrl(snipe._meta?.mediaUrl)
-                          : "./logo-white-new.png"
-                      }
-                      className="w-16 h-16 border-2 border-eversnipe-dark"
-                    />
+                  <div className="text-lg font-bold mt-4 mb-2">
+                    {parseSnipeStatus(snipe.status)}
+                  </div>
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="relative h-36 w-36">
+                      <div className="absolute h-36 flex flex-col w-full">
+                        <div className="my-2 relative flex flex-grow h-0 mx-auto">
+                          <div className="w-32">
+                            <img
+                              alt="Token Image"
+                              src={
+                                snipe._meta?.mediaUrl
+                                  ? parseImgUrl(snipe._meta?.mediaUrl)
+                                  : "./logo-white-new.png"
+                              }
+                              className="relative object-contain w-full h-full drop-shadow-md mx-auto z-10"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="flex flex-col justify-between items-start gap-y-2">
                       <div>
-                        <p className="text-white font-bold text-md">
+                        <p className="text-white font-bold text-md text-center mb-2">
                           {snipe._meta?.nftToken?.metadata.title}
                         </p>
                         <div className="flex flex-col">
-                          <p className="text-white text-xs">
-                            {prettyTruncate(snipe.contractId, 30, "address")}
+                          <p className="text-white text-xs text-center">
+                            {prettyTruncate(snipe.contractId, 35, "address")}
                           </p>
-                          <p className="text-white text-xs">
-                            {prettyTruncate(snipe.tokenId, 30, "address")}
+                          <p className="text-white text-xs text-center">
+                            {prettyTruncate(snipe.tokenId, 35, "address")}
                           </p>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-y-2 justify-start items-end">
-                    {parseSnipeStatus(snipe.status)}
+                  <div className="flex flex-row gap-y-2 justify-center items-end my-4">
                     <div className="inline-flex gap-x-1">
-                      <button
-                        className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
-                        onClick={() => {
-                          setShowModal(ModalEnum.Info);
-                          setSelectedSnipe(snipe);
-                        }}
-                      >
-                        <IconInfo size={20} />
-                      </button>
                       {snipe.status === SnipeStatusEnum.Waiting && (
                         <>
                           <button
-                            className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                            className="inline-flex items-center gap-x-2 bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
                             onClick={() => {
                               setShowModal(ModalEnum.Edit);
                               setSelectedSnipe(snipe);
                             }}
                           >
-                            <IconEdit size={20} />
+                            <p className="text-sm self-end justify-self-end">
+                              Update
+                            </p>
+                            <IconEdit size={15} />
                           </button>
                           <button
-                            className="bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                            className="inline-flex items-center gap-x-2 bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
                             onClick={() => {
                               snipe.isAutoBuy
                                 ? deleteSnipeAutoBuy(snipe)
                                 : deleteSnipe(snipe);
                             }}
                           >
-                            <IconDelete size={20} />
+                            <p className="text-sm self-end justify-self-end">
+                              Delete
+                            </p>
+                            <IconDelete size={16} />
+                          </button>
+                        </>
+                      )}
+
+                      {snipe.status === SnipeStatusEnum.Success && (
+                        <>
+                          <button
+                            className="inline-flex items-center gap-x-2 bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                            onClick={() => {
+                              setShowModal(ModalEnum.Edit);
+                              setSelectedSnipe(snipe);
+                            }}
+                          >
+                            <p className="text-sm self-end justify-self-end">
+                              Show Receipt
+                            </p>
+                            <IconRedirect color={'#FFFFFF'} size={15} />
                           </button>
                         </>
                       )}
@@ -549,8 +527,8 @@ const MySnipe = () => {
                   </div>
                 </div>
               ))}
-              {/* Loop token snipe */}
-            </div>
+            </InfiniteScroll>
+            {/* Loop token snipe */}
           </div>
         </div>
       </section>

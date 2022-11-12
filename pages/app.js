@@ -151,8 +151,15 @@ const App = () => {
 
       let settings = {};
 
+      if (!price) {
+        const errorMessage = "Please input Alert Price.";
+        setContractResult(errorMessage);
+        setIsValid(false);
+
+        return;
+      }
+
       if (price && parseFloat(price) < 0) {
-        console.log(parseFloat(price));
         const errorMessage = "Alert price must be greater than zero";
         setContractResult(errorMessage);
         setIsValid(false);
@@ -244,27 +251,28 @@ const App = () => {
           }
 
           setIsValid(false);
-        } else {
-          const resultSnipe = await axios.post(
-            `${process.env.NEXT_PUBLIC_API}/snipes`,
-            formData,
-            {
-              headers: {
-                authorization: await generateAuth(accountId),
-              },
-            }
-          );
-
-          if (resultSnipe.data && resultSnipe.data?.status === 1) {
-            setShowModal(ModalEnum.success);
-          } else {
-            setShowModal(ModalEnum.error);
-          }
-
-          setIsValid(false);
         }
+      } else {
+        const resultSnipe = await axios.post(
+          `${process.env.NEXT_PUBLIC_API}/snipes`,
+          formData,
+          {
+            headers: {
+              authorization: await generateAuth(accountId),
+            },
+          }
+        );
+
+        if (resultSnipe.data && resultSnipe.data?.status === 1) {
+          setShowModal(ModalEnum.success);
+        } else {
+          setShowModal(ModalEnum.error);
+        }
+
+        setIsValid(false);
       }
     } catch (err) {
+      setContractResult(err);
       console.error(err);
     }
   };
@@ -930,27 +938,6 @@ const App = () => {
                             </tr>
                           </tbody>
                         </table>
-                        {/* <div className="grid grid-cols-3">
-                          <p className="text-white text-sm">Token Id</p>
-                          <p className="text-white text-sm">:</p>
-                          <p className="text-white text-sm">
-                            {contractResult.token?.token_id}
-                          </p>
-                        </div>
-                        <div className="grid grid-cols-3">
-                          <p className="text-white text-sm">Owner Id</p>
-                          <p className="text-white text-sm">:</p>
-                          <p className="text-white text-sm">
-                            {contractResult.token?.owner_id}
-                          </p>
-                        </div>
-                        <div className="grid grid-cols-3">
-                          <p className="text-white text-sm">Title</p>
-                          <p className="text-white text-sm">:</p>
-                          <p className="text-white text-sm">
-                            {contractResult.token?.metadata?.title}
-                          </p>
-                        </div> */}
                       </Fragment>
                     )}
                 </div>
@@ -965,7 +952,13 @@ const App = () => {
       )}
 
       {showModal === ModalEnum.success && (
-        <SuccessModal onClose={() => setShowModal(null)} />
+        <SuccessModal
+          isShow={showModal === ModalEnum.success}
+          onClose={() => {
+            setShowModal(null);
+            router.replace("/my-snipe");
+          }}
+        />
       )}
 
       {showModal === ModalEnum.error && (

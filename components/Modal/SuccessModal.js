@@ -34,7 +34,7 @@ const SuccessModal = ({ onClose }) => {
                 className="bg-eversnipe hover:bg-eversnipe-hover text-eversnipe-text rounded-lg p-2"
                 onClick={onClose}
               >
-                Close
+                Redirect to My Snipe
               </button>
             </div>
           </div>

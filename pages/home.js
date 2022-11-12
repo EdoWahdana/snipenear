@@ -5,6 +5,7 @@ import IndexFooter from "pagesComponents/IndexFooter";
 import UserContext from "../config/context";
 import { parseImgUrl } from "../utils/common";
 import Link from "next/link";
+import LearnMoreModal from "../components/Modal/LearnMoreModal";
 import { useRouter } from "next/router";
 
 const RecommendedTokens = [
@@ -65,10 +66,16 @@ const RecommendedTokens = [
   },
 ];
 
+const ModalEnum = {
+  LearnMore: 'LearnMore'
+}
+
 const Home = () => {
   const router = useRouter();
   const { walletSelector, walletSelectorObject, accountId, signInModal } =
     useContext(UserContext);
+
+  const [showModal, setShowModal] = useState(null)
 
   const _signIn = async () => {
     signInModal.show();
@@ -140,7 +147,9 @@ const Home = () => {
                   )}
                   <button
                     className="bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-4 md:py-4 md:px-10 text-eversnipe font-bold text-2xl rounded-lg"
-                    onClick={() => {}}
+                    onClick={() => {
+                      setShowModal(ModalEnum.LearnMore)
+                    }}
                   >
                     Learn More
                   </button>
@@ -208,6 +217,8 @@ const Home = () => {
       </section>
 
       <IndexFooter />
+
+      <LearnMoreModal isShow={showModal === ModalEnum.LearnMore} onClose={() => setShowModal(null)} />
     </>
   );
 };
