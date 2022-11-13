@@ -67,19 +67,19 @@ const RecommendedTokens = [
 ];
 
 const ModalEnum = {
-  LearnMore: 'LearnMore'
-}
+  LearnMore: "LearnMore",
+};
 
 const Home = () => {
   const router = useRouter();
   const { walletSelector, walletSelectorObject, accountId, signInModal } =
     useContext(UserContext);
 
-  const [showModal, setShowModal] = useState(null)
+  const [showModal, setShowModal] = useState(null);
 
   const _signIn = async () => {
     signInModal.show();
-  }; 
+  };
 
   return (
     <>
@@ -148,7 +148,7 @@ const Home = () => {
                   <button
                     className="bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-4 md:py-4 md:px-10 text-eversnipe font-bold text-2xl rounded-lg"
                     onClick={() => {
-                      setShowModal(ModalEnum.LearnMore)
+                      setShowModal(ModalEnum.LearnMore);
                     }}
                   >
                     Learn More
@@ -181,13 +181,15 @@ const Home = () => {
                   key={index}
                   className="text-white cursor-pointer bg-eversnipe transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4 overflow-ellipsis"
                   onClick={() => {
-                    router.push({
-                      pathname: "/app",
-                      query: {
-                        contractId: token.contract_id,
-                        tokenId: token.token_id,
-                      },
-                    });
+                    walletSelector.isSignedIn()
+                      ? router.push({
+                          pathname: "/app",
+                          query: {
+                            contractId: token.contract_id,
+                            tokenId: token.token_id,
+                          },
+                        })
+                      : _signIn();
                   }}
                 >
                   <img
@@ -218,7 +220,10 @@ const Home = () => {
 
       <IndexFooter />
 
-      <LearnMoreModal isShow={showModal === ModalEnum.LearnMore} onClose={() => setShowModal(null)} />
+      <LearnMoreModal
+        isShow={showModal === ModalEnum.LearnMore}
+        onClose={() => setShowModal(null)}
+      />
     </>
   );
 };

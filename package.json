@@ -55,6 +55,7 @@
     "react-infinite-scroll-component": "^6.1.0",
     "react-modal": "^3.16.1",
     "react-onesignal": "^2.0.4",
+    "react-simple-image-viewer": "^1.2.2",
     "react-syntax-highlighter": "^15.4.3"
   },
   "eslintConfig": {

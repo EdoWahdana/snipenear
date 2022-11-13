@@ -14,7 +14,12 @@ import axios from "axios";
 import { generateAuth } from "../config/utils";
 import { prettyTruncate } from "../utils/common";
 
-const AppNavbar = () => {
+const TitleEnum = {
+  Snipe: "/app",
+  MySnipe: "/my-snipe",
+};
+
+const AppNavbar = ({ title }) => {
   const router = useRouter();
   const [openNavbar, setOpenNavbar] = useState(false);
   const { walletSelector, walletSelectorObject, accountId } =
@@ -66,7 +71,9 @@ const AppNavbar = () => {
               <Link href="/app" replace={true}>
                 <div className="mr-0 md:mr-4">
                   <p
-                    className={`font-poppins text-[#CCA8B4] text-lg cursor-pointer hover:text-opacity-80`}
+                    className={`${
+                      title === TitleEnum.Snipe && "font-bold underline"
+                    } font-poppins text-[#CCA8B4] text-lg cursor-pointer hover:text-opacity-80`}
                   >
                     Snipe
                   </p>
@@ -74,7 +81,11 @@ const AppNavbar = () => {
               </Link>
               <Link href="/my-snipe" replace={true}>
                 <div className="font-poppins mr-0 md:mr-4">
-                  <p className="text-lg text-[#CCA8B4] cursor-pointer hover:text-opacity-80">
+                  <p
+                    className={`${
+                      title === TitleEnum.MySnipe && "font-bold underline"
+                    } text-lg text-[#CCA8B4] cursor-pointer hover:text-opacity-80`}
+                  >
                     My Snipe
                   </p>
                 </div>

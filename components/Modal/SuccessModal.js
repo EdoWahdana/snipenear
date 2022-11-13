@@ -1,6 +1,6 @@
 import IconEmailSent from "../Icons/IconEmailSent";
 
-const SuccessModal = ({ onClose }) => {
+const SuccessModal = ({ onClose, onSnipeMore }) => {
   return (
     <div className="fixed inset-0 z-20 overflow-y-auto bg-black bg-opacity-50">
       <div className="flex min-h-full items-center md:items-center justify-center p-4 text-center sm:items-center">
@@ -28,13 +28,20 @@ const SuccessModal = ({ onClose }) => {
               </div>
             </div>
 
-            <div className="bg-eversnipe-input mx-auto">
+            <div className="inline-flex gap-x-2 bg-eversnipe-input mx-auto">
+              <button
+                type="button"
+                className="bg-eversnipe hover:bg-eversnipe-hover text-eversnipe-text rounded-lg p-2"
+                onClick={onSnipeMore}
+              >
+                Snipe More
+              </button>
               <button
                 type="button"
                 className="bg-eversnipe hover:bg-eversnipe-hover text-eversnipe-text rounded-lg p-2"
                 onClick={onClose}
               >
-                Redirect to My Snipe
+                Go to My Snipe
               </button>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import IconMagic from "../Icons/IconMagic";
 
-const SuccessModalAutoBuy = ({ onClose }) => {
+const SuccessModalAutoBuy = ({ onClose, onSnipeMore }) => {
   return (
     <div className="fixed inset-0 z-20 overflow-y-auto bg-black bg-opacity-50">
       <div className="flex min-h-full items-center md:items-center justify-center p-4 text-center sm:items-center">
@@ -11,7 +11,7 @@ const SuccessModalAutoBuy = ({ onClose }) => {
                 <IconMagic
                   width={70}
                   height={70}
-                  color={'#FFF'}
+                  color={"#FFF"}
                   className="mx-auto mb-4"
                 />
                 <h3
@@ -22,19 +22,27 @@ const SuccessModalAutoBuy = ({ onClose }) => {
                 </h3>
                 <div className="my-4">
                   <p className="text-sm text-white">
-                    Our AutoBuy Magic system will do a magic that transfer your favorite NFT when your snipe hit the target.
+                    Our AutoBuy Magic system will do a magic that transfer your
+                    favorite NFT when your snipe hit the target.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-eversnipe-input mx-auto">
+            <div className="inline-flex gap-x-2 bg-eversnipe-input mx-auto">
+              <button
+                type="button"
+                className="bg-eversnipe hover:bg-eversnipe-hover text-eversnipe-text rounded-lg p-2"
+                onClick={onSnipeMore}
+              >
+                Snipe More
+              </button>
               <button
                 type="button"
                 className="bg-eversnipe hover:bg-eversnipe-hover text-eversnipe-text rounded-lg p-2"
                 onClick={onClose}
               >
-                Close
+                Go to My Snipe
               </button>
             </div>
           </div>

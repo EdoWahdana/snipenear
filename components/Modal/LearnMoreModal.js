@@ -1,6 +1,24 @@
-
+import IconBell from "../Icons/IconBell";
+import ImageViewer from "react-simple-image-viewer";
+import { useState } from "react";
 
 const LearnMoreModal = ({ isShow, onClose }) => {
+  const imageList = [
+    "learnmore1.png",
+    "learnmore2.png",
+    "learnmore3.png",
+    "learnmore4.png",
+    "learnmore5.png",
+    "learnmore6.png",
+    "learnmore7.png",
+    "learnmore8.png",
+    "learnmore9.png",
+    "learnmore10.png",
+  ];
+
+  const [showImagePreview, setShowImagePreview] = useState(false);
+  const [imageIndex, setImageIndex] = useState(null);
+
   if (!isShow) {
     return null;
   }
@@ -30,42 +48,318 @@ const LearnMoreModal = ({ isShow, onClose }) => {
                   <p className="text-md text-white text-center font-poppins">
                     How to use :
                   </p>
-                  <table className="table-auto border text-white mt-4">
-                    <tbody>
-                      <tr>
-                        <td className="p-2">
-                          <p className="text-lg font-bold">1.</p>
-                        </td>
-                        <td className="p-2">
-                          <p>
-                            Before you can use our app, you have to Sign in with
-                            Wallet Selector and select your favorite wallet to
-                            be connected.
-                          </p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-2">
-                          <p className="text-lg font-bold">2.</p>
-                        </td>
-                        <td className="p-2">
-                          <p>
-                            Click the <b>"Launch App"</b> button to start sniping. You will be redirected to a new page.
-                          </p>
-                        </td>
-                      </tr>
-<tr>
-                        <td className="p-2">
-                          <p className="text-lg font-bold">2.</p>
-                        </td>
-                        <td className="p-2">
-                          <p>
-                            Click the <b>"Launch App"</b> button to start sniping. You will be redirected to a new page.
-                          </p>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <div className="scrollbar bg-[#523550] rounded-lg max-h-96 overflow-y-auto">
+                    <table className="table-auto text-white mt-4">
+                      <tbody>
+                        <tr>
+                          <td className="p-2 align-top md:align-middle">
+                            <p className="text-lg font-bold">1.</p>
+                          </td>
+                          <td className="p-2 align-top md:align-middle">
+                            <p>
+                              Before you can use our app, you have to Sign in
+                              with Wallet Selector and select your favorite
+                              wallet to be connected.
+                              <button
+                                className="hidden md:block bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mt-2 ml-2"
+                                onClick={() => {
+                                  setShowImagePreview(true);
+                                  setImageIndex(0);
+                                }}
+                              >
+                                Show Image
+                              </button>
+                            </p>
+                            <button
+                              className="block md:hidden bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mx-auto mt-1"
+                              onClick={() => {
+                                setShowImagePreview(true);
+                                setImageIndex(0);
+                              }}
+                            >
+                              Show Image
+                            </button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="p-2 align-top md:align-middle">
+                            <p className="text-lg font-bold">2.</p>
+                          </td>
+                          <td className="p-2 align-top md:align-middle">
+                            <p>
+                              After you logged in, you should see notification
+                              prompt in your browser. Click <b>"Allow"</b> to
+                              get Push Notification.
+                              <button
+                                className="hidden md:block bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mt-2 ml-2"
+                                onClick={() => {
+                                  setShowImagePreview(true);
+                                  setImageIndex(1);
+                                }}
+                              >
+                                Show Image
+                              </button>
+                            </p>
+                            <button
+                              className="block md:hidden bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mx-auto mt-1"
+                              onClick={() => {
+                                setShowImagePreview(true);
+                                setImageIndex(1);
+                              }}
+                            >
+                              Show Image
+                            </button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="p-2 align-top md:align-middle">
+                            <p className="text-lg font-bold">3.</p>
+                          </td>
+                          <td className="p-2 align-top md:align-middle">
+                            <p>
+                              Click the <b>"Launch App"</b> button to start
+                              sniping. You will be redirected to a new page.
+                              <button
+                                className="hidden md:block bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mt-2 ml-2"
+                                onClick={() => {
+                                  setShowImagePreview(true);
+                                  setImageIndex(2);
+                                }}
+                              >
+                                Show Image
+                              </button>
+                            </p>
+                            <button
+                              className="block md:hidden bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mx-auto mt-1"
+                              onClick={() => {
+                                setShowImagePreview(true);
+                                setImageIndex(2);
+                              }}
+                            >
+                              Show Image
+                            </button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="p-2 align-top md:align-middle">
+                            <p className="text-lg font-bold">4.</p>
+                          </td>
+                          <td className="p-2 align-top md:align-middle">
+                            <p>
+                              Insert Contract Id and Token Id of NFT that you
+                              want to snipe.
+                              <button
+                                className="hidden md:block bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mt-2 ml-2"
+                                onClick={() => {
+                                  setShowImagePreview(true);
+                                  setImageIndex(3);
+                                }}
+                              >
+                                Show Image
+                              </button>
+                            </p>
+                            <button
+                              className="block md:hidden bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mx-auto mt-1"
+                              onClick={() => {
+                                setShowImagePreview(true);
+                                setImageIndex(3);
+                              }}
+                            >
+                              Show Image
+                            </button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="p-2 align-top md:align-middle">
+                            <p className="text-lg font-bold">5.</p>
+                          </td>
+                          <td className="p-2 align-top md:align-middle">
+                            <p>
+                              Set Alert Price to get notified when the NFT is
+                              listed less than or equal the Alert Price.
+                              <button
+                                className="hidden md:block bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mt-2 ml-2"
+                                onClick={() => {
+                                  setShowImagePreview(true);
+                                  setImageIndex(4);
+                                }}
+                              >
+                                Show Image
+                              </button>
+                            </p>
+                            <button
+                              className="block md:hidden bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mx-auto mt-1"
+                              onClick={() => {
+                                setShowImagePreview(true);
+                                setImageIndex(4);
+                              }}
+                            >
+                              Show Image
+                            </button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="p-2 align-top md:align-middle">
+                            <p className="text-lg font-bold">6.</p>
+                          </td>
+                          <td className="p-2 align-top md:align-middle">
+                            <p>
+                              Enter your valid email that will receive the
+                              notification later.
+                              <button
+                                className="hidden md:block bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mt-2 ml-2"
+                                onClick={() => {
+                                  setShowImagePreview(true);
+                                  setImageIndex(5);
+                                }}
+                              >
+                                Show Image
+                              </button>
+                            </p>
+                            <button
+                              className="block md:hidden bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mx-auto mt-1"
+                              onClick={() => {
+                                setShowImagePreview(true);
+                                setImageIndex(5);
+                              }}
+                            >
+                              Show Image
+                            </button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="p-2 align-top md:align-middle">
+                            <p className="text-lg font-bold">7.</p>
+                          </td>
+                          <td className="p-2 align-top md:align-middle">
+                            <p>
+                              Enable the AutoBuy option if you want to buy the
+                              NFT immediately when the snipe hit the Alert
+                              Price.
+                              <button
+                                className="hidden md:block bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mt-2 ml-2"
+                                onClick={() => {
+                                  setShowImagePreview(true);
+                                  setImageIndex(6);
+                                }}
+                              >
+                                Show Image
+                              </button>
+                            </p>
+                            <button
+                              className="block md:hidden bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mx-auto mt-1"
+                              onClick={() => {
+                                setShowImagePreview(true);
+                                setImageIndex(6);
+                              }}
+                            >
+                              Show Image
+                            </button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="p-2 align-top md:align-middle">
+                            <p className="text-lg font-bold">8.</p>
+                          </td>
+                          <td className="p-2 align-top md:align-middle">
+                            <p>
+                              After you finish inserting the data. Click the{" "}
+                              <b>"Check"</b> button to validate the NFT.
+                              <button
+                                className="hidden md:block bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mt-2 ml-2"
+                                onClick={() => {
+                                  setShowImagePreview(true);
+                                  setImageIndex(7);
+                                }}
+                              >
+                                Show Image
+                              </button>
+                            </p>
+                            <button
+                              className="block md:hidden bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mx-auto mt-1"
+                              onClick={() => {
+                                setShowImagePreview(true);
+                                setImageIndex(7);
+                              }}
+                            >
+                              Show Image
+                            </button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="p-2 align-top md:align-middle">
+                            <p className="text-lg font-bold">9.</p>
+                          </td>
+                          <td className="p-2 align-top md:align-middle">
+                            <p>
+                              If eligible, the <b>"Snipe"</b> button will be
+                              enabled and you can proceed to Snipe! 🎯
+                              <button
+                                className="hidden md:block bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mt-2 ml-2"
+                                onClick={() => {
+                                  setShowImagePreview(true);
+                                  setImageIndex(8);
+                                }}
+                              >
+                                Show Image
+                              </button>
+                            </p>
+                            <button
+                              className="block md:hidden bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mx-auto mt-1"
+                              onClick={() => {
+                                setShowImagePreview(true);
+                                setImageIndex(8);
+                              }}
+                            >
+                              Show Image
+                            </button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="p-2 align-top md:align-middle">
+                            <p className="text-lg font-bold">10.</p>
+                          </td>
+                          <td className="p-2 align-top md:align-middle">
+                            <p>
+                              If you enable the AutoBuy option, you will be
+                              redirected to Wallet in order to deposit your
+                              Alert Price.
+                              <button
+                                className="hidden md:block bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mt-2 ml-2"
+                                onClick={() => {
+                                  setShowImagePreview(true);
+                                  setImageIndex(9);
+                                }}
+                              >
+                                Show Image
+                              </button>
+                            </p>
+                            <button
+                              className="block md:hidden bg-transparent hover:bg-eversnipe-dark-hover transition-colors duration-100 border-2 border-eversnipe p-1 text-eversnipe font-bold text-xs rounded-lg mx-auto mt-1"
+                              onClick={() => {
+                                setShowImagePreview(true);
+                                setImageIndex(9);
+                              }}
+                            >
+                              Show Image
+                            </button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="p-2 align-top md:align-middle">
+                            <p className="text-lg font-bold">11.</p>
+                          </td>
+                          <td className="p-2 align-top md:align-middle">
+                            <p>
+                              And that's it. You just have to wait our system to
+                              tell you the NFT listed at your Alert Price or the
+                              NFT is already sent to your Wallet.
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -82,6 +376,14 @@ const LearnMoreModal = ({ isShow, onClose }) => {
           </div>
         </div>
       </div>
+
+      {showImagePreview && (
+        <ImageViewer
+          src={imageList}
+          currentIndex={imageIndex}
+          onClose={() => setShowImagePreview(false)}
+        />
+      )}
     </div>
   );
 };

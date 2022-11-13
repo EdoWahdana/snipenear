@@ -280,7 +280,7 @@ const App = () => {
   return (
     <>
       <Header title="EverSnipe | App" />
-      <AppNavbar />
+      <AppNavbar title={router.asPath} />
 
       {/* Mobile Section */}
       <section className="grid md:hidden header relative items-start bg-eversnipe-bg">
@@ -948,7 +948,13 @@ const App = () => {
       </section>
 
       {showModal === ModalEnum.successAutoBuy && (
-        <SuccessModalAutoBuy onClose={() => setShowModal(null)} />
+        <SuccessModalAutoBuy
+          onClose={() => { 
+            setShowModal(null)
+            router.replace("/my-snipe");
+          }}
+          onSnipeMore={() => setShowModal(null)}
+        />
       )}
 
       {showModal === ModalEnum.success && (
@@ -957,6 +963,9 @@ const App = () => {
           onClose={() => {
             setShowModal(null);
             router.replace("/my-snipe");
+          }}
+          onSnipeMore={() => {
+            setShowModal(null);
           }}
         />
       )}
