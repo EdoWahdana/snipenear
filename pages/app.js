@@ -24,6 +24,7 @@ import { viewMethod } from "../config/utils";
 import JSBI from "jsbi";
 import SuccessModalAutoBuy from "../components/Modal/SuccessModalAutoBuy";
 import IconLoader from "../components/Icons/IconLoader";
+import IconWarning from "../components/Icons/IconWarning";
 
 const ModalEnum = {
   successAutoBuy: "SuccessAutoBuy",
@@ -112,8 +113,6 @@ const App = () => {
         }
       );
 
-      setIsFetchingMetadata(false);
-
       if (metadataRaw.data.status === 0) {
         throw new Error(metadataRaw.data.message);
       }
@@ -137,9 +136,13 @@ const App = () => {
       window.scroll(0, 0);
       setHasFetching(true);
       setContractResult(contractResultData);
+      setIsFetchingMetadata(false);
     } catch (err) {
+      window.scroll(0, 0);
+      const errorMessage = "NFT or Contract invalid, please try again!";
       setIsValid(false);
-      setContractResult(err.toString());
+      setContractResult(errorMessage);
+      setIsFetchingMetadata(false);
     }
   };
 
@@ -308,9 +311,16 @@ const App = () => {
                     </div>
                   )}
                   {typeof contractResult === "string" && (
-                    <p className="text-white text-md font-bold mx-auto">
-                      {contractResult}
-                    </p>
+                    <div>
+                      <IconWarning
+                        size={100}
+                        color={"#FFF"}
+                        className='mx-auto my-4'
+                      />
+                      <p className="text-white text-md font-bold mx-auto">
+                        {contractResult}
+                      </p>
+                    </div>
                   )}
 
                   {/* Contract Result */}
@@ -813,10 +823,17 @@ const App = () => {
                     </div>
                   )}
 
-                  {typeof contractResult === "string" && (
-                    <p className="text-white text-md font-bold mx-auto">
-                      {contractResult}
-                    </p>
+                  {!isFetchingMetadata && typeof contractResult === "string" && (
+                    <div>
+                      <IconWarning
+                        size={100}
+                        color={'#FFF'}
+                        className='mx-auto my-4'
+                      />
+                      <p className="text-white text-md font-bold text-center">
+                        {contractResult}
+                      </p>
+                    </div>
                   )}
 
                   {/* Contract Result */}
@@ -949,8 +966,8 @@ const App = () => {
 
       {showModal === ModalEnum.successAutoBuy && (
         <SuccessModalAutoBuy
-          onClose={() => { 
-            setShowModal(null)
+          onClose={() => {
+            setShowModal(null);
             router.replace("/my-snipe");
           }}
           onSnipeMore={() => setShowModal(null)}
