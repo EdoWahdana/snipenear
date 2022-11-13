@@ -24,6 +24,17 @@ const AppNavbar = () => {
     if (!walletSelector.isSignedIn()) {
       return;
     }
+
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_API}/remove-account-identity`,
+      null,
+      {
+        headers: {
+          authorization: await generateAuth(accountId),
+        },
+      }
+    );
+
     localStorage.removeItem("account_identity");
 
     await walletSelectorObject.signOut();

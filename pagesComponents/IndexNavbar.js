@@ -29,6 +29,16 @@ export default function IndexNavbar() {
       return;
     }
 
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_API}/remove-account-identity`,
+      null,
+      {
+        headers: {
+          authorization: await generateAuth(accountId),
+        },
+      }
+    );
+
     localStorage.removeItem("account_identity");
     await walletSelectorObject.signOut();
     router.replace(process.env.NEXT_PUBLIC_BASE_URL);
