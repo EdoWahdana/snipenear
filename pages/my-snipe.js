@@ -551,7 +551,7 @@ const MySnipe = () => {
                     )}
 
                     {snipe.status === SnipeStatusEnum.Success && (
-                      <div className="grid grid-cols-2">
+                      <div className="grid grid-cols-2 gap-x-2">
                         <button
                           className="  items-center gap-x-2 bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
                           onClick={() => {
