@@ -26,53 +26,24 @@ const AppNavbar = ({ title }) => {
     useContext(UserContext);
 
   const _signOut = async () => {
-    await unsubscribePushManager();
-  };
-
-  const unsubscribePushManager = async () => {
     if (!walletSelector.isSignedIn()) {
       return;
     }
 
-    try {
-      navigator.serviceWorker
-        .register("/_worker.js")
-        .then(async (serviceWorkerRegistration) => {
-          await serviceWorkerRegistration.unregister();
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_API}/remove-account-identity`,
+      null,
+      {
+        headers: {
+          authorization: await generateAuth(accountId),
+        },
+      }
+    );
 
-          const subscription =
-            await serviceWorkerRegistration.pushManager.getSubscription();
+    localStorage.removeItem("account_identity");
 
-          if (!subscription) {
-            await walletSelectorObject.signOut();
-            router.replace(process.env.NEXT_PUBLIC_BASE_URL);
-
-            return;
-          }
-
-          await subscription
-            .unsubscribe()
-            .then(async () => {
-              await axios({
-                method: "POST",
-                data: subscription,
-                url: `${process.env.NEXT_PUBLIC_API}/unsubscribe-web-push-notification`,
-                headers: {
-                  authorization: await generateAuth(accountId),
-                },
-              });
-            })
-            .then(async () => {
-              await walletSelectorObject.signOut();
-              router.replace(process.env.NEXT_PUBLIC_BASE_URL);
-            })
-            .catch((error) => {
-              console.error("UNSUBSCRIBE ERR : ", error);
-            });
-        });
-    } catch (err) {
-      console.error("GET SUBSCRIPTION ERR : ", err);
-    }
+    await walletSelectorObject.signOut();
+    router.replace(process.env.NEXT_PUBLIC_BASE_URL);
   };
 
   return (
