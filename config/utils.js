@@ -8,7 +8,9 @@ import {
 import getConfig from "./near";
 import { Base64 } from "js-base64";
 import sha256 from "js-sha256";
-import { providers } from 'near-api-js';
+import { providers } from "near-api-js";
+const axios = require("axios");
+import OneSignal from "react-onesignal";
 
 const nearConfig = getConfig(process.env.NODE_ENV || "development");
 
@@ -46,6 +48,7 @@ export function logout() {
   window.walletConnection.signOut();
   // reload page
   window.location.replace(window.location.origin + window.location.pathname);
+  localStorage.removeItem("account_identity");
 }
 
 export function login() {
@@ -79,7 +82,7 @@ export async function generateAuth(accountId) {
     return _authToken;
   } catch (err) {
     return null;
-  } 
+  }
 
   async function signMessage(message, accountId, networkId) {
     const _keyStore = new keyStores.BrowserLocalStorageKeyStore();
@@ -96,16 +99,35 @@ export async function generateAuth(accountId) {
   }
 }
 
- export async function viewMethod(contractId, method, args = {}) {
-    const network = getConfig(process.env.NEXT_PUBLIC_APP_ENV);
-    const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+export async function viewMethod(contractId, method, args = {}) {
+  const network = getConfig(process.env.NEXT_PUBLIC_APP_ENV);
+  const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
 
-    let res = await provider.query({
-      request_type: "call_function",
-      account_id: contractId,
-      method_name: method,
-      args_base64: Buffer.from(JSON.stringify(args)).toString("base64"),
-      finality: "optimistic",
-    });
-    return JSON.parse(Buffer.from(res.result).toString());
+  let res = await provider.query({
+    request_type: "call_function",
+    account_id: contractId,
+    method_name: method,
+    args_base64: Buffer.from(JSON.stringify(args)).toString("base64"),
+    finality: "optimistic",
+  });
+  return JSON.parse(Buffer.from(res.result).toString());
+}
+
+export const setAccountIdentity = async (accountId) => {
+  if (!localStorage.getItem("account_identity")) {
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_API}/set-account-identity`,
+      null,
+      {
+        headers: {
+          authorization: await generateAuth(accountId),
+        },
+      }
+    );
+
+    localStorage.setItem("account_identity", response.data.data.identity);
+    if (localStorage.getItem("account_identity")) {
+      OneSignal.setExternalUserId(localStorage.getItem("account_identity"));
+    }
   }
+};

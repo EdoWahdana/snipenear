@@ -13,8 +13,10 @@ import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import "@near-wallet-selector/modal-ui/styles.css";
 import MyNearIconUrl from "@near-wallet-selector/my-near-wallet/assets/my-near-wallet-icon.png";
 import { urlBase64ToUint8Array } from "../utils/common";
-import { generateAuth } from "../config/utils";
+import { generateAuth, setAccountIdentity } from "../config/utils";
 import axios from "axios";
+import useOneSignal from "../utils/useOneSignal";
+import OneSignal from "react-onesignal";
 
 export default function MyApp({ Component, pageProps }) {
   const [walletSelector, setWalletSelector] = useState({});
@@ -44,6 +46,7 @@ export default function MyApp({ Component, pageProps }) {
     if (isSignedIn) {
       wallet = await selector.wallet();
       accountIdWallet = selector.store.getState().accounts[0].accountId;
+      setAccountIdentity(accountIdWallet);
     }
 
     return { selector, wallet, accountIdWallet, modal };
@@ -61,65 +64,7 @@ export default function MyApp({ Component, pageProps }) {
     }
   }, [walletSelector]);
 
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      setup();
-    } else {
-      console.error("Service worker not supported");
-    }
-  }, [initWalletSelector]);
-
-  const setup = async () => {
-    if (!initWalletSelector) {
-      return;
-    }
-
-    if (!walletSelector.isSignedIn()) {
-      return;
-    }
-
-    const currentRegistration = await navigator.serviceWorker.getRegistration();
-    if (currentRegistration) {
-      return;
-    }
-
-    try {
-      navigator.serviceWorker
-        .register("/_worker.js")
-        .then(async (serviceWorkerRegistration) => {
-          const currentSubscription =
-            await serviceWorkerRegistration.pushManager.getSubscription();
-
-          if (currentSubscription) {
-            return;
-          }
-
-          console.log("Registering push...");
-
-          const subscription =
-            await serviceWorkerRegistration.pushManager.subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: urlBase64ToUint8Array(
-                "BMCbH8jWoT-mPUAODqUzCrern-rO1PrhywprUvz21mhSlFBdbvvpyCpRiTBIRaXvBOhsoAIJ3E9XDjt0c0EPL44"
-              ),
-            });
-
-          await axios.post(
-            `${process.env.NEXT_PUBLIC_API}/subscribe-web-push-notification`,
-            subscription,
-            {
-              headers: {
-                authorization: await generateAuth(accountId),
-              },
-            }
-          );
-
-          console.log("Finish registering");
-        });
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  useOneSignal();
 
   return (
     <React.Fragment>

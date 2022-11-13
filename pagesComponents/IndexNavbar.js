@@ -25,53 +25,13 @@ export default function IndexNavbar() {
   };
 
   const _signOut = async () => {
-    unsubscribePushManager();
-  };
-
-  const unsubscribePushManager = async () => {
     if (!walletSelector.isSignedIn()) {
       return;
     }
 
-    try {
-      navigator.serviceWorker
-        .register("/_worker.js")
-        .then(async (serviceWorkerRegistration) => {
-          await serviceWorkerRegistration.unregister();
-
-          const subscription =
-            await serviceWorkerRegistration.pushManager.getSubscription();
-
-          if (!subscription) {
-            await walletSelectorObject.signOut();
-            router.replace(process.env.NEXT_PUBLIC_BASE_URL);
-
-            return;
-          }
-
-          await subscription
-            .unsubscribe()
-            .then(async () => {
-              await axios({
-                method: "POST",
-                data: subscription,
-                url: `${process.env.NEXT_PUBLIC_API}/unsubscribe-web-push-notification`,
-                headers: {
-                  authorization: await generateAuth(accountId),
-                },
-              });
-            })
-            .then(async () => {
-              await walletSelectorObject.signOut();
-              router.replace(process.env.NEXT_PUBLIC_BASE_URL);
-            })
-            .catch((error) => {
-              console.error("UNSUBSCRIBE ERR : ", error);
-            });
-        });
-    } catch (err) {
-      console.error("GET SUBSCRIPTION ERR : ", err);
-    }
+    localStorage.removeItem("account_identity");
+    await walletSelectorObject.signOut();
+    router.replace(process.env.NEXT_PUBLIC_BASE_URL);
   };
 
   return (
