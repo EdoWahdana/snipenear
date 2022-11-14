@@ -164,18 +164,20 @@ const Home = () => {
                 </div>
               </div>
               <div className="hidden md:block">
-                <img
-                  src="nfts.png"
-                  alt="Material Tailwind Logo"
-                  className="w-64 md:w-[450px] mx-auto md:my-10"
-                />
+                <a href="#recommendation">
+                  <img
+                    src="nfts-new.png"
+                    alt="Material Tailwind Logo"
+                    className="w-64 md:w-[450px] mx-auto md:my-10"
+                  />
+                </a>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="overflow-hidden bg-[url('/landing-page-2.png')] bg-no-repeat bg-cover py-10 md:py-20">
+      <section id="recommendation" className="overflow-hidden bg-[url('/landing-page-2.png')] bg-no-repeat bg-cover py-10 md:py-20">
         <div className="flex flex-wrap items-center">
           <div className="w-full md:w-9/12 px-8 md:px-4 ml-auto mr-auto mt-10">
             <div className="w-80 md:w-full mb-10 mx-auto">
