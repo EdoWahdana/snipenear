@@ -300,7 +300,7 @@ const App = () => {
               backgroundRepeat: "no-repeat",
             }}
           >
-            <div data-aos='fade-up' className="w-full px-8 md:px-4">
+            <div data-aos='zoom-in' className="w-full px-8 md:px-4">
               <div className="mt-24">
                 <p className="text-white font-bold text-2xl text-center mb-2">
                   Preview
@@ -453,7 +453,7 @@ const App = () => {
           </div>
 
           <div className="container w-full md:w-2/3">
-            <div className="w-full px-8 md:px-4 text-center">
+            <div data-aos='zoom-in' data-aos-delay='300' className="w-full px-8 md:px-4 text-center">
               <div className="flex flex-col gap-y-2 mt-6">
                 <p className=" font-poppins font-bold text-white text-md text-left md:text-xl">
                   Contract Id

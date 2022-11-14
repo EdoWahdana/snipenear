@@ -14,6 +14,8 @@ import SnipeEditModal from "../components/Modal/SnipeEditModal";
 import IconWarning from "../components/Icons/IconWarning";
 import InfiniteScroll from "react-infinite-scroll-component";
 import IconRedirect from "../components/Icons/IconRedirect";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const FilterEnum = {
   Waiting: "Waiting",
@@ -49,6 +51,10 @@ const MySnipe = () => {
   const [showModal, setShowModal] = useState(null);
 
   useEffect(() => {
+    AOS.init({
+      duration: 300
+    })
+
     fetchSnipe();
   }, []);
 
@@ -324,6 +330,7 @@ const MySnipe = () => {
 
                 {tokenSnipe.map((snipe) => (
                   <div
+                    data-aos='zoom-in'
                     key={snipe._id}
                     className="bg-eversnipe transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 mx-2 my-4"
                   >
@@ -469,6 +476,8 @@ const MySnipe = () => {
             >
               {tokenSnipe.map((snipe) => (
                 <div
+                  data-aos='zoom-in'
+                  data-aos-offset='100'
                   key={snipe._id}
                   className="w-full shadow-sm shadow-eversnipe-input justify-between items-center text-white bg-eversnipe transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg px-4 my-4"
                 >
@@ -487,7 +496,7 @@ const MySnipe = () => {
                                   ? parseImgUrl(snipe._meta?.mediaUrl)
                                   : "./logo-white-new.png"
                               }
-                              className="relative object-contain w-full h-full drop-shadow-md mx-auto z-10"
+                              className="relative object-contain w-full h-full drop-shadow-xl mx-auto z-10"
                             />
                           </div>
                         </div>
@@ -551,9 +560,9 @@ const MySnipe = () => {
                     )}
 
                     {snipe.status === SnipeStatusEnum.Success && (
-                      <div className="grid grid-cols-2 gap-x-2">
+                      <div className={`${snipe.isAutoBuy ? 'grid grid-cols-2 gap-x-2' : 'grid grid-cols-1'}`}>
                         <button
-                          className="  items-center gap-x-2 bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                          className={`${snipe.isAutoBuy ? 'p-2' : 'py-4 px-8'} items-center gap-x-2 bg-eversnipe-input text-sm rounded-lg hover:bg-opacity-50`}
                           onClick={() => {
                             setShowModal(ModalEnum.Info);
                             setSelectedSnipe(snipe);
@@ -563,20 +572,15 @@ const MySnipe = () => {
                             Info
                           </p>
                         </button>
-                        <button
-                          className="inline-flex items-center gap-x-2 bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
-                          onClick={() => {
-                            console.log(
-                              generateTransactionHashFromReceipt(
-                                snipe._meta?.buyReceiptId
-                              )
-                            );
-                          }}
-                        >
-                          <p className="text-sm self-end justify-self-end">
-                            Show Receipt
-                          </p>
-                        </button>
+                        {snipe.isAutoBuy && (
+                          <button
+                            className="inline-flex items-center gap-x-2 bg-eversnipe-input text-sm p-2 rounded-lg hover:bg-opacity-50"
+                          >
+                            <a href={`https://explorer.testnet.near.org/?query=${snipe?.buyReceiptId}`} className="text-sm self-end justify-self-end">
+                              Show Receipt
+                            </a>
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
