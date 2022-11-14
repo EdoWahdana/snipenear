@@ -7,6 +7,8 @@ import { parseImgUrl } from "../utils/common";
 import Link from "next/link";
 import LearnMoreModal from "../components/Modal/LearnMoreModal";
 import { useRouter } from "next/router";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const RecommendedTokens = [
   {
@@ -77,6 +79,12 @@ const Home = () => {
 
   const [showModal, setShowModal] = useState(null);
 
+  useEffect(() => {
+    AOS.init({
+      duration: 300
+    })
+  }, [])
+
   const _signIn = async () => {
     signInModal.show();
   };
@@ -89,14 +97,14 @@ const Home = () => {
       <section
         className="header relative items-center flex bg-fill"
         style={{
-          backgroundImage: `url('./landing-page.png')`,
+          backgroundImage: `url('./landing-page-min.png')`,
           backgroundSize: "100% 100%",
           backgroundRepeat: "no-repeat",
         }}
       >
         <div className="container max-w-7xl mx-auto">
           <div className="w-full px-8 md:px-4 text-center">
-            <div className="flex flex-col md:flex-row relative mt-16 md:mt-32">
+            <div data-aos="zoom-in" className="flex flex-col md:flex-row relative mt-16 md:mt-32">
               <div className="md:w-6/12 mr-auto mt-10">
                 <div className="block md:hidden mb-4 md:mb-0">
                   <img
@@ -178,6 +186,7 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {RecommendedTokens.map((token, index) => (
                 <div
+                  data-aos='zoom-in'
                   key={index}
                   className="text-white cursor-pointer bg-eversnipe transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4 overflow-ellipsis"
                   onClick={() => {

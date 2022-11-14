@@ -17,6 +17,7 @@ import { generateAuth, setAccountIdentity } from "../config/utils";
 import axios from "axios";
 import useOneSignal from "../utils/useOneSignal";
 import OneSignal from "react-onesignal";
+import Loading from "../components/Loading";
 
 export default function MyApp({ Component, pageProps }) {
   const [walletSelector, setWalletSelector] = useState({});
@@ -82,7 +83,7 @@ export default function MyApp({ Component, pageProps }) {
           signInModal: signInModal,
         }}
       >
-        {initWalletSelector ? <Component {...pageProps} /> : <p>Loading</p>}
+        {initWalletSelector ? <Component {...pageProps} /> : <Loading />}
       </UserContext.Provider>
     </React.Fragment>
   );

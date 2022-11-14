@@ -3,8 +3,6 @@ import React, {
   Fragment,
   useContext,
   useEffect,
-  useImperativeHandle,
-  useRef,
   useState,
 } from "react";
 import Header from "components/Documentation/Header";
@@ -25,6 +23,8 @@ import JSBI from "jsbi";
 import SuccessModalAutoBuy from "../components/Modal/SuccessModalAutoBuy";
 import IconLoader from "../components/Icons/IconLoader";
 import IconWarning from "../components/Icons/IconWarning";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const ModalEnum = {
   successAutoBuy: "SuccessAutoBuy",
@@ -34,7 +34,6 @@ const ModalEnum = {
 };
 
 const App = () => {
-  const autoBuyDepositRef = useRef();
   const router = useRouter();
   const { walletSelector, walletSelectorObject, accountId } =
     useContext(UserContext);
@@ -54,7 +53,12 @@ const App = () => {
   const [isAutoBuy, setIsAutoBuy] = useState(false);
   const [autoBuyDeposit, setAutoBuyDeposit] = useState(null);
   const [isFetchingMetadata, setIsFetchingMetadata] = useState(false);
-  const [tokenMetadata, setTokenMetadata] = useState(null);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 300
+    })
+  }, [])
 
   useEffect(() => {
     if (!walletSelector.isSignedIn()) {
@@ -296,7 +300,7 @@ const App = () => {
               backgroundRepeat: "no-repeat",
             }}
           >
-            <div className="w-full px-8 md:px-4">
+            <div data-aos='fade-up' className="w-full px-8 md:px-4">
               <div className="mt-24">
                 <p className="text-white font-bold text-2xl text-center mb-2">
                   Preview
@@ -625,7 +629,7 @@ const App = () => {
         }}
       >
         <div className="flex flex-row gap-x-2 mx-auto w-4/5">
-          <div className="container w-full md:w-2/3">
+          <div data-aos='zoom-in' className="container w-full md:w-2/3">
             <div className="w-5/12 px-8 md:px-4 text-center">
               <div className="grid grid-cols-2 gap-x-8 justify-center items-center mt-40">
                 <p
@@ -809,7 +813,7 @@ const App = () => {
               </div>
             </div>
           </div>
-          <div className="container w-full md:w-1/3">
+          <div data-aos='zoom-in' data-aos-delay='300' className="container w-full md:w-1/3">
             <div className="w-5/12 px-8 md:px-4">
               <div className="mt-36">
                 <p className="text-white text-2xl text-left mb-2">Preview</p>
