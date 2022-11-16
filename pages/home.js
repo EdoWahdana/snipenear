@@ -97,7 +97,7 @@ const Home = () => {
       <section
         className="header relative items-center flex bg-fill"
         style={{
-          backgroundImage: `url('./landing-page-min.png')`,
+          backgroundImage: `url('https://paras-cdn.imgix.net/bafybeibio3mxazb4iycvwfodibtqojle3277yi2rbng3lnyrmx32ncmo4a?w=800')`,
           backgroundSize: "100% 100%",
           backgroundRepeat: "no-repeat",
         }}
@@ -108,8 +108,8 @@ const Home = () => {
               <div className="md:w-6/12 mr-auto mt-10">
                 <div className="block md:hidden mb-4 md:mb-0">
                   <img
-                    src="nfts.png"
-                    alt="Material Tailwind Logo"
+                    src="https://paras-cdn.imgix.net/bafkreih4r2uhssyarmxo4cbf32ebfg252wh2ec6x5yyzr3avb3qry5s3gi?w=800"
+                    alt="NFT Logo"
                     className="w-72 md:w-[450px] mx-auto md:my-10"
                   />
                 </div>
@@ -177,7 +177,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section id="recommendation" className="overflow-hidden bg-[url('/landing-page-2.png')] bg-no-repeat bg-cover py-10 md:py-20">
+      <section id="recommendation" className="overflow-hidden bg-[url('https://paras-cdn.imgix.net/bafybeid27u6akdzjyltls5xmdjo2tqybqogrieewovoermg3yvsglcz7yy?w=800')] bg-no-repeat bg-cover py-10 md:py-20">
         <div className="flex flex-wrap items-center">
           <div className="w-full md:w-9/12 px-8 md:px-4 ml-auto mr-auto mt-10">
             <div className="w-80 md:w-full mb-10 mx-auto">

@@ -295,7 +295,7 @@ const App = () => {
           <div
             className="container w-full md:w-1/3"
             style={{
-              backgroundImage: `url('./landing-page.png')`,
+              backgroundImage: `url('https://paras-cdn.imgix.net/bafybeibio3mxazb4iycvwfodibtqojle3277yi2rbng3lnyrmx32ncmo4a?w=800')`,
               backgroundSize: "100% 100%",
               backgroundRepeat: "no-repeat",
             }}

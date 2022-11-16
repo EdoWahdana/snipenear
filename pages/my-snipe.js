@@ -256,7 +256,7 @@ const MySnipe = () => {
       <section
         className="grid md:hidden header relative items-start bg-fill min-h-screen overflow-y-auto"
         style={{
-          backgroundImage: `url('./landing-page-bg.png')`,
+          backgroundImage: `url('https://paras-cdn.imgix.net/bafybeibio3mxazb4iycvwfodibtqojle3277yi2rbng3lnyrmx32ncmo4a?w=800')`,
           backgroundSize: "100% 100%",
           backgroundRepeat: "no-repeat",
         }}
