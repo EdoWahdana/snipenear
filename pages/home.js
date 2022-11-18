@@ -7,8 +7,10 @@ import { parseImgUrl } from "../utils/common";
 import Link from "next/link";
 import LearnMoreModal from "../components/Modal/LearnMoreModal";
 import { useRouter } from "next/router";
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+import AOS from "aos";
+import "aos/dist/aos.css";
+import Lottie from "react-lottie";
+import * as animationData from "../public/abstract.json";
 
 const RecommendedTokens = [
   {
@@ -72,6 +74,15 @@ const ModalEnum = {
   LearnMore: "LearnMore",
 };
 
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: animationData,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
+};
+
 const Home = () => {
   const router = useRouter();
   const { walletSelector, walletSelectorObject, accountId, signInModal } =
@@ -81,9 +92,9 @@ const Home = () => {
 
   useEffect(() => {
     AOS.init({
-      duration: 300
-    })
-  }, [])
+      duration: 300,
+    });
+  }, []);
 
   const _signIn = async () => {
     signInModal.show();
@@ -97,21 +108,20 @@ const Home = () => {
       <section
         className="header relative items-center flex bg-fill"
         style={{
-          backgroundImage: `url('https://paras-cdn.imgix.net/bafybeibio3mxazb4iycvwfodibtqojle3277yi2rbng3lnyrmx32ncmo4a?w=800')`,
+          background: 'linear-gradient(180deg, rgba(74,39,75,1) 0%, rgba(20,20,32,1) 100%)',
           backgroundSize: "100% 100%",
           backgroundRepeat: "no-repeat",
         }}
       >
         <div className="container max-w-7xl mx-auto">
           <div className="w-full px-8 md:px-4 text-center">
-            <div data-aos="zoom-in" className="flex flex-col md:flex-row relative mt-16 md:mt-32">
+            <div
+              data-aos="zoom-in"
+              className="flex flex-col md:flex-row relative mt-16 md:mt-32"
+            >
               <div className="md:w-6/12 mr-auto mt-10">
                 <div className="block md:hidden mb-4 md:mb-0">
-                  <img
-                    src="https://paras-cdn.imgix.net/bafkreih4r2uhssyarmxo4cbf32ebfg252wh2ec6x5yyzr3avb3qry5s3gi?w=800"
-                    alt="NFT Logo"
-                    className="w-72 md:w-[450px] mx-auto md:my-10"
-                  />
+                  <Lottie options={defaultOptions} height={300} width={300} />
                 </div>
                 <div className="w-[90%]">
                   <p
@@ -165,11 +175,7 @@ const Home = () => {
               </div>
               <div className="hidden md:block">
                 <a href="#recommendation">
-                  <img
-                    src="nfts-new.png"
-                    alt="Material Tailwind Logo"
-                    className="w-64 md:w-[450px] mx-auto md:my-10"
-                  />
+                  <Lottie options={defaultOptions} height={500} width={500} />
                 </a>
               </div>
             </div>
@@ -177,7 +183,13 @@ const Home = () => {
         </div>
       </section>
 
-      <section id="recommendation" className="overflow-hidden bg-[url('https://paras-cdn.imgix.net/bafybeid27u6akdzjyltls5xmdjo2tqybqogrieewovoermg3yvsglcz7yy?w=800')] bg-no-repeat bg-cover py-10 md:py-20">
+      <section
+        id="recommendation"
+        style={{
+          background: "#151521",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
         <div className="flex flex-wrap items-center">
           <div className="w-full md:w-9/12 px-8 md:px-4 ml-auto mr-auto mt-10">
             <div className="w-80 md:w-full mb-10 mx-auto">
@@ -188,7 +200,7 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {RecommendedTokens.map((token, index) => (
                 <div
-                  data-aos='zoom-in'
+                  data-aos="zoom-in"
                   key={index}
                   className="text-white cursor-pointer bg-eversnipe transition-colors duration-100 bg-opacity-50 hover:bg-opacity-60 rounded-lg text-center p-4 overflow-ellipsis"
                   onClick={() => {

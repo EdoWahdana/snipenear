@@ -1,10 +1,5 @@
 import { providers } from "near-api-js";
-import React, {
-  Fragment,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import Header from "components/Documentation/Header";
 import getConfig from "../config/near";
 import AppNavbar from "pagesComponents/AppNavbar";
@@ -23,8 +18,8 @@ import JSBI from "jsbi";
 import SuccessModalAutoBuy from "../components/Modal/SuccessModalAutoBuy";
 import IconLoader from "../components/Icons/IconLoader";
 import IconWarning from "../components/Icons/IconWarning";
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const ModalEnum = {
   successAutoBuy: "SuccessAutoBuy",
@@ -56,9 +51,9 @@ const App = () => {
 
   useEffect(() => {
     AOS.init({
-      duration: 300
-    })
-  }, [])
+      duration: 300,
+    });
+  }, []);
 
   useEffect(() => {
     if (!walletSelector.isSignedIn()) {
@@ -295,12 +290,12 @@ const App = () => {
           <div
             className="container w-full md:w-1/3"
             style={{
-              backgroundImage: `url('https://paras-cdn.imgix.net/bafybeibio3mxazb4iycvwfodibtqojle3277yi2rbng3lnyrmx32ncmo4a?w=800')`,
+              background: 'linear-gradient(180deg, rgba(74,39,75,1) 0%, rgba(20,20,32,1) 100%)',
               backgroundSize: "100% 100%",
               backgroundRepeat: "no-repeat",
             }}
           >
-            <div data-aos='zoom-in' className="w-full px-8 md:px-4">
+            <div data-aos="zoom-in" className="w-full px-8 md:px-4">
               <div className="mt-24">
                 <p className="text-white font-bold text-2xl text-center mb-2">
                   Preview
@@ -319,7 +314,7 @@ const App = () => {
                       <IconWarning
                         size={100}
                         color={"#FFF"}
-                        className='mx-auto my-4'
+                        className="mx-auto my-4"
                       />
                       <p className="text-white text-md font-bold mx-auto">
                         {contractResult}
@@ -453,7 +448,11 @@ const App = () => {
           </div>
 
           <div className="container w-full md:w-2/3">
-            <div data-aos='zoom-in' data-aos-delay='300' className="w-full px-8 md:px-4 text-center">
+            <div
+              data-aos="zoom-in"
+              data-aos-delay="300"
+              className="w-full px-8 md:px-4 text-center"
+            >
               <div className="flex flex-col gap-y-2 mt-6">
                 <p className=" font-poppins font-bold text-white text-md text-left md:text-xl">
                   Contract Id
@@ -623,13 +622,13 @@ const App = () => {
       <section
         className="hidden md:flex header relative items-start bg-fill min-h-screen overflow-y-auto pb-6"
         style={{
-          backgroundImage: `url('./landing-page.png')`,
+          background: 'linear-gradient(180deg, rgba(74,39,75,1) 0%, rgba(20,20,32,1) 100%)',
           backgroundSize: "100% 100%",
           backgroundRepeat: "no-repeat",
         }}
       >
         <div className="flex flex-row gap-x-2 mx-auto w-4/5">
-          <div data-aos='zoom-in' className="container w-full md:w-2/3">
+          <div data-aos="zoom-in" className="container w-full md:w-2/3">
             <div className="w-5/12 px-8 md:px-4 text-center">
               <div className="grid grid-cols-2 gap-x-8 justify-center items-center mt-40">
                 <p
@@ -813,7 +812,11 @@ const App = () => {
               </div>
             </div>
           </div>
-          <div data-aos='zoom-in' data-aos-delay='300' className="container w-full md:w-1/3">
+          <div
+            data-aos="zoom-in"
+            data-aos-delay="300"
+            className="container w-full md:w-1/3"
+          >
             <div className="w-5/12 px-8 md:px-4">
               <div className="mt-36">
                 <p className="text-white text-2xl text-left mb-2">Preview</p>
@@ -831,8 +834,8 @@ const App = () => {
                     <div>
                       <IconWarning
                         size={100}
-                        color={'#FFF'}
-                        className='mx-auto my-4'
+                        color={"#FFF"}
+                        className="mx-auto my-4"
                       />
                       <p className="text-white text-md font-bold text-center">
                         {contractResult}

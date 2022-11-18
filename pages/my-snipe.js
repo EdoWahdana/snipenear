@@ -256,7 +256,7 @@ const MySnipe = () => {
       <section
         className="grid md:hidden header relative items-start bg-fill min-h-screen overflow-y-auto"
         style={{
-          backgroundImage: `url('https://paras-cdn.imgix.net/bafybeibio3mxazb4iycvwfodibtqojle3277yi2rbng3lnyrmx32ncmo4a?w=800')`,
+          background: 'linear-gradient(180deg, rgba(74,39,75,1) 0%, rgba(20,20,32,1) 100%)',
           backgroundSize: "100% 100%",
           backgroundRepeat: "no-repeat",
         }}
@@ -409,10 +409,9 @@ const MySnipe = () => {
       <section
         className="hidden md:flex header relative items-start bg-fill min-h-screen"
         style={{
-          backgroundImage: `url('./landing-page.png')`,
+          background: 'linear-gradient(180deg, rgba(74,39,75,1) 0%, rgba(20,20,32,1) 100%)',
           backgroundSize: "100% 100%",
-          backgroundRepeat: "repeat",
-          backgroundAttachment: "fixed",
+          backgroundRepeat: "no-repeat",
         }}
       >
         <div className="container w-full mx-auto">
