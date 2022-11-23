@@ -70,10 +70,52 @@ export default function MyApp({ Component, pageProps }) {
   return (
     <React.Fragment>
       <Head>
+        <title>EverSnipe</title>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#03a9f4" />
-        <title>EverSnipe</title>
+        <meta
+					name="description"
+					content="The most reliable tool to snipe and AutoBuy your favorite NFT and Collection"
+				/>
+				<meta
+					name="keywords"
+					content="eversnipe, snipenear, snipe near, ever snipe, sniper near, rarity sniper"
+				/>
+
+				<meta
+					name="twitter:title"
+					content="EverSnipe - The most reliable tool to snipe and AutoBuy your favorite NFT and Collection"
+				/>
+				<meta name="twitter:card" content="summary_large_image" />
+				<meta name="twitter:site" content="@EverSnipe" />
+				<meta name="twitter:url" content="https://eversnipe.xyz" />
+				<meta
+					name="twitter:description"
+					content="EverSnipe is the most reliable tool to snipe and AutoBuy your favorite NFT and Collection in NEAR Blockchain."
+				/>
+				<meta
+					name="twitter:image"
+					content="https://i.ibb.co/0trcX7c/Background-9.png"
+				/>
+				<meta property="og:type" content="website" />
+				<meta
+					property="og:title"
+					content="EverSnipe - The most reliable tool to snipe and AutoBuy your favorite NFT and Collection"
+				/>
+				<meta
+					property="og:site_name"
+					content="EverSnipe - The most reliable tool to snipe and AutoBuy your favorite NFT and Collection"
+				/>
+				<meta
+					property="og:description"
+					content="EverSnipe is the most reliable tool to snipe and AutoBuy your favorite NFT and Collection in NEAR Blockchain."
+				/>
+				<meta property="og:url" content="https://eversnipe.xyz" />
+				<meta
+					property="og:image"
+					content="https://i.ibb.co/0trcX7c/Background-9.png"
+				/>
       </Head>
       <UserContext.Provider
         value={{
